@@ -3,7 +3,9 @@ package com.exam.model.exam;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -11,7 +13,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "category")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Category {
     @Id
@@ -21,7 +24,7 @@ public class Category {
     private String description;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JsonIgnore
+    @JsonIgnore
     private Set<Quiz> quizzes = new LinkedHashSet<>();
 
     public Category(String title, String description) {

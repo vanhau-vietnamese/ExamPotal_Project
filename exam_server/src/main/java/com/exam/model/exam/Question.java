@@ -12,6 +12,8 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questId;
+
+    @Column(nullable = false)
     private String content;
     private String image;
     private String option1;
