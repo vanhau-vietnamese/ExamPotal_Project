@@ -5,23 +5,16 @@ import Icons from '~/assets/icons';
 import images from '~/assets/images';
 import { Button, FormInput } from '~/components';
 import { router } from '~/routes';
-import { FormSignInInput } from '~/validations';
+import { FormSignUpInput } from '~/validations';
 
-function SignInPage() {
+function SignUpPage() {
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({
-    resolver: zodResolver(FormSignInInput),
-    mode: 'onBlur',
-  });
+  } = useForm({ resolver: zodResolver(FormSignUpInput), mode: 'onBlur' });
 
   const onSubmit = handleSubmit((data) => console.log(data));
-
-  const handleLoginWithSocial = () => {
-    console.log('Login with social');
-  };
 
   return (
     <div className="flex items-center justify-center w-full h-full">
@@ -31,8 +24,18 @@ function SignInPage() {
       <div className="flex-1 md:max-w-[50%]">
         <div className="px-5 mx-auto">
           <div className="w-full ">
-            <p className="my-3 text-2xl font-bold text-center text-icon">Đăng nhập</p>
+            <p className="my-3 text-2xl font-bold text-center text-icon">Đăng ký tài khoản</p>
             <form onSubmit={onSubmit}>
+              <FormInput
+                control={control}
+                title="Họ và tên"
+                name="fullName"
+                placeholder="Họ và tên"
+                required
+                type="text"
+                icon={<Icons.User />}
+                error={errors.fullName?.message}
+              />
               <FormInput
                 control={control}
                 title="Địa chỉ Email"
@@ -53,39 +56,30 @@ function SignInPage() {
                 icon={<Icons.Key />}
                 error={errors.password?.message}
               />
+              <FormInput
+                control={control}
+                title="Xác nhận mật khẩu"
+                name="confirmPassword"
+                placeholder="Xác nhận mật khẩu"
+                required
+                type={'password'}
+                icon={<Icons.Key />}
+                error={errors.confirmPassword?.message}
+              />
               <div className="text-left">
                 <Button
                   type="submit"
                   className="w-full px-5 py-2 text-[16px] text-white bg-primary shadow-success hover:shadow-success_hover"
                 >
-                  Đăng nhập
+                  Đăng ký ngay
                 </Button>
               </div>
             </form>
-            <div className="text-[14px] font-semibold text-center m-[12px_auto] text-icon">
-              <span>Hoặc đăng nhập bằng</span>
-            </div>
-            <div className="flex items-center gap-8 w-full">
-              <Button
-                className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={handleLoginWithSocial}
-              >
-                <img src={images.google} alt="google_logo" />
-                <p>Google</p>
-              </Button>
-              <Button
-                className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={handleLoginWithSocial}
-              >
-                <img src={images.facebook} alt="facebook_logo" />
-                <p>Facebook</p>
-              </Button>
-            </div>
             <div className="flex items-center justify-center">
               <p className="mt-4 font-semibold text-icon text-[15px]">
-                Bạn chưa có tài khoản?{' '}
-                <Link to={router.auth.signUp} className="text-primary font-bold underline">
-                  Đăng ký tại đây
+                Bạn đã có tài khoản?{' '}
+                <Link to={router.auth.signIn} className="text-primary font-bold underline">
+                  Đăng nhập tại đây
                 </Link>
               </p>
             </div>
@@ -96,4 +90,4 @@ function SignInPage() {
   );
 }
 
-export default SignInPage;
+export default SignUpPage;

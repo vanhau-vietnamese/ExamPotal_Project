@@ -1,5 +1,8 @@
-import dashboard from "./dashboard.png";
-
+import dashboard from './dashboard.png';
+import facebook from './facebook.svg';
+import google from './google.svg';
 export default {
-	dashboard,
+  dashboard,
+  facebook,
+  google,
 };
