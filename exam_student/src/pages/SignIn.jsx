@@ -4,18 +4,18 @@ import { Link } from 'react-router-dom';
 import Icons from '~/assets/icons';
 import images from '~/assets/images';
 import { Button, FormInput } from '~/components';
+import { useAuth } from '~/hooks';
 import { router } from '~/routes';
 import { FormSignInInput } from '~/validations';
 
 function SignInPage() {
+  const { signInWithGoogle } = useAuth();
+
   const {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({
-    resolver: zodResolver(FormSignInInput),
-    mode: 'onBlur',
-  });
+  } = useForm({ resolver: zodResolver(FormSignInInput), mode: 'onBlur' });
 
   const onSubmit = handleSubmit((data) => console.log(data));
 
@@ -68,7 +68,7 @@ function SignInPage() {
             <div className="flex items-center gap-8 w-full">
               <Button
                 className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={handleLoginWithSocial}
+                onClick={signInWithGoogle}
               >
                 <img src={images.google} alt="google_logo" />
                 <p>Google</p>
@@ -84,7 +84,7 @@ function SignInPage() {
             <div className="flex items-center justify-center">
               <p className="mt-4 font-semibold text-icon text-[15px]">
                 Bạn chưa có tài khoản?{' '}
-                <Link to={router.auth.signUp} className="text-primary font-bold underline">
+                <Link to={router.signUp} className="text-primary font-bold underline">
                   Đăng ký tại đây
                 </Link>
               </p>

@@ -8,16 +8,9 @@ export const FormSignInInput = z.object({
   password: z
     .string()
     .min(8, 'Mật khẩu phải có ít nhất 8 ký tự!')
-    .refine(
-      (password) => {
-        const uppercaseRegex = /[A-Z]/;
-        const symbolRegex = /[^a-zA-Z0-9]/;
-        return uppercaseRegex.test(password) && symbolRegex.test(password);
-      },
-      {
-        message: 'Mật khẩu phải có ít nhất 1 ký tự viết hoa và 1 ký tự đặc biệt!',
-      }
-    ),
+    .refine((password) => uppercaseRegex.test(password) && symbolRegex.test(password), {
+      message: 'Mật khẩu phải có ít nhất 1 ký tự viết hoa và 1 ký tự đặc biệt!',
+    }),
 });
 
 export const FormSignUpInput = z

@@ -78,7 +78,7 @@ function SignUpPage() {
             <div className="flex items-center justify-center">
               <p className="mt-4 font-semibold text-icon text-[15px]">
                 Bạn đã có tài khoản?{' '}
-                <Link to={router.auth.signIn} className="text-primary font-bold underline">
+                <Link to={router.signIn} className="text-primary font-bold underline">
                   Đăng nhập tại đây
                 </Link>
               </p>

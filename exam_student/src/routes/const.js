@@ -1,9 +1,7 @@
 export default {
-	home: {
-		root: "/",
-	},
-	auth: {
-		signIn: "/auth/sign-in",
-		signUp: "/auth/sign-up",
-	},
+  root: '/',
+  student: '/student',
+  dashboard: '/dashboard',
+  signIn: '/auth/sign-in',
+  signUp: '/auth/sign-up',
 };

@@ -1,22 +1,32 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { AuthLayout } from '~/layouts';
-import { NotFound, SignInPage, HomePage, SignUpPage } from '~/pages';
+import { AuthLayout, DashBoardLayout, StudentLayout } from '~/layouts';
+import { NotFound, SignInPage, Main, SignUpPage } from '~/pages';
+import router from './const';
 
-const router = createBrowserRouter([
+const routes = createBrowserRouter([
   {
-    path: '/',
-    element: <HomePage />,
+    path: router.root,
+    element: <Main />,
   },
+  {
+    path: router.dashboard,
+    element: <DashBoardLayout />,
+  },
+  {
+    path: router.student,
+    element: <StudentLayout />,
+  },
+  // Auth Route
   {
     path: '/auth',
     element: <AuthLayout />,
     children: [
       {
-        path: 'sign-in',
+        path: router.signIn,
         element: <SignInPage />,
       },
       {
-        path: 'sign-up',
+        path: router.signUp,
         element: <SignUpPage />,
       },
     ],
@@ -27,4 +37,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router;
+export default routes;
