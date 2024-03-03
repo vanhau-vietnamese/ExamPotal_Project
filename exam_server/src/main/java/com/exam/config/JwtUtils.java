@@ -1,10 +1,13 @@
 package com.exam.config;
 
+import com.exam.model.Role;
+import com.exam.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Service
@@ -27,9 +31,9 @@ public class JwtUtils {
 
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
+//        claims.put("roles", role);
         return createToken(claims, userName);
     }
-
 
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()

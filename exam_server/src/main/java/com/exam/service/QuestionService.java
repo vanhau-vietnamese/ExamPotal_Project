@@ -1,7 +1,7 @@
 package com.exam.service;
 
-import com.exam.model.exam.Question;
-import com.exam.model.exam.Quiz;
+import com.exam.model.Question;
+import com.exam.model.Quiz;
 
 import java.util.Set;
 

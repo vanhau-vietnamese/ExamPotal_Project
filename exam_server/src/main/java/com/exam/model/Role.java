@@ -1,5 +1,6 @@
-package com.exam.model.user;
+package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class Role {
     @Column(name = "RoleName", nullable = false, unique = true)
     private String roleName;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY, mappedBy = "role")
     private Set<User> users = new HashSet<>();
 }

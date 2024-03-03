@@ -1,6 +1,6 @@
 package com.exam.controller;
 
-import com.exam.model.exam.Quiz;
+import com.exam.model.Quiz;
 import com.exam.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

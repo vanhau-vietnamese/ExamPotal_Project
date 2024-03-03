@@ -1,14 +1,12 @@
 package com.exam.service.impl;
 
-import com.exam.model.exam.Quiz;
-import com.exam.repo.QuizRepository;
+import com.exam.model.Quiz;
+import com.exam.repository.QuizRepository;
 import com.exam.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service

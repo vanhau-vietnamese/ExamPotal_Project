@@ -1,4 +1,4 @@
-package com.exam.model.exam;
+package com.exam.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -22,6 +22,9 @@ public class Category {
     private Long cid;
     private String title;
     private String description;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User createBy;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore

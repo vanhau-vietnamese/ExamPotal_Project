@@ -2,14 +2,18 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtUtils;
 import com.exam.config.UserDetailsServiceImpl;
+import com.exam.dto.request.ChangePasswordRequest;
+import com.exam.dto.request.ForgotPasswordRequest;
 import com.exam.dto.request.LoginRequest;
 import com.exam.dto.request.SignupRequest;
 import com.exam.dto.response.JwtResponse;
-import com.exam.model.user.Role;
-import com.exam.model.user.User;
-import com.exam.repo.RoleRepository;
-import com.exam.repo.UserRepository;
+import com.exam.model.Role;
+import com.exam.model.User;
+import com.exam.repository.RoleRepository;
+import com.exam.repository.UserRepository;
 import com.exam.service.AuthenticationService;
+import com.exam.utils.EmailUtils;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
@@ -29,6 +33,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleRepository roleRepository;
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtUtils jwtUtils;
+    private final EmailUtils emailUtils;
+
     @Override
     public ResponseEntity<?> register(SignupRequest request) {
         if(userRepository.existsByEmail(request.getEmail())){
@@ -38,9 +44,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResponseEntity.badRequest().body("Username already exists");
         }
         Role role = new Role();
-        role = roleRepository.findByRoleName("student");
+        role = roleRepository.findByRoleName("ROLE_STUDENT");
 
         User user = new User();
+        user.setName(request.getUsername());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
@@ -51,6 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
+        System.out.println("23513");
         String token;
         try {
             Authentication auth = authenticationManager.authenticate(
@@ -59,13 +67,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             loginRequest.getPassword()
                     )
             );
-            // Kiểm tra xem quá trình xác thực có thành công không
             if (auth != null && auth.isAuthenticated()) {
-                // Sinh token và trả về cho người dùng
-                token = jwtUtils.generateToken(userDetailsService.getUserDetail().getUsername());
+                User userDetail = userDetailsService.getUserDetail();
+                token = jwtUtils.generateToken(userDetail.getUsername());
+                System.out.println("ABCD");
                 return new JwtResponse(token);
-            } else {
-                // Trả về một thông báo lỗi hoặc đối tượng ResponseEntity tương ứng
+            } else{
                 return null;
             }
         } catch (AuthenticationException e) {
@@ -73,5 +80,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return null;
         }
     }
+
+    @Override
+    public ResponseEntity<String> changePassword(ChangePasswordRequest request) {
+        User user = userRepository.findByUsername(request.getUsername());
+        if(user != null){
+            if(passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
+                // lưu xuống ật khẩu mã hóa
+
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                userRepository.save(user);
+                return ResponseEntity.ok("Password Updated Successfully");
+            }
+            return ResponseEntity.badRequest().body("Incorrect Old Password");
+        }
+        return ResponseEntity.badRequest().body("Incorrect username");
+    }
+
+    @Override
+    public ResponseEntity<String> forgotPassword(ForgotPasswordRequest emailRequest) throws MessagingException {
+        User user = userRepository.findByEmail(emailRequest.getEmail());
+        System.out.println("emailRequest: "+ emailRequest.getEmail());
+        System.out.println("email: "+ user.getEmail());
+        if(user != null){
+            emailUtils.sendPasswordToEmail(emailRequest.getEmail(), "Credentials By Online Exam", user.getPassword());
+            return ResponseEntity.ok("Please check your email to get password");
+        }
+        return ResponseEntity.badRequest().body("Incorrect Email");
+    }
+
 
 }

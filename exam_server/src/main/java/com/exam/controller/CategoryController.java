@@ -1,9 +1,10 @@
 package com.exam.controller;
 
-import com.exam.model.exam.Category;
+import com.exam.model.Category;
 import com.exam.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -14,8 +15,9 @@ public class CategoryController {
     private final CategoryService categoryService;
     // add category
     @PostMapping("/")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
     public ResponseEntity<Category> addCategory(@RequestBody Category category){
-        return ResponseEntity.ok(categoryService.addCategory(category));
+        return categoryService.addCategory(category);
     }
 
     // get category
@@ -40,4 +42,5 @@ public class CategoryController {
         categoryService.deleteCategory(categoryId);
     }
 
+    // teacher có thể delete category mà họ tạo
 }

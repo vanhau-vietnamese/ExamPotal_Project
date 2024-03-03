@@ -1,6 +1,6 @@
-package com.exam.repo;
+package com.exam.repository;
 
-import com.exam.model.user.Role;
+import com.exam.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

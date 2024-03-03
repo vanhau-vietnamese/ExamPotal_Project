@@ -1,8 +1,8 @@
 package com.exam.service.impl;
 
-import com.exam.model.exam.Question;
-import com.exam.model.exam.Quiz;
-import com.exam.repo.QuestionRepository;
+import com.exam.model.Question;
+import com.exam.model.Quiz;
+import com.exam.repository.QuestionRepository;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

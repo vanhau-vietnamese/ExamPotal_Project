@@ -1,7 +1,7 @@
 package com.exam.config;
 
-import com.exam.model.user.User;
-import com.exam.repo.UserRepository;
+import com.exam.model.User;
+import com.exam.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
