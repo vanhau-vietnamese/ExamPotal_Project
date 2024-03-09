@@ -7,7 +7,7 @@ import { useUserStore } from '~/store';
 
 export function useAuth() {
   const navigate = useNavigate();
-  const { setUser } = useUserStore((state) => state);
+  const { user, setUser } = useUserStore((state) => state);
   const [loading, setLoading] = useState(true);
 
   useLayoutEffect(() => {
@@ -45,6 +45,7 @@ export function useAuth() {
   };
 
   return {
+    user,
     loading,
     signInWithGoogle,
   };

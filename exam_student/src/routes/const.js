@@ -1,7 +1,8 @@
 export default {
   root: '/',
   student: '/student',
-  dashboard: '/dashboard',
+  admin: '/admin',
+  question: '/admin/question',
   signIn: '/auth/sign-in',
   signUp: '/auth/sign-up',
 };

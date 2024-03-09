@@ -1,21 +1,38 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { AuthLayout, DashBoardLayout, StudentLayout } from '~/layouts';
-import { NotFound, SignInPage, Main, SignUpPage } from '~/pages';
+import { AuthLayout, DashBoardLayout } from '~/layouts';
+import { SignInPage, SignUpPage } from '~/pages/auth';
+import { AdminMain } from '~/pages/admin';
+import { StudentMain } from '~/pages/student';
+import NotFound from '~/pages/NotFound';
+
 import router from './const';
 
 const routes = createBrowserRouter([
   {
     path: router.root,
-    element: <Main />,
-  },
-  {
-    path: router.dashboard,
     element: <DashBoardLayout />,
+    children: [
+      {
+        path: router.admin,
+        children: [
+          {
+            index: true,
+            element: <AdminMain />,
+          },
+        ],
+      },
+      {
+        path: router.student,
+        children: [
+          {
+            index: true,
+            element: <StudentMain />,
+          },
+        ],
+      },
+    ],
   },
-  {
-    path: router.student,
-    element: <StudentLayout />,
-  },
+
   // Auth Route
   {
     path: '/auth',
