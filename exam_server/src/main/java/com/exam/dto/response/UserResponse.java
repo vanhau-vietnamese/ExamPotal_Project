@@ -1,26 +1,29 @@
 package com.exam.dto.response;
 
-import com.exam.model.Role;
+import com.exam.model.ERole;
+import com.exam.model.Quiz;
+import com.exam.model.UserQuizResult;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class UserResponse {
-    private String name;
-    private String username;
-    private String password;
+    private Long id;
+    private String fullName;
     private String email;
-    Role role;
+    @Enumerated(EnumType.STRING)
+    private ERole role;
 
-    public UserResponse(String name, String username, String password, String email, Role role) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-    }
+    private int numberOfCompleted; // student
+    private int numberOfPost; // teacher
 
+    private Set<UserQuizResult> userQuizResults; // Lisst kết quả
+    private Set<Quiz> postsOfTeacher; // các bài teacher post
 }

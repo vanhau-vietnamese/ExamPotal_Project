@@ -1,37 +1,41 @@
 package com.exam.controller;
 
-import com.exam.dto.request.ChangePasswordRequest;
-import com.exam.dto.request.ForgotPasswordRequest;
-import com.exam.dto.request.LoginRequest;
-import com.exam.dto.request.SignupRequest;
-import com.exam.dto.response.JwtResponse;
+import com.exam.config.JwtAuthenticationFilter;
+import com.exam.config.JwtUtils;
+import com.exam.dto.request.RegisterRequest;
+import com.exam.model.ERole;
+import com.exam.model.User;
 import com.exam.service.AuthenticationService;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.Map;
+
 @RequiredArgsConstructor
+@RestController
 @RequestMapping("/auth")
-public class AuthenticationController{
+public class AuthenticationController {
     private final AuthenticationService authenticationService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignupRequest request){
-        System.out.println("1234");
-        return authenticationService.register(request);
-    }
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest){
-        return ResponseEntity.ok(authenticationService.login(loginRequest));
-    }
-    @PutMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request){
-        return authenticationService.changePassword(request);
+    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest){
+        return authenticationService.registerUser(registerRequest);
     }
 
-    @PostMapping("/forgotPassword")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest emailRequest) throws MessagingException {
-        return authenticationService.forgotPassword(emailRequest);
+
+    private final JwtUtils jwtUtils;
+    @PostMapping("/generate-token")
+    public ResponseEntity<String> generateToken(@RequestBody Map<String, String> request) {
+        System.out.println("request: "+request);
+        // Tạo một người dùng giả lập
+        User user = new User();
+        user.setEmail(request.get("email"));
+        user.setFullName(request.get("fullName"));
+        user.setRole(ERole.ROLE_STUDENT);
+        user.setFirebaseId(request.get("firebaseId"));
+        // Tạo token cho người dùng giả lập
+        String token = jwtUtils.generateToken(user.getEmail(), user.getFirebaseId());
+        return ResponseEntity.ok("token: " + token);
     }
 }

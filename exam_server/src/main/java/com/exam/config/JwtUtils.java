@@ -1,13 +1,10 @@
 package com.exam.config;
 
-import com.exam.model.Role;
-import com.exam.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +12,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 @Service
@@ -29,16 +25,26 @@ public class JwtUtils {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(String userName) {
-        Map<String, Object> claims = new HashMap<>();
-//        claims.put("roles", role);
-        return createToken(claims, userName);
+    public String extractFirebaseId(String token) {
+        try {
+            return extractClaim(token, claims -> claims.get("firebaseId", String.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // hoặc xử lý ngoại lệ theo nhu cầu của bạn
+        }
     }
 
-    private String createToken(Map<String, Object> claims, String userName) {
+
+    public String generateToken(String email, String firebaseId) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("firebaseId", firebaseId);
+        return createToken(claims, email);
+    }
+
+    private String createToken(Map<String, Object> claims, String email) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userName)
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
@@ -51,12 +57,12 @@ public class JwtUtils {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String email = extractUserName(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = extractAllClaims(token);
+        Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 

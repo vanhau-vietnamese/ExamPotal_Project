@@ -25,7 +25,7 @@ CREATE TABLE `answers`  (
 -- Table structure for category
 -- ----------------------------
 DROP TABLE IF EXISTS `category`;
-CREATE TABLE `category`  (
+CREATE TABLE `category`  (    
   `id` bigint NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
@@ -91,9 +91,12 @@ CREATE TABLE `quizzes`  (
   `numberOfQuestions` int NOT NULL,
   `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
   `categoryId` bigint NULL DEFAULT NULL,
+  `createBy` bigint NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `categoryId`(`categoryId` ASC) USING BTREE,
-  CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  INDEX `createBy`(`createBy` ASC) USING BTREE,
+  CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `quizzes_ibfk_2` FOREIGN KEY (`createBy`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------

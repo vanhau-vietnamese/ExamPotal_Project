@@ -13,28 +13,37 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "quiz")
+@Table(name = "quizzes")
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long qId;
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     private String title;
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-    private String maxMarks;
-    private String numberOfQuestions;
-    private boolean active = false;
+    @Column(name = "maxMarks", nullable = false)
+    private int maxMarks;
+    @Column(name = "numberOfQuestions", nullable = false)
+    private int numberOfQuestions;
+    @Column(name = "status")
+    private boolean status = false;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @JoinColumn(name = "createBy", referencedColumnName = "id")
+    private User createBy;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @JoinColumn(name = "categoryId", referencedColumnName = "id")
     private Category category;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Question> questions = new HashSet<>();
+    @OneToMany(mappedBy = "quiz")
+    private Set<UserQuizResult> userQuizResults = new HashSet<>();
 
-    @ManyToMany
-    @JsonIgnore
-    @JoinTable(name = "user_quiz_history",
-            joinColumns = @JoinColumn(name = "quiz_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new HashSet<>();
+    @OneToMany(mappedBy = "quiz")
+    Set<QuizQuestion> quizQuestions;
 }

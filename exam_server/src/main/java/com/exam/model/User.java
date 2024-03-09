@@ -9,51 +9,57 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 
-@NamedQuery(
-        name = "User.getAllUser",
-        query = "SELECT new com.exam.dto.response.UserResponse(u.name, u.username, u.password, u.email, u.role) " +
-                "FROM User u"
-)
 @Entity
-@Table(name = "User")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserId")
-    private Long userId;
-    private String name;
-    @Column(name = "UserName", nullable = false, unique = true)
-    private String username;
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "fullName", nullable = false, columnDefinition = "TEXT")
+    private String fullName;
     @Column(name = "PassWord", nullable = false, unique = true)
     private String password;
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true, columnDefinition = "TEXT")
     private String email;
-
-    // user use 1 role
-    @ManyToOne()
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+    @Column(name = "firebaseId", unique = true, columnDefinition = "TEXT")
+    private String firebaseId;
+    @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createAt;
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Quiz> quizzes = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Category> categories = new HashSet<>();
 
-    @ManyToMany(mappedBy = "users")
-    @JsonIgnore
-    private Set<Quiz> quizzes = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<UserQuizResult> userQuizResults = new HashSet<>();
 
+    @Column(name = "role", columnDefinition = "TEXT", nullable = false, unique = false)
+    @Enumerated(EnumType.STRING)
+    private ERole role;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override

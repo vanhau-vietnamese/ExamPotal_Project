@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 public interface UserService {
-    public ResponseEntity<?> getAllUser();
-    public ResponseEntity<UserResponse> getUser(Long id);
-    public void deleteUser(Long id);
-    public ResponseEntity<String> updateUser(User user);
-    public ResponseEntity<?> getUsersOfQuiz(@PathVariable("quizId") Long id);
+    public ResponseEntity<UserResponse> getProfile(Long id);
+//    public ResponseEntity<?> getAllUser();
+//    public ResponseEntity<UserResponse> getUser(Long id);
+//    public void deleteUser(Long id);
+//    public ResponseEntity<String> updateUser(User user);
+//    public ResponseEntity<?> getUsersOfQuiz(@PathVariable("quizId") Long id);
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -13,14 +14,15 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "question_type")
+@Table(name = "question_types")
 public class QuestionType {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long questionTypeId;
+    @Column(name = "alias", nullable = false, unique = true, length = 100)
+    private String alias;
+    @Column(name = "displayName", nullable = false, length = 50)
     private String displayName;
-
-    @JsonIgnore
+    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt;
     @OneToMany(mappedBy = "questionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Question> questions = new LinkedHashSet<>();
 }

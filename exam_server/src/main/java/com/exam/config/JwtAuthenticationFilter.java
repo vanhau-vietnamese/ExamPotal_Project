@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,23 +22,24 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
-    private String getJwtFromRequest(HttpServletRequest request){
+    @Getter
+    private String jwt;
+
+    public String getJwtFromRequest(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
+        System.out.println("bearerToken: " + bearerToken);
         // Kiểm tra xem header authorization có chứa thông tin jwt k?
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
-            return bearerToken.substring(7);
+            jwt = bearerToken.substring(7);
+            return jwt;
         }
         return null;
-//        final String authHeader = request.getHeader("Authorization");
-//        final String jwt;
-//        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//        jwt = authHeader.substring(7);
+    }
+    private boolean isRegistrationRequest(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        return requestURI.equals("/auth/register");
     }
     @Override
     protected void doFilterInternal(
@@ -46,10 +48,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String token = getJwtFromRequest(request);
+        if(isRegistrationRequest(request)){
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (token != null) {
-            String username = jwtUtils.extractUserName(token);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            String email = jwtUtils.extractUserName(token);
+            String firebaseId = jwtUtils.extractFirebaseId(token);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 if (jwtUtils.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
