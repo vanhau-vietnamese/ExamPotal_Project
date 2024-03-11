@@ -1,5 +1,11 @@
+import ExamList from '../ExamList';
+
 function AdminMain() {
-  return <div>Admin Main Page</div>;
+  return (
+    <div>
+      <ExamList></ExamList>
+    </div>
+  );
 }
 
 export default AdminMain;

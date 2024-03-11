@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import { Backdrop, Loading } from '~/components';
+import { Backdrop, Loading, TypeLanguges } from '~/components';
 import { useAuth } from '~/hooks';
 import { router } from '~/routes';
 import { Header, SideBar } from './components';
@@ -31,9 +31,10 @@ function DashBoardLayout() {
       ) : (
         <>
           <Header />
-          <main>
+          <main className="flex">
             <SideBar />
-            <section>
+            <section className="bg-slate-300 m-3 rounded-md h-full max-w-fit ">
+              <TypeLanguges></TypeLanguges>
               <Outlet />
             </section>
           </main>

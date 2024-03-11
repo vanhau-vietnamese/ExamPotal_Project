@@ -1,11 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom';
+
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import { SignInPage, SignUpPage } from '~/pages/auth';
-import { AdminMain } from '~/pages/admin';
-import { StudentMain } from '~/pages/student';
 import NotFound from '~/pages/NotFound';
 
 import router from './const';
+import { AdminMain } from '~/pages/admin';
+import { StudentMain } from '~/pages/student';
+import { QuestionList } from '~/pages';
+import DetailExam from '~/pages/DetailExam';
 
 const routes = createBrowserRouter([
   {
@@ -30,6 +33,15 @@ const routes = createBrowserRouter([
           },
         ],
       },
+      {
+        path: router.questionlist,
+        children: [
+          {
+            index: true,
+            element: <QuestionList />,
+          },
+        ],
+      },
     ],
   },
 
@@ -51,6 +63,10 @@ const routes = createBrowserRouter([
   {
     path: '*',
     element: <NotFound />,
+  },
+  {
+    path: router.detailexam,
+    element: <DetailExam />,
   },
 ]);
 

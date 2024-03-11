@@ -1,5 +1,7 @@
+import QuestionList from '../QuestionList';
+
 function StudentMain() {
-  return <div>StudentMain</div>;
+  return <QuestionList></QuestionList>;
 }
 
 export default StudentMain;

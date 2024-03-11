@@ -19,6 +19,30 @@ function SignInPage() {
 
   const onSubmit = handleSubmit((data) => console.log(data));
 
+  // const onSubmit = async (data) => {
+  //   try {
+  //     // Gửi dữ liệu đăng nhập đến backend
+  //     const response = await fetch('/api/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+
+  //     // Kiểm tra phản hồi từ server
+  //     if (response.ok) {
+  //       // Xử lý đăng nhập thành công
+  //       console.log('Đăng nhập thành công');
+  //     } else {
+  //       // Xử lý đăng nhập thất bại
+  //       console.log('Đăng nhập thất bại');
+  //     }
+  //   } catch (error) {
+  //     console.error('Lỗi:', error);
+  //   }
+  // };
+
   const handleLoginWithSocial = () => {
     console.log('Login with social');
   };
@@ -26,7 +50,11 @@ function SignInPage() {
   return (
     <div className="flex items-center justify-center w-full h-full">
       <div className="items-center flex-grow-0 flex-shrink-0 hidden px-3 md:flex w-[50%]">
-        <img src={images.dashboard} alt="..." className="block object-cover w-full h-full mx-auto" />
+        <img
+          src={images.dashboard}
+          alt="..."
+          className="block object-cover w-full h-full mx-auto"
+        />
       </div>
       <div className="flex-1 md:max-w-[50%]">
         <div className="px-5 mx-auto">
