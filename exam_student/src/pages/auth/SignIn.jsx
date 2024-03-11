@@ -25,8 +25,13 @@ function SignInPage() {
 
   return (
     <div className="flex items-center justify-center w-full h-full">
+      <Link to={router.admin}>Click</Link>
       <div className="items-center flex-grow-0 flex-shrink-0 hidden px-3 md:flex w-[50%]">
-        <img src={images.dashboard} alt="..." className="block object-cover w-full h-full mx-auto" />
+        <img
+          src={images.dashboard}
+          alt="..."
+          className="block object-cover w-full h-full mx-auto"
+        />
       </div>
       <div className="flex-1 md:max-w-[50%]">
         <div className="px-5 mx-auto">
