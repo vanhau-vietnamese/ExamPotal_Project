@@ -45,40 +45,6 @@ export const HeadingThree = () => (
   </svg>
 );
 
-export const RotateLeft = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    className="w-4 h-4"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-    />
-  </svg>
-);
-
-export const RotateRight = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={2}
-    stroke="currentColor"
-    className="w-4 h-4"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-    />
-  </svg>
-);
-
 export const Bold = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -193,5 +159,47 @@ export const Code = () => (
   >
     <polyline points="16 18 22 12 16 6"></polyline>
     <polyline points="8 6 2 12 8 18"></polyline>
+  </svg>
+);
+
+export const BulletList = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+  >
+    <path d="M8 6L21 6"></path>
+    <path d="M8 12L21 12"></path>
+    <path d="M8 18L21 18"></path>
+    <path d="M3 6L3.01 6"></path>
+    <path d="M3 12L3.01 12"></path>
+    <path d="M3 18L3.01 18"></path>
+  </svg>
+);
+
+export const OrderedList = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+  >
+    <path d="M10 6L21 6"></path>
+    <path d="M10 12L21 12"></path>
+    <path d="M10 18L21 18"></path>
+    <path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
   </svg>
 );

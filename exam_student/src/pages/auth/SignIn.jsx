@@ -9,7 +9,7 @@ import { router } from '~/routes';
 import { FormSignInInput } from '~/validations';
 
 function SignInPage() {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithSocial } = useAuth();
 
   const {
     control,
@@ -19,14 +19,14 @@ function SignInPage() {
 
   const onSubmit = handleSubmit((data) => console.log(data));
 
-  const handleLoginWithSocial = () => {
-    console.log('Login with social');
-  };
-
   return (
     <div className="flex items-center justify-center w-full h-full">
       <div className="items-center flex-grow-0 flex-shrink-0 hidden px-3 md:flex w-[50%]">
-        <img src={images.dashboard} alt="..." className="block object-cover w-full h-full mx-auto" />
+        <img
+          src={images.dashboard}
+          alt="..."
+          className="block object-cover w-full h-full mx-auto"
+        />
       </div>
       <div className="flex-1 md:max-w-[50%]">
         <div className="px-5 mx-auto">
@@ -68,14 +68,14 @@ function SignInPage() {
             <div className="flex items-center gap-8 w-full">
               <Button
                 className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={signInWithGoogle}
+                onClick={() => signInWithSocial('google')}
               >
                 <img src={images.google} alt="google_logo" />
                 <p>Google</p>
               </Button>
               <Button
                 className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={handleLoginWithSocial}
+                onClick={() => signInWithSocial('facebook')}
               >
                 <img src={images.facebook} alt="facebook_logo" />
                 <p>Facebook</p>

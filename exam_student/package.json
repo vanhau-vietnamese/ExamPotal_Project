@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@tiptap/extension-bold": "^2.2.4",
+    "@tiptap/extension-bullet-list": "^2.2.4",
     "@tiptap/extension-code": "^2.2.4",
     "@tiptap/extension-document": "^2.2.4",
     "@tiptap/extension-heading": "^2.2.4",
@@ -29,6 +30,7 @@
     "axios": "^1.6.7",
     "firebase": "^10.8.0",
     "prop-types": "^15.8.1",
+    "query-string": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
