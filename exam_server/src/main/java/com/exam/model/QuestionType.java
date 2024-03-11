@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
@@ -21,8 +22,8 @@ public class QuestionType {
     private String alias;
     @Column(name = "displayName", nullable = false, length = 50)
     private String displayName;
-    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     @OneToMany(mappedBy = "questionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Question> questions = new LinkedHashSet<>();
 }

@@ -14,4 +14,8 @@ import java.util.Set;
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
     public Set<Quiz> findAllByCreateBy(User user);
+
+    // get quizzes from category
+    @Query("SELECT quiz FROM Quiz quiz WHERE quiz.category.id= :category_id")
+    public Set<Quiz> getQuizzesOfCategory(@Param("category_id") Long category_id);
 }

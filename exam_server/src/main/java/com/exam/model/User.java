@@ -1,10 +1,13 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,13 +38,14 @@ public class User implements UserDetails{
     @Column(name = "firebaseId", unique = true, columnDefinition = "TEXT")
     private String firebaseId;
     @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt;
+    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Quiz> quizzes = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonManagedReference
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "user")

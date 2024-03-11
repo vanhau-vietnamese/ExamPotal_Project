@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("category")
+@RequestMapping("/category")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
@@ -25,4 +25,10 @@ public class CategoryController {
     public ResponseEntity<?> getAllCategories(){
         return categoryService.getAllCategories();
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateCategory(@PathVariable("id")Long id, @RequestBody Category category){
+        return categoryService.updateCategory(id, category);
+    }
+
 }

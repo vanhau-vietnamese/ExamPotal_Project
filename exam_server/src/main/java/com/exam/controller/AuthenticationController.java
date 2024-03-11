@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.TimeZone;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,6 +21,8 @@ public class AuthenticationController {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest){
+        TimeZone defaultTimeZone = TimeZone.getDefault();
+        System.out.println("Múi giờ mặc định của ứng dụng Java: " + defaultTimeZone.getID());
         return authenticationService.registerUser(registerRequest);
     }
 

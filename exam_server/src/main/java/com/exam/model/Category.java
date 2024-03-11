@@ -1,11 +1,14 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -28,11 +31,12 @@ public class Category {
     private String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinColumn(name = "createBy", referencedColumnName = "id")
     private User createBy;
 
-    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore

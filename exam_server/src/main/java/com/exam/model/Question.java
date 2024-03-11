@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.Set;
@@ -22,19 +23,20 @@ public class Question {
     private Long id;
     @Column(name = "media", columnDefinition = "JSON")
     private String media;
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "JSON")
     private String content;
+    @Column(name = "status")
+    private String status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "questionType", referencedColumnName = "alias")
     private QuestionType questionType;
 
-    @Column(name = "status")
-    private String status;
-    @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt  = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "question")
     Set<QuizQuestion> quizQuestions;
+
 }

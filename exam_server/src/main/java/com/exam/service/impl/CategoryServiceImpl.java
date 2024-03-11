@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -24,7 +25,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Override
     public Category getCategory(Long id) {
-        return categoryRepository.findById(id).get();
+        Optional<Category> category = categoryRepository.findById(id);
+        return category.orElse(null);
     }
     @Override
     public Category addCategory(Category category) {
@@ -33,11 +35,9 @@ public class CategoryServiceImpl implements CategoryService {
         }
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
-        System.out.println("ads:" + jwt);
         String email = jwtUtils.extractUserName(jwt);
-        System.out.println("email:" + email);
         User user = userRepository.findByEmail(email);
-        System.out.println("user:" + user);
+
         category.setCreateBy(user);
         return categoryRepository.save(category);
     }
@@ -46,4 +46,23 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<?> getAllCategories() {
         return ResponseEntity.ok(categoryRepository.findAll());
     }
+
+    @Override
+    public ResponseEntity<?> updateCategory(Long id, Category categoryRequest) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if(category.isPresent()){
+            category.get().setTitle(categoryRequest.getTitle());
+            category.get().setDescription(categoryRequest.getDescription());
+            // get jwt from request
+            String jwt = jwtAuthenticationFilter.getJwt();
+            String email = jwtUtils.extractUserName(jwt);
+            User user = userRepository.findByEmail(email);
+            category.get().setCreateBy(user);
+
+            return ResponseEntity.ok(categoryRepository.save(category.get()));
+        }
+        return null;
+    }
+
+
 }

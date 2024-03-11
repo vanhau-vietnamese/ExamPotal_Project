@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -28,8 +29,8 @@ public class Answer {
     private boolean isCorrect;
     @Column(name = "status", columnDefinition = "TEXT")
     private String status;
-    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt;
+    @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "question", referencedColumnName = "id")

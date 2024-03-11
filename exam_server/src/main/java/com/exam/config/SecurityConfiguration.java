@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         /*.requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")*/
                         .requestMatchers(HttpMethod.OPTIONS).permitAll() // Bổ sung phần này nếu cần

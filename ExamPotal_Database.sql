@@ -53,7 +53,7 @@ CREATE TABLE `question_types`  (
 DROP TABLE IF EXISTS `questions`;
 CREATE TABLE `questions`  (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `content` json NULL,
   `media` json NULL,
   `questionType` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
