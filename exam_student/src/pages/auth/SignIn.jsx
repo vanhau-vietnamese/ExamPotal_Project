@@ -9,7 +9,7 @@ import { router } from '~/routes';
 import { FormSignInInput } from '~/validations';
 
 function SignInPage() {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithSocial } = useAuth();
 
   const {
     control,
@@ -18,30 +18,6 @@ function SignInPage() {
   } = useForm({ resolver: zodResolver(FormSignInInput), mode: 'onBlur' });
 
   const onSubmit = handleSubmit((data) => console.log(data));
-
-  // const onSubmit = async (data) => {
-  //   try {
-  //     // Gửi dữ liệu đăng nhập đến backend
-  //     const response = await fetch('/api/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(data),
-  //     });
-
-  //     // Kiểm tra phản hồi từ server
-  //     if (response.ok) {
-  //       // Xử lý đăng nhập thành công
-  //       console.log('Đăng nhập thành công');
-  //     } else {
-  //       // Xử lý đăng nhập thất bại
-  //       console.log('Đăng nhập thất bại');
-  //     }
-  //   } catch (error) {
-  //     console.error('Lỗi:', error);
-  //   }
-  // };
 
   const handleLoginWithSocial = () => {
     console.log('Login with social');
@@ -96,14 +72,14 @@ function SignInPage() {
             <div className="flex items-center gap-8 w-full">
               <Button
                 className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={signInWithGoogle}
+                onClick={() => signInWithSocial('google')}
               >
                 <img src={images.google} alt="google_logo" />
                 <p>Google</p>
               </Button>
               <Button
                 className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
-                onClick={handleLoginWithSocial}
+                onClick={() => signInWithSocial('facebook')}
               >
                 <img src={images.facebook} alt="facebook_logo" />
                 <p>Facebook</p>

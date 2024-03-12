@@ -7,7 +7,7 @@ Backdrop.propTypes = {
   className: PropTypes.string,
 };
 
-function Backdrop({ children, className, opacity = 0.35 }) {
+function Backdrop({ children, className, opacity = 0 }) {
   return createPortal(
     <div
       className={`fixed inset-0 z-50 w-full h-full min-h-screen bg-black ${className}`}

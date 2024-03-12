@@ -1,12 +1,14 @@
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
+import {
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+} from 'firebase/auth';
 import { useLayoutEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { authentication } from '~/config';
-import { router } from '~/routes';
 import { useUserStore } from '~/store';
 
 export function useAuth() {
-  const navigate = useNavigate();
   const { user, setUser } = useUserStore((state) => state);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +20,7 @@ export function useAuth() {
         localStorage.clear();
         const data = credential.providerData[0];
         const firebaseId = data.uid;
-        localStorage.setItem('accessToken', credential.accessToken);
+        localStorage.setItem('access_token', credential.accessToken);
         setUser({ ...data, firebaseId });
         setLoading(false);
       } else {
@@ -29,14 +31,25 @@ export function useAuth() {
     return () => unregisterAuthObserver();
   }, [setUser]);
 
-  const signInWithGoogle = async () => {
+  const signInWithSocial = async (platform) => {
     setLoading(true);
-    const provider = new GoogleAuthProvider();
+
+    let provider = null;
+    switch (platform) {
+      case 'google':
+        provider = new GoogleAuthProvider();
+        break;
+      case 'facebook':
+        provider = new FacebookAuthProvider();
+        break;
+      default:
+        break;
+    }
+
     signInWithPopup(authentication, provider)
-      .then(({ user: userData, _tokenResponse }) => {
-        setUser(userData);
-        localStorage.setItem('token', _tokenResponse);
-        navigate(router.root);
+      .then(({ user: data }) => {
+        // Get Profile API
+        console.log('user', data);
       })
       .catch((error) => {
         setLoading(false);
@@ -47,6 +60,6 @@ export function useAuth() {
   return {
     user,
     loading,
-    signInWithGoogle,
+    signInWithSocial,
   };
 }

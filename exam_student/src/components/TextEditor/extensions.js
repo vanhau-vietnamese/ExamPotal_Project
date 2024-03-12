@@ -11,23 +11,21 @@ import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
+import BulletList from '@tiptap/extension-bullet-list';
 
 export default [
-  Heading.configure({
-    levels: [1, 2, 3],
-  }),
   Document,
   History,
   Paragraph,
   Text,
-  TextAlign.configure({
-    types: ['heading', 'paragraph'],
-  }),
   Bold,
   Underline,
   Italic,
   Strike,
   Code,
   ListItem,
-  OrderedList,
+  Heading.configure({ levels: [1, 2, 3] }),
+  TextAlign.configure({ types: ['heading', 'paragraph'] }),
+  BulletList.configure({ HTMLAttributes: { class: 'list-disc pl-4' } }),
+  OrderedList.configure({ HTMLAttributes: { class: 'list-decimal pl-4' } }),
 ];
