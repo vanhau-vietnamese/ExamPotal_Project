@@ -1,7 +1,9 @@
 package com.exam.service.impl;
 
+import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 //import com.exam.config.UserDetailsServiceImpl;
+import com.exam.dto.request.UserRequest;
 import com.exam.dto.response.UserResponse;
 import com.exam.model.ERole;
 import com.exam.model.Quiz;
@@ -25,21 +27,30 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final QuizRepository quizRepository;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
     @Override
-    public ResponseEntity<UserResponse> getProfile(Long id) {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<UserResponse> getProfile() {
+        String jwt = jwtAuthenticationFilter.getJwt();
+        String email = jwtUtils.extractUserName(jwt);
+        String firebaseId = jwtUtils.extractFirebaseId(jwt);
+
+        User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
+
         UserResponse userResponse = new UserResponse();
+        // nếu tồn tại user chứa firebaseId and email
         if(user != null){
-            userResponse.setId(id);
+            userResponse.setId(user.getId());
             userResponse.setFullName(user.getFullName());
             userResponse.setEmail(user.getEmail());
             userResponse.setRole(user.getRole());
 
-            Set<UserQuizResult> listResultOfUser = userRepository.getQuizResultOfUser(id);
+            Set<UserQuizResult> listResultOfUser = userRepository.getQuizResultOfUser(user.getId());
             userResponse.setNumberOfCompleted(listResultOfUser.size());
             userResponse.setUserQuizResults(listResultOfUser);
 
-            if(user.getRole().equals(ERole.ROLE_STUDENT)){
+            if(user.getRole().equals(ERole.student)){
                 return ResponseEntity.ok(userResponse);
             }
             Set<Quiz> quizzes = quizRepository.findAllByCreateBy(user);
@@ -48,7 +59,18 @@ public class UserServiceImpl implements UserService {
 
             return ResponseEntity.ok(userResponse);
         }
-        return null;
+        return ResponseEntity.badRequest().body(null);
+    }
+
+    @Override
+    public ResponseEntity<?> addNewUser(UserRequest userRequest) {
+        User user = new User();
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setFirebaseId(userRequest.getFirebaseId());
+        user.setFullName(userRequest.getFullName());
+        user.setRole(ERole.student);
+        return ResponseEntity.ok(userRepository.save(user));
     }
 //    private final UserRepository userRepository;
 //    private final JwtUtils jwtUtils;

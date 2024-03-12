@@ -12,7 +12,8 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT result FROM UserQuizResult result WHERE result.user.id= :user_id")
-    public Set<UserQuizResult> getQuizResultOfUser(@Param("user_id") Long user_id);
+    public Set<UserQuizResult> getQuizResultOfUser(@Param("user_id") String user_id);
     public User findByEmail(String email);
     public boolean existsByEmail(String email);
+    public User findByEmailAndFirebaseId(String email, String firebaseId);
 }

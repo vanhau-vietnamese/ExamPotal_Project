@@ -8,6 +8,7 @@ import com.exam.model.User;
 import com.exam.repository.UserRepository;
 import com.exam.service.AuthenticationService;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.internal.FirebaseService;
@@ -29,20 +30,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResponseEntity<String> registerUser(RegisterRequest registerRequest) {
         try{
-            String jwt = jwtAuthenticationFilter.getJwt();
-
-            if(userRepository.existsByEmail(registerRequest.getEmail())){
-                return ResponseEntity.badRequest().body("Email already exists");
+            // Kiểm tra xem nó có tồn tại trong firebase auth k?
+            if (isUserExists(registerRequest.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists!");
             }
 
-            String firebaseId = jwtUtils.extractFirebaseId(jwt);
+            UserRecord.CreateRequest request = new UserRecord.CreateRequest()
+                    .setEmail(registerRequest.getEmail())
+                    .setPassword(registerRequest.getPassword());
+
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
+            String firebaseId = userRecord.getUid(); // Trả về UID của người dùng mới được tạo
+
             // lưu vào db
             User user = new User();
             user.setEmail(registerRequest.getEmail());
-            user.setFullName(registerRequest.getFullName());
             user.setFirebaseId(firebaseId);
+            user.setFullName("user");
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-            user.setRole(ERole.ROLE_STUDENT);
+            user.setRole(ERole.student  );
             userRepository.save(user);
 
             return ResponseEntity.ok("User registered successfully!");
@@ -51,5 +57,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user");
         }
     }
-
+    // Kiểm tra xem người dùng đã tồn tại trong Firebase Authentication hay không
+    private boolean isUserExists(String email) {
+        try {
+            return userRepository.existsByEmail(email);
+        } catch (Exception e) {
+            // Xử lý ngoại lệ nếu cần thiết
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

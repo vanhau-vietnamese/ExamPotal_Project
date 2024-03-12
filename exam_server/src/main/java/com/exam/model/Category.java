@@ -20,6 +20,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@jdk.jfr.Timestamp
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

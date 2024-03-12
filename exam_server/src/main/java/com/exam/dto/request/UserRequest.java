@@ -6,7 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserRequest {
-    private String username;
+    private String fullName;
+    private String firebaseId;
     private String password;
     private String email;
 }

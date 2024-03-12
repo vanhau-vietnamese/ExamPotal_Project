@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Entity
 @Table(name = "answers")
+@jdk.jfr.Timestamp
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,7 @@ public class Answer {
     @Column(name = "status", columnDefinition = "TEXT")
     private String status;
     @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
+    private Timestamp createAt ;
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "question", referencedColumnName = "id")

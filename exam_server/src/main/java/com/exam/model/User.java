@@ -26,12 +26,12 @@ import java.util.Set;
 @NoArgsConstructor
 public class User implements UserDetails{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private Long id;
+    private String id;
     @Column(name = "fullName", nullable = false, columnDefinition = "TEXT")
     private String fullName;
-    @Column(name = "PassWord", nullable = false, unique = true)
+    @Column(name = "password", nullable = false, unique = true)
     private String password;
     @Column(name = "email", nullable = false, unique = true, columnDefinition = "TEXT")
     private String email;

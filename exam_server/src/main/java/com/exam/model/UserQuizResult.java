@@ -14,12 +14,10 @@ public class UserQuizResult {
     private int marks;
     @Column(name = "capture", columnDefinition = "JSON")
     private String capture;
-
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "userId")
     private User user;
-
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "quizId")

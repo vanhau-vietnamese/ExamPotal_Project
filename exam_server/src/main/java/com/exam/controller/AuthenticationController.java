@@ -21,8 +21,6 @@ public class AuthenticationController {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest){
-        TimeZone defaultTimeZone = TimeZone.getDefault();
-        System.out.println("Múi giờ mặc định của ứng dụng Java: " + defaultTimeZone.getID());
         return authenticationService.registerUser(registerRequest);
     }
 
@@ -35,7 +33,7 @@ public class AuthenticationController {
         User user = new User();
         user.setEmail(request.get("email"));
         user.setFullName(request.get("fullName"));
-        user.setRole(ERole.ROLE_STUDENT);
+        user.setRole(ERole.student);
         user.setFirebaseId(request.get("firebaseId"));
         // Tạo token cho người dùng giả lập
         String token = jwtUtils.generateToken(user.getEmail(), user.getFirebaseId());

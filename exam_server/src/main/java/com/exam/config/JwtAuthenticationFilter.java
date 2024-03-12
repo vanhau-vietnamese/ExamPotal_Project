@@ -37,9 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
-    private boolean isRegistrationRequest(HttpServletRequest request) {
+    private boolean isValidateRequest(HttpServletRequest request, String url) {
         String requestURI = request.getRequestURI();
-        return requestURI.equals("/auth/register");
+        return requestURI.equals(url);
     }
     @Override
     protected void doFilterInternal(
@@ -48,7 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String token = getJwtFromRequest(request);
-        if(isRegistrationRequest(request)){
+        if(isValidateRequest(request, "/auth/register") || isValidateRequest(request, "/user/me")
+        || isValidateRequest(request, "/user/add") ){
             filterChain.doFilter(request, response);
             return;
         }
