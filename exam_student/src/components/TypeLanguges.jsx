@@ -1,65 +1,103 @@
 import { useState } from 'react';
-import Button from './Button';
 
-function TypeLanguges() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const options = ['Giá trị 1', 'Giá trị 2', 'Giá trị 3'];
-  const [filteredOptions, setFilteredOptions] = useState(options);
+function AddButton() {
+  const [showForm, setShowForm] = useState(false);
+  const [buttonName, setButtonName] = useState('');
+  const [buttons, setButtons] = useState([]);
+  const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  const handleAddButtonClick = () => {
+    setShowForm(true);
   };
 
-  const handleOptionClick = (option) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-    filterData(option);
-  };
-
-  const filterData = (option) => {
-    if (option) {
-      const filteredData = options.filter((data) => data === option);
-      setFilteredOptions(filteredData);
-    } else {
-      setFilteredOptions(options);
+  const handleCreateButton = () => {
+    if (buttonName) {
+      setButtons([...buttons, buttonName]);
+      setButtonName('');
     }
+    setShowForm(false);
+  };
+
+  const handleDeleteButtonClick = (index) => {
+    setSelectedButtonIndex(index);
+    setShowDeleteDropdown(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedButtonIndex !== null) {
+      const updatedButtons = [...buttons];
+      updatedButtons.splice(selectedButtonIndex, 1); // xoa tai vi tri dang chon va update lai mang nut
+      setButtons(updatedButtons);
+    }
+    setSelectedButtonIndex(null);
+    setShowDeleteDropdown(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setSelectedButtonIndex(null);
+    setShowDeleteDropdown(false);
   };
 
   return (
-    <div className="relative inline-block">
-      <Button
-        onClick={toggleDropdown}
-        className="bg-gray-400 py-2 px-4 hover:bg-gray-500 text-white rounded-md max-w-fit h-10 m-5"
+    <div className="flex flex-wrap">
+      <button
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded m-4"
+        onClick={handleAddButtonClick}
       >
-        Loại ngôn ngữ
-      </Button>
-      {isOpen && (
-        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-          <div
-            className="py-1"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="options-menu"
+        Thêm ngôn ngữ
+      </button>
+      {showForm && (
+        <div className="flex items-center mt-4">
+          <input
+            type="text"
+            placeholder="Nhập tên ngôn ngữ..."
+            value={buttonName}
+            onChange={(e) => setButtonName(e.target.value)}
+            className="border border-gray-400 px-4 py-2 rounded"
+          />
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+            onClick={handleCreateButton}
           >
-            {filteredOptions.map((option, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ${
-                  selectedOption === option ? 'bg-blue-500 text-white' : ''
-                }`}
-                role="menuitem"
-                onClick={() => handleOptionClick(option)}
-              >
-                {option}
-              </a>
-            ))}
-          </div>
+            Tạo
+          </button>
         </div>
       )}
+      <div className="mt-4">
+        {buttons.map((button, index) => (
+          <div key={index} className="relative inline-block">
+            <button
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4 mr-4"
+              onClick={() => handleDeleteButtonClick(index)}
+            >
+              {button}
+            </button>
+            {showDeleteDropdown && selectedButtonIndex === index && (
+              <div className="absolute top-0 right-0 mt-2 mr-2">
+                <div className="bg-white border border-gray-400 rounded shadow-md">
+                  <div className="flex justify-end px-4 py-2">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2"
+                      onClick={handleDeleteConfirm}
+                    >
+                      Xóa
+                    </button>
+                    <button
+                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={handleDeleteCancel}
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-export default TypeLanguges;
+export default AddButton;

@@ -1,6 +1,5 @@
-import ExamList from '../ExamList';
-
 import { Editor } from '~/components';
+import ExamList from '../ExamList';
 
 function AdminMain() {
   return (

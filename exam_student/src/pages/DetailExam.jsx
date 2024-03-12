@@ -14,11 +14,6 @@ export default function DetailExam() {
         <div className="bg-gray-100 m-3 ml-9 rounded-lg flex-1 overflow-hidden">
           <div className="flex flex-col h-full">
             <DetailExamItem></DetailExamItem>
-            <DetailExamItem></DetailExamItem>
-            <DetailExamItem></DetailExamItem>
-            <DetailExamItem></DetailExamItem>
-            <DetailExamItem></DetailExamItem>
-            <DetailExamItem></DetailExamItem>
           </div>
         </div>
 

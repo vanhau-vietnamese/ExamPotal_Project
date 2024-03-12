@@ -19,9 +19,9 @@ function SignInPage() {
 
   const onSubmit = handleSubmit((data) => console.log(data));
 
-  const handleLoginWithSocial = () => {
-    console.log('Login with social');
-  };
+  // const handleLoginWithSocial = () => {
+  //   console.log('Login with social');
+  // };
 
   return (
     <div className="flex items-center justify-center w-full h-full">

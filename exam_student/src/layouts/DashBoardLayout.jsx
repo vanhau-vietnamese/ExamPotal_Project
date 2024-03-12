@@ -33,7 +33,7 @@ function DashBoardLayout() {
           <Header />
           <main className="flex">
             <SideBar />
-            <section className="bg-slate-300 m-3 rounded-md h-full max-w-fit ">
+            <section className="bg-slate-300 m-3 rounded-md h-full w-full ">
               <TypeLanguges></TypeLanguges>
               <Outlet />
             </section>

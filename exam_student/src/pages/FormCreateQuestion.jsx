@@ -20,6 +20,11 @@ export default function FormCreateQuestion({ onClose }) {
     const updatedOptions = [...options];
     updatedOptions[index] = value;
     setOptions(updatedOptions);
+
+    const updateCorrectOption = correctOption.includes(value)
+      ? correctOption.filter((option) => option !== value)
+      : [...correctOption, value];
+    setCorrectOption(updateCorrectOption);
   };
 
   const handleRemoveOption = (index) => {
@@ -61,14 +66,6 @@ export default function FormCreateQuestion({ onClose }) {
               Nhập câu hỏi
             </label>
             <TextEditor></TextEditor>
-            {/* <input
-              type="text"
-              id="question"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="w-full px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              required
-            /> */}
           </div>
 
           <div className="mb-4">
@@ -104,12 +101,14 @@ export default function FormCreateQuestion({ onClose }) {
             <label htmlFor="correctOption" className="block mb-2 font-medium text-black">
               Đáp án chính xác
             </label>
+
             <select
               id="correctOption"
               value={correctOption}
-              onChange={(e) => setCorrectOption(e.target.value)}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               required
+              multiple
             >
               <option value="" disabled>
                 Chọn đáp án đúng
