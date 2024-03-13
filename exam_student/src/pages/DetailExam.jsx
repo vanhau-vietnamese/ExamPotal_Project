@@ -1,15 +1,8 @@
-import { Link } from 'react-router-dom';
-import { DetailExamItem, Header } from '~/layouts/components';
-import { router } from '~/routes';
+import { DetailExamItem } from '~/layouts/components';
 
 export default function DetailExam() {
   return (
     <main className="block">
-      <Header></Header>
-      <div className=" p-5 font-bold text-[26px]">
-        <Link to={router.admin}>Quay lại</Link>
-      </div>
-
       <div className="flex">
         <div className="bg-gray-100 m-3 ml-9 rounded-lg flex-1 overflow-hidden">
           <div className="flex flex-col h-full">

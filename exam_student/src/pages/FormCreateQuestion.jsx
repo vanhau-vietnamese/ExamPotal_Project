@@ -65,6 +65,7 @@ export default function FormCreateQuestion({ onClose }) {
             <label htmlFor="question" className="block mb-2 font-medium text-black">
               Nhập câu hỏi
             </label>
+
             <TextEditor></TextEditor>
           </div>
 

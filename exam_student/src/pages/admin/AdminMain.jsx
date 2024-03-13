@@ -1,9 +1,10 @@
-import { Editor } from '~/components';
+import { Editor, TypeLanguges } from '~/components';
 import ExamList from '../ExamList';
 
 function AdminMain() {
   return (
     <div>
+      <TypeLanguges></TypeLanguges>
       <ExamList></ExamList>
 
       <p>Admin Main Page</p>

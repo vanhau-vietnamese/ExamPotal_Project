@@ -11,9 +11,7 @@ export default function ExamList() {
   return (
     <div className="flex">
       <div className="bg-white m-3 rounded-lg w-5/6 h-full">
-        <div className="flex flex-wrap justify-center grid-cols-3">
-          <BodyExercise></BodyExercise>
-        </div>
+        <BodyExercise></BodyExercise>
       </div>
 
       <div className=" mt-9 rounded-lg w-1/6">

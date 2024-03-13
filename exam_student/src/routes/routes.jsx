@@ -22,7 +22,16 @@ const routes = createBrowserRouter([
             index: true,
             element: <AdminMain />,
           },
+
+          {
+            path: router.detailexam,
+            element: <DetailExam />,
+          },
         ],
+      },
+      {
+        path: router.questionlist,
+        element: <QuestionList />,
       },
       {
         path: router.student,
@@ -30,15 +39,6 @@ const routes = createBrowserRouter([
           {
             index: true,
             element: <StudentMain />,
-          },
-        ],
-      },
-      {
-        path: router.questionlist,
-        children: [
-          {
-            index: true,
-            element: <QuestionList />,
           },
         ],
       },
@@ -63,10 +63,6 @@ const routes = createBrowserRouter([
   {
     path: '*',
     element: <NotFound />,
-  },
-  {
-    path: router.detailexam,
-    element: <DetailExam />,
   },
 ]);
 

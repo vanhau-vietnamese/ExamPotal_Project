@@ -3,7 +3,7 @@ import { router } from '~/routes';
 
 function Sidebar() {
   return (
-    <div className="bg-gray-100 font-family-karla block w-72 h-full shadow-lg">
+    <div className="bg-gray-100 font-family-karla block w-72 max-h-[500px] shadow-lg">
       <div className="flex">
         <div>
           <div className="mt-6 w-72 text-2xl shadow-lg font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
