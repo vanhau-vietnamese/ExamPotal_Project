@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,12 +19,10 @@ public class QuizQuestion {
     private Long id;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "quizId")
     private Quiz quiz;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "questionId")
     private Question question;
 

@@ -38,4 +38,5 @@ public class QuizController {
         return quizService.getQuizzesOfCategory(categoryId);
     }
 
+
 }

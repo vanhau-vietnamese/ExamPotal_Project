@@ -1,6 +1,9 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
@@ -29,7 +33,7 @@ public class Question {
     private String status;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonIgnoreProperties("questions")
     @JoinColumn(name = "questionType", referencedColumnName = "alias")
     private QuestionType questionType;
 
@@ -37,6 +41,6 @@ public class Question {
     private Timestamp createdAt  = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "question")
-    Set<QuizQuestion> quizQuestions;
-
+    @JsonIgnore
+    Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
 }

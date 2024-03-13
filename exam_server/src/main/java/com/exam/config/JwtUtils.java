@@ -20,11 +20,9 @@ public class JwtUtils {
     public Claims extractAllClaims(String token){
         return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
-
     public String extractUserName(String token){
         return extractClaim(token, Claims::getSubject);
     }
-
     public String extractFirebaseId(String token) {
         try {
             return extractClaim(token, claims -> claims.get("uid", String.class));
@@ -33,14 +31,11 @@ public class JwtUtils {
             return null; // hoặc xử lý ngoại lệ theo nhu cầu của bạn
         }
     }
-
-
     public String generateToken(String email, String firebaseId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uid", firebaseId);
         return createToken(claims, email);
     }
-
     private String createToken(Map<String, Object> claims, String email) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -55,17 +50,14 @@ public class JwtUtils {
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String email = extractUserName(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);

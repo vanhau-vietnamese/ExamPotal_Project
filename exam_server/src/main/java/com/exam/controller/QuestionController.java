@@ -7,17 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
-
 @RestController
 @RequestMapping("/question")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
-
     @PostMapping("/add")
-    public ResponseEntity<?> addQuestion(@RequestBody QuestionRequest question){
-        return questionService.addQuestion(question);
+    public ResponseEntity<?> addQuestion(@RequestBody QuestionRequest questionRequest){
+        return questionService.addQuestion(questionRequest);
     }
 
     @GetMapping("/{questionId}")

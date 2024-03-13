@@ -1,5 +1,6 @@
 package com.exam.controller;
 
+import com.exam.dto.request.CategoryRequest;
 import com.exam.model.Category;
 import com.exam.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ import java.util.Set;
 public class CategoryController {
     private final CategoryService categoryService;
     @PostMapping("/add")
-    public Category addCategory(@RequestBody Category category){
-        return categoryService.addCategory(category);
+    public ResponseEntity<?> addCategory(@RequestBody CategoryRequest categoryRequest){
+        return categoryService.addCategory(categoryRequest);
     }
     @GetMapping("/{id}")
     public Category getCategory(@PathVariable("id") Long id){
@@ -27,8 +28,8 @@ public class CategoryController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable("id")Long id, @RequestBody Category category){
-        return categoryService.updateCategory(id, category);
+    public ResponseEntity<?> updateCategory(@PathVariable("id")Long id, @RequestBody CategoryRequest categoryRequest){
+        return categoryService.updateCategory(id, categoryRequest);
     }
 
 }

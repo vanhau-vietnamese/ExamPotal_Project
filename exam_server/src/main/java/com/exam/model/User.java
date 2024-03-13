@@ -2,6 +2,7 @@ package com.exam.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -41,14 +42,15 @@ public class User implements UserDetails{
     private Timestamp createAt = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private Set<Quiz> quizzes = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnore
     private Set<Category> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<UserQuizResult> userQuizResults = new HashSet<>();
 
     @Column(name = "role", columnDefinition = "TEXT", nullable = false, unique = false)

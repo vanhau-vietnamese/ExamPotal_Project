@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -15,11 +16,11 @@ public class UserQuizResult {
     @Column(name = "capture", columnDefinition = "JSON")
     private String capture;
     @ManyToOne
-    @JsonIgnore
+    @JsonBackReference
     @JoinColumn(name = "userId")
     private User user;
     @ManyToOne
-    @JsonIgnore
+    @JsonBackReference
     @JoinColumn(name = "quizId")
     private Quiz quiz;
 }

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -33,9 +34,7 @@ public class QuizServiceImpl implements QuizService {
     public ResponseEntity<?> addQuiz(QuizRequest quizRequest) {
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
-        System.out.println("jwt: "+jwt);
         String email = jwtUtils.extractUserName(jwt);
-        System.out.println("email:"+email);
         User user = userRepository.findByEmail(email);
 
         Quiz quiz = new Quiz();
@@ -88,6 +87,7 @@ public class QuizServiceImpl implements QuizService {
             quiz.setMaxMarks(quizRequest.getMaxMarks());
             quiz.setStatus(quizRequest.isStatus());
             quiz.setCategory(category);
+            quiz.setCreateAt(new Timestamp(System.currentTimeMillis()));
             quiz.setNumberOfQuestions(quizRequest.getNumberOfQuestions());
             quiz.setCreateBy(user);
 
@@ -98,6 +98,9 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId) {
-        return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
+        if (categoryRepository.existsById(categoryId)){
+            return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
+        }
+        return ResponseEntity.badRequest().body("Not Found Category");
     }
 }

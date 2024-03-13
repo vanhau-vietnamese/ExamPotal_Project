@@ -2,6 +2,7 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
+import com.exam.dto.request.CategoryRequest;
 import com.exam.model.Category;
 import com.exam.model.User;
 import com.exam.repository.CategoryRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,17 +31,21 @@ public class CategoryServiceImpl implements CategoryService {
         return category.orElse(null);
     }
     @Override
-    public Category addCategory(Category category) {
-        if(categoryRepository.existsByTitle(category.getTitle())){
-            return null;
+    public ResponseEntity<?> addCategory(CategoryRequest categoryRequest) {
+        if(categoryRepository.existsByTitle(categoryRequest.getTitle())){
+            return ResponseEntity.badRequest().body("Category already exists");
         }
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
         String email = jwtUtils.extractUserName(jwt);
         User user = userRepository.findByEmail(email);
 
+        Category category = new Category();
         category.setCreateBy(user);
-        return categoryRepository.save(category);
+        category.setTitle(categoryRequest.getTitle());
+        category.setDescription(categoryRequest.getDescription());
+
+        return ResponseEntity.ok(categoryRepository.save(category));
     }
 
     @Override
@@ -48,11 +54,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<?> updateCategory(Long id, Category categoryRequest) {
+    public ResponseEntity<?> updateCategory(Long id, CategoryRequest categoryRequest) {
         Optional<Category> category = categoryRepository.findById(id);
         if(category.isPresent()){
             category.get().setTitle(categoryRequest.getTitle());
             category.get().setDescription(categoryRequest.getDescription());
+            category.get().setCreatedAt(new Timestamp(System.currentTimeMillis()));
             // get jwt from request
             String jwt = jwtAuthenticationFilter.getJwt();
             String email = jwtUtils.extractUserName(jwt);
@@ -61,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
 
             return ResponseEntity.ok(categoryRepository.save(category.get()));
         }
-        return null;
+        return ResponseEntity.badRequest().body(null);
     }
 
 
