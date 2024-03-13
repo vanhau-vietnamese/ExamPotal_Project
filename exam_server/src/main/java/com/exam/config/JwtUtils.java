@@ -27,7 +27,7 @@ public class JwtUtils {
 
     public String extractFirebaseId(String token) {
         try {
-            return extractClaim(token, claims -> claims.get("firebaseId", String.class));
+            return extractClaim(token, claims -> claims.get("uid", String.class));
         } catch (Exception e) {
             e.printStackTrace();
             return null; // hoặc xử lý ngoại lệ theo nhu cầu của bạn
@@ -37,7 +37,7 @@ public class JwtUtils {
 
     public String generateToken(String email, String firebaseId) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("firebaseId", firebaseId);
+        claims.put("uid", firebaseId);
         return createToken(claims, email);
     }
 

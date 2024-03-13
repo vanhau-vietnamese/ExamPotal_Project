@@ -33,10 +33,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<UserResponse> getProfile() {
         String jwt = jwtAuthenticationFilter.getJwt();
+        System.out.println("jwt: "+jwt);
         String email = jwtUtils.extractUserName(jwt);
+        System.out.println("email: "+email);
         String firebaseId = jwtUtils.extractFirebaseId(jwt);
+        System.out.println("firebase: "+firebaseId);
 
         User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
+        System.out.println("user:" + user);
 
         UserResponse userResponse = new UserResponse();
         // nếu tồn tại user chứa firebaseId and email

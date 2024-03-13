@@ -62,7 +62,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             return userRepository.existsByEmail(email);
         } catch (Exception e) {
-            // Xử lý ngoại lệ nếu cần thiết
             e.printStackTrace();
             return false;
         }

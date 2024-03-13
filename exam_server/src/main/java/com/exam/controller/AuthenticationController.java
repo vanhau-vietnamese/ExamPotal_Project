@@ -34,7 +34,7 @@ public class AuthenticationController {
         user.setEmail(request.get("email"));
         user.setFullName(request.get("fullName"));
         user.setRole(ERole.student);
-        user.setFirebaseId(request.get("firebaseId"));
+        user.setFirebaseId(request.get("uid"));
         // Tạo token cho người dùng giả lập
         String token = jwtUtils.generateToken(user.getEmail(), user.getFirebaseId());
         return ResponseEntity.ok("token: " + token);

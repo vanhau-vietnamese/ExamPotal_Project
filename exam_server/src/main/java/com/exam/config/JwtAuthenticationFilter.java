@@ -31,10 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         System.out.println("bearerToken: " + bearerToken);
         // Kiểm tra xem header authorization có chứa thông tin jwt k?
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
-            jwt = bearerToken.substring(7);
-            return jwt;
+        if(StringUtils.hasText(bearerToken)){
+            if(bearerToken.startsWith("Bearer ")){
+                // token bắt đầu bằng chuỗi "Bearer "
+                jwt = bearerToken.substring(7);
+                return jwt;
+            }
+            else{
+                // nếu k,return về chuỗi token
+                jwt = bearerToken;
+                return jwt;
+            }
         }
+
         return null;
     }
     private boolean isValidateRequest(HttpServletRequest request, String url) {
