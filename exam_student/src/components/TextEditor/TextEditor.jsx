@@ -14,6 +14,7 @@ export default function TextEditor({ data, onChange }) {
   const editor = useEditor({
     extensions,
     content: data,
+    autofocus: false,
     onUpdate: ({ editor }) => onChange(editor.getJSON()),
   });
 
@@ -64,7 +65,7 @@ export default function TextEditor({ data, onChange }) {
   }
 
   return (
-    <div className="relative w-full mb-12">
+    <div className="relative w-full mb-12 bg-white min-w-[600px]">
       <div className="absolute top-[2px] left-[2px] z-10 flex items-center gap-2 w-[calc(100%-4px)] h-10 m-0 px-2 py-0 rounded-ss rounded-se bg-strike">
         <ToolBarButton
           icon={<Icons.HeadingOne />}

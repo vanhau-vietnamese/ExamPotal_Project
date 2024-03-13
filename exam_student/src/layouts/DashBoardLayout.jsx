@@ -21,22 +21,30 @@ function DashBoardLayout() {
   }, [loading, navigate, user]);
 
   return (
-    <div>
+    <div className="app-wrapper bg-[#e4e6e8] min-h-screen">
       {loading ? (
         <Backdrop opacity={0}>
-          <div className="flex items-center justify-center w-full h-full">
+          <div className="flex flex-col items-center justify-center w-full h-full">
             <Loading />
+            <h4 className="font-semibold text-center text-icon mt-4">
+              Hệ thống đang xử lý,{' '}
+              <span className="font-semibold text-icon">Xin vui lòng chờ trong giây lát!</span>
+            </h4>
           </div>
         </Backdrop>
       ) : (
         <>
-          <Header />
-          <main>
+          <div>
             <SideBar />
-            <section>
-              <Outlet />
-            </section>
-          </main>
+          </div>
+          <div className="relative app-main">
+            <Header />
+            <div className="app-content !pl-[280px] pt-16">
+              <div className="app-content--inner">
+                <Outlet />
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>

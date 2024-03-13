@@ -15,6 +15,18 @@
   html,
   body {
     @apply h-full text-base font-body;
+    text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		&::-webkit-scrollbar {
+			@apply w-[8px];
+			-webkit-appearance: none;
+		}
+		&::-webkit-scrollbar-track {
+			@apply bg-[#e4e6e8];
+		}
+		&::-webkit-scrollbar-thumb {
+			@apply bg-slate-500 rounded;
+		}
   }
   h1 {
     @apply text-3xl font-bold;
@@ -30,12 +42,12 @@
 
   kbd,
   code {
-    @apply font-mono font-medium text-sm bg-gray-200 rounded p-1 text-icon;
+    @apply font-mono font-medium text-sm bg-gray-300 rounded p-1 text-icon;
     box-decoration-break: clone;
   }
 
   .app-wrapper {
-    @apply flex flex-1 overflow-hidden bg-white;
+    @apply flex flex-1 overflow-hidden;
     transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   }
   .app-main {
@@ -46,7 +58,7 @@
     transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   }
   .app-content--inner {
-    @apply flex flex-1 px-8 py-10;
+    @apply flex flex-1 px-4;
   }
 }
 /* Editor */

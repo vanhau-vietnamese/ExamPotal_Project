@@ -1,11 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import { SignInPage, SignUpPage } from '~/pages/auth';
-import { AdminMain } from '~/pages/admin';
+import { AdminMain, Question } from '~/pages/admin';
 import { StudentMain } from '~/pages/student';
 import NotFound from '~/pages/NotFound';
 
 import router from './const';
+import { Navigate } from 'react-router-dom';
 
 const routes = createBrowserRouter([
   {
@@ -17,7 +18,15 @@ const routes = createBrowserRouter([
         children: [
           {
             index: true,
+            element: <Navigate to={`${router.admin}/overview`} />,
+          },
+          {
+            path: 'overview',
             element: <AdminMain />,
+          },
+          {
+            path: 'question',
+            element: <Question />,
           },
         ],
       },
