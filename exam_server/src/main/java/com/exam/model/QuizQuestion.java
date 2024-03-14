@@ -26,6 +26,4 @@ public class QuizQuestion {
     @JoinColumn(name = "questionId")
     private Question question;
 
-    @Column(name = "status", columnDefinition = "TEXT")
-    private String status;
 }

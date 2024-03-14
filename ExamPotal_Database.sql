@@ -13,7 +13,6 @@ CREATE TABLE `answers`  (
   `media` json NULL,
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `isCorrect` tinyint(1) NOT NULL DEFAULT 0,
-  `status` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
   `questionId` bigint NULL DEFAULT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE,

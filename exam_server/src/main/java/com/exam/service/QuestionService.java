@@ -7,15 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 public interface QuestionService {
     public ResponseEntity<?> addQuestion(QuestionRequest question);
-    @GetMapping("/{questionId}")
-    public ResponseEntity<Question> getQuestion(Long id);
-
-    @GetMapping("/")
+    public ResponseEntity<?> getQuestion(Long id);
     public ResponseEntity<?> getAllQuestions();
-
-    @PutMapping("/edit/{id}")
-    public ResponseEntity<Question> editQuestion(Long id, Question question);
-
-    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest);
     public ResponseEntity<String> deleteQuestion(Long id);
+    public ResponseEntity<?> getQuestionsOfQuiz(Long id);
 }

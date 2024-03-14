@@ -49,7 +49,7 @@ public class User implements UserDetails{
     @JsonIgnore
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<UserQuizResult> userQuizResults = new HashSet<>();
 

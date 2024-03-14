@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
+
 @RestController
 @RequestMapping("/question")
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{questionId}")
-    public ResponseEntity<Question> getQuestion(@PathVariable("questionId") Long id){
+    public ResponseEntity<?> getQuestion(@PathVariable("questionId") Long id){
         return questionService.getQuestion(id);
     }
 
@@ -28,12 +30,17 @@ public class QuestionController {
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<Question> editQuestion(@PathVariable("id") Long id, @RequestBody Question question){
-        return questionService.editQuestion(id, question);
+    public ResponseEntity<?> editQuestion(@PathVariable("id") Long id, @RequestBody QuestionRequest questionRequest){
+        return questionService.editQuestion(id, questionRequest);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable("id")Long id){
         return questionService.deleteQuestion(id);
+    }
+
+    @GetMapping("/quiz/{quizId}")
+    public ResponseEntity<?> getQuestionsOfQuiz(@PathVariable("quizId")Long id){
+        return questionService.getQuestionsOfQuiz(id);
     }
 }

@@ -40,7 +40,7 @@ public class Question {
     @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt  = new Timestamp(System.currentTimeMillis());
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
 }

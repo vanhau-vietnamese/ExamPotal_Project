@@ -19,12 +19,12 @@ import java.util.Set;
 @Table(name = "question_types")
 public class QuestionType {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "alias", nullable = false, unique = true, length = 100)
     private String alias;
     @Column(name = "displayName", nullable = false, length = 50)
     private String displayName;
-    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
     @OneToMany(mappedBy = "questionType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Question> questions = new LinkedHashSet<>();

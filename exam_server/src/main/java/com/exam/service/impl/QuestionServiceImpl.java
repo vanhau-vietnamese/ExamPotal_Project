@@ -6,13 +6,16 @@ import com.exam.model.QuestionType;
 import com.exam.model.Quiz;
 import com.exam.model.QuizQuestion;
 import com.exam.repository.QuestionRepository;
+import com.exam.repository.QuestionTypeRepository;
 import com.exam.repository.QuizQuestionRepository;
+import com.exam.repository.QuizRepository;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -20,10 +23,11 @@ import java.util.Set;
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final QuizQuestionRepository quizQuestionRepository;
+    private final QuestionTypeRepository questionTypeRepository;
+    private final QuizRepository quizRepository;
     @Override
     public ResponseEntity<?> addQuestion(QuestionRequest questionRequest) {
-        QuestionType questionType = new QuestionType();
-        questionType.setAlias(questionRequest.getQuestionTypeId());
+        QuestionType questionType = questionTypeRepository.findByAlias(questionRequest.getQuestionTypeId());
 
         Question question = new Question();
         question.setMedia(questionRequest.getMedia());
@@ -31,29 +35,27 @@ public class QuestionServiceImpl implements QuestionService {
         question.setStatus(question.getStatus());
         question.setQuestionType(questionType);
 
+        questionRepository.save(question);
+
         Quiz quiz = new Quiz();
         quiz.setId(questionRequest.getQuizId());
 
         QuizQuestion quizQuestion = new QuizQuestion();
         quizQuestion.setQuiz(quiz);
         quizQuestion.setQuestion(question);
+        quizQuestionRepository.save(quizQuestion);
 
-        Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
-        quizQuestions.add(quizQuestion);
-
-        question.setQuizQuestions(quizQuestions);
-
-
-        return ResponseEntity.ok(questionRepository.save(question));
+        return ResponseEntity.ok(question);
     }
 
     @Override
-    public ResponseEntity<Question> getQuestion(Long id) {
-        Question question = questionRepository.findById(id).get();
-        if(question != null){
-            return ResponseEntity.ok(question);
+
+    public ResponseEntity<?> getQuestion(Long id) {
+        Optional<Question> question = questionRepository.findById(id);
+        if(question.isPresent()){
+            return ResponseEntity.ok(question.get());
         }
-        return null;
+        return ResponseEntity.badRequest().body("Not found Question");
     }
 
     @Override
@@ -62,22 +64,35 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResponseEntity<Question> editQuestion(Long id, Question questionRequest) {
-        Question question = questionRepository.findById(id).get();
+    public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
+        Optional<Question> questionOptional = questionRepository.findById(id);
 
-        if(question != null){
-            question.setMedia(question.getMedia());
-            question.setContent(question.getContent());
-            question.setQuestionType(questionRequest.getQuestionType());
+        if(questionOptional.isPresent()){
+            Question question = questionOptional.get();
+
+            QuestionType questionType = questionTypeRepository.findByAlias(questionRequest.getQuestionTypeId());
+
+            question.setMedia(questionRequest.getMedia());
+            question.setContent(questionRequest.getContent());
+            question.setQuestionType(questionType);
             question.setStatus(questionRequest.getStatus());
 
             return ResponseEntity.ok(questionRepository.save(question));
         }
-        return null;
+        return ResponseEntity.badRequest().body("Not Found Question");
     }
 
     @Override
     public ResponseEntity<String> deleteQuestion(Long id) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<?> getQuestionsOfQuiz(Long quizId) {
+        Optional<Quiz> quiz = quizRepository.findById(quizId);
+        if(quiz.isPresent()){
+            return ResponseEntity.ok(questionRepository.getQuestionsOfQuiz(quizId));
+        }
+        return ResponseEntity.badRequest().body("Not Found Quiz");
     }
 }

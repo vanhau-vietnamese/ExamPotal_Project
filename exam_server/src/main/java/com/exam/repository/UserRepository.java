@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT result FROM UserQuizResult result WHERE result.user.id= :user_id")
     public Set<UserQuizResult> getQuizResultOfUser(@Param("user_id") String user_id);
     public User findByEmail(String email);

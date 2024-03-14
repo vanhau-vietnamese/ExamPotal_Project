@@ -29,8 +29,6 @@ public class Answer {
     private String content;
     @Column(name = "isCorrect",nullable = false)
     private boolean isCorrect;
-    @Column(name = "status", columnDefinition = "TEXT")
-    private String status;
     @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createAt ;
     @ManyToOne(fetch = FetchType.EAGER)
