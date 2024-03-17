@@ -6,7 +6,7 @@ import { Button } from '~/components';
 function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   return (
-    <div className="fixed w-[calc(100%-280px)] h-[64px] flex items-center py-1 backdrop-blur-[6px] ml-[280px] z-0 bg-[#e4e6e8] bg-opacity-15">
+    <div className="fixed w-[calc(100%-280px)] h-[64px] flex items-center py-1 backdrop-blur-[6px] ml-[280px] z-0 bg-[#fcfcfc] bg-opacity-15">
       <div className="flex items-center justify-between w-full px-4">
         <div className="flex items-center gap-4 text-icon">
           <Icons.Search />

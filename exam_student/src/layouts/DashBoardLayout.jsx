@@ -21,7 +21,7 @@ function DashBoardLayout() {
   }, [loading, navigate, user]);
 
   return (
-    <div className="app-wrapper bg-[#e4e6e8] min-h-screen">
+    <div className="app-wrapper bg-[#f8f9f9] min-h-screen">
       {loading ? (
         <Backdrop opacity={0}>
           <div className="flex flex-col items-center justify-center w-full h-full">

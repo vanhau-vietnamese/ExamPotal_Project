@@ -2,12 +2,13 @@ import { Link, NavLink } from 'react-router-dom';
 import images from '~/assets/images';
 
 import router, { SidebarNavLinks } from '~/routes/const';
+// =============== đã đổi router ở Objective Quiz
 
 function Sidebar() {
   return (
     <div className="fixed left-0 flex flex-col h-full w-[280px] z-50 border-r border-dashed border-slate-300">
       <div className="relative flex items-center justify-between h-20 px-6 py-0 mb-3 min-h-20 after:content[''] after:w-[80%] after:absolute after:bg-[rgba(7,9,25,.1)] after:left-0 after:bottom-0 after:h-[1px] after:ml-[10%]">
-        <Link to={router.admin} className="flex items-end gap-x-2">
+        <Link to={router.student} className="flex items-end gap-x-2">
           <div className="flex items-center w-10 h-10 rounded-full">
             <img src={images.logo} alt="logo" className="object-cover w-full h-full" />
           </div>
@@ -24,7 +25,7 @@ function Sidebar() {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center px-4 rounded gap-x-2 h-[44px] text-[15px] transition-all text-icon ${
+                    `flex items-center px-4 rounded gap-x-2 h-[44px] transition-all text-icon ${
                       isActive ? 'bg-primary text-primary bg-opacity-20' : 'bg-transparent'
                     } hover:bg-primary text-sm hover:bg-opacity-20`
                   }

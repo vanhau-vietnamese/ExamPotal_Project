@@ -5,6 +5,10 @@ import ChartPie from './ChartPie';
 import DocumentText from './DocumentText';
 import Search from './Search';
 import Notification from './Notification';
+import Academic from './Academic';
+import Bookmark from './Bookmark';
+import Clock from './Clock';
+import Question from './Question';
 
 export default {
   Email,
@@ -14,4 +18,8 @@ export default {
   DocumentText,
   Search,
   Notification,
+  Academic,
+  Bookmark,
+  Clock,
+  Question,
 };

@@ -1,5 +1,11 @@
+import ExamStudent from './ExamStudent';
+
 function StudentMain() {
-  return <div>StudentMain</div>;
+  return (
+    <div>
+      <ExamStudent></ExamStudent>
+    </div>
+  );
 }
 
 export default StudentMain;
