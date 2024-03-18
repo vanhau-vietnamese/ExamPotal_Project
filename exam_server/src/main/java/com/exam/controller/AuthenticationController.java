@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.TimeZone;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")

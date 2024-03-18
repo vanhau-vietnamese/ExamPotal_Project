@@ -1,11 +1,12 @@
 package com.exam.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,5 +26,9 @@ public class QuizQuestion {
     @ManyToOne
     @JoinColumn(name = "questionId")
     private Question question;
+
+    @OneToMany(mappedBy = "quizQuestion", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<UserQuestionChoice> userQuestionChoices;
 
 }

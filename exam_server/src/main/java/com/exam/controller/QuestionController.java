@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 
+//@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequestMapping("/question")
 @RequiredArgsConstructor

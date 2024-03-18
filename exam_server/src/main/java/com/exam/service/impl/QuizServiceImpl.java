@@ -42,6 +42,7 @@ public class QuizServiceImpl implements QuizService {
         quiz.setDescription(quizRequest.getDescription());
         quiz.setMaxMarks(quizRequest.getMaxMarks());
         quiz.setCreateBy(user);
+        quiz.setDurationMinutes(quizRequest.getDurationMinutes());
         quiz.setStatus(quiz.isStatus());
         quiz.setNumberOfQuestions(quizRequest.getNumberOfQuestions());
 
@@ -87,7 +88,7 @@ public class QuizServiceImpl implements QuizService {
             quiz.setMaxMarks(quizRequest.getMaxMarks());
             quiz.setStatus(quizRequest.isStatus());
             quiz.setCategory(category);
-            quiz.setCreateAt(new Timestamp(System.currentTimeMillis()));
+            quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             quiz.setNumberOfQuestions(quizRequest.getNumberOfQuestions());
             quiz.setCreateBy(user);
 

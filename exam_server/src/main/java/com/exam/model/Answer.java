@@ -23,14 +23,14 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "media", columnDefinition = "JSON")
+    @Column(name = "media", columnDefinition = " JSON")
     private String media;
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
     @Column(name = "isCorrect",nullable = false)
     private boolean isCorrect;
-    @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt ;
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt ;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question", referencedColumnName = "id")
     private Question question;

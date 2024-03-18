@@ -14,5 +14,5 @@ public class QuizRequest {
     private int numberOfQuestions;
     private boolean status = false;
     private Long categoryId;
-
+    private int durationMinutes;
 }

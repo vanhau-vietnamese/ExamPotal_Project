@@ -1,9 +1,17 @@
 package com.exam.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.Duration;
+
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "user_quiz_results")
 public class UserQuizResult {
@@ -15,6 +23,13 @@ public class UserQuizResult {
     private int marks;
     @Column(name = "capture", columnDefinition = "JSON")
     private String capture;
+    @Column(name = "startTime")
+    private Timestamp startTime;
+    @Column(name = "submitTime")
+    private Timestamp submitTime;
+    @Column(name = "duration")
+    private String durationTime;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "userId")
@@ -23,4 +38,16 @@ public class UserQuizResult {
     @JsonBackReference
     @JoinColumn(name = "quizId")
     private Quiz quiz;
+
+    public String calculateDuration(Timestamp startTime, Timestamp submitTime) {
+        if (startTime != null && submitTime != null) {
+            Duration duration = Duration.between(startTime.toInstant(), submitTime.toInstant());
+            long hours = duration.toHours();
+            long minutes = duration.toMinutesPart();
+            long seconds = duration.toSecondsPart();
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return null;
+        }
+    }
 }

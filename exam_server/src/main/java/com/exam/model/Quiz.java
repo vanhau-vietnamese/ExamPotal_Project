@@ -32,6 +32,8 @@ public class Quiz {
     private int maxMarks;
     @Column(name = "numberOfQuestions", nullable = false)
     private int numberOfQuestions;
+    @Column(name = "durationMinutes")
+    private int durationMinutes;
     @Column(name = "status")
     private boolean status = false;
 
@@ -40,8 +42,8 @@ public class Quiz {
     @JoinColumn(name = "createBy", referencedColumnName = "id")
     private User createBy;
 
-    @Column(name = "createAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp createAt = new Timestamp(System.currentTimeMillis());
+    @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("quizzes")

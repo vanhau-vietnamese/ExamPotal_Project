@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+//@CrossOrigin(origins = "http://localhost:8080")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/questionType")
+@RequestMapping("/question-type")
 public class QuestionTypeController {
     private final QuestionTypeService questionTypeService;
     @PostMapping("/add")

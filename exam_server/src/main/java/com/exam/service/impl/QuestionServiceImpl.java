@@ -37,8 +37,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         questionRepository.save(question);
 
-        Quiz quiz = new Quiz();
-        quiz.setId(questionRequest.getQuizId());
+        Quiz quiz = quizRepository.findById(questionRequest.getQuizId()).get();
 
         QuizQuestion quizQuestion = new QuizQuestion();
         quizQuestion.setQuiz(quiz);
