@@ -2,13 +2,14 @@ package com.exam.service.impl;
 
 import com.exam.model.QuestionType;
 import com.exam.repository.QuestionTypeRepository;
+import com.exam.service.QuestionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class QuestionTypeServiceImpl implements QuestionTypeService{
+public class QuestionTypeServiceImpl implements QuestionTypeService {
     private final QuestionTypeRepository questionTypeRepository;
     @Override
     public ResponseEntity<?> addQuestionType(QuestionType questionType) {

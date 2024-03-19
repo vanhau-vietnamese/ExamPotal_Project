@@ -1,7 +1,7 @@
 package com.exam.controller;
 
 import com.exam.model.QuestionType;
-import com.exam.service.impl.QuestionTypeService;
+import com.exam.service.QuestionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

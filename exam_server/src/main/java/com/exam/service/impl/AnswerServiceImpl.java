@@ -20,7 +20,6 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public ResponseEntity<?> addAnswer(AnswerRequest answerRequest) {
         Optional<Question> question = questionRepository.findById(answerRequest.getQuestionId());
-
         Answer answer = new Answer();
         answer.setMedia(answerRequest.getMedia());
         answer.setContent(answerRequest.getContent());

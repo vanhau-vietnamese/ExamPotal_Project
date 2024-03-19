@@ -8,6 +8,9 @@ import com.exam.model.User;
 import com.exam.repository.CategoryRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.CategoryService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
         }
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
-        String email = jwtUtils.extractUserName(jwt);
+        FirebaseToken decodedToken = null;
+        try {
+            decodedToken = FirebaseAuth.getInstance().verifyIdToken(jwt);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
+        }
+        String email = decodedToken.getEmail();
         User user = userRepository.findByEmail(email);
 
         Category category = new Category();
@@ -62,7 +71,8 @@ public class CategoryServiceImpl implements CategoryService {
             category.get().setCreatedAt(new Timestamp(System.currentTimeMillis()));
             // get jwt from request
             String jwt = jwtAuthenticationFilter.getJwt();
-            String email = jwtUtils.extractUserName(jwt);
+            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+            String email = decodedToken.getEmail();
             User user = userRepository.findByEmail(email);
             category.get().setCreateBy(user);
 

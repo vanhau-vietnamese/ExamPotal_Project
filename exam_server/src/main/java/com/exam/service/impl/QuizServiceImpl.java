@@ -10,6 +10,7 @@ import com.exam.repository.CategoryRepository;
 import com.exam.repository.QuizRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.QuizService;
+import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class QuizServiceImpl implements QuizService {
     public ResponseEntity<?> addQuiz(QuizRequest quizRequest) {
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
-        String email = jwtUtils.extractUserName(jwt);
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
         User user = userRepository.findByEmail(email);
 
         Quiz quiz = new Quiz();
@@ -79,7 +81,8 @@ public class QuizServiceImpl implements QuizService {
 
             // get jwt from request
             String jwt = jwtAuthenticationFilter.getJwt();
-            String email = jwtUtils.extractUserName(jwt);
+            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+            String email = decodedToken.getEmail();
             User user = userRepository.findByEmail(email);
 
             Quiz quiz = quizOptional.get();

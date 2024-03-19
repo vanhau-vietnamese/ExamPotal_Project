@@ -7,6 +7,7 @@ import com.exam.model.ERole;
 import com.exam.model.User;
 import com.exam.repository.UserRepository;
 import com.exam.service.AuthenticationService;
+import com.exam.validate.ValidateUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -27,6 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final ValidateUser validateUser;
     @Override
     public ResponseEntity<String> registerUser(RegisterRequest registerRequest) {
         try{
@@ -46,9 +48,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             User user = new User();
             user.setEmail(registerRequest.getEmail());
             user.setFirebaseId(firebaseId);
-            user.setFullName("user");
+            if(!validateUser.validateFullName(registerRequest.getFullName())){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tên đăng nhập phải nhiều hơn 3 kí tự");
+            }
+            user.setFullName(registerRequest.getFullName());
+
+            if(!validateUser.validatePasswordLength(registerRequest.getPassword())){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mật khẩu phải ít nhất 8 kí tự");
+
+            }
+            if(!validateUser.validatePasswordComplexity(registerRequest.getPassword())){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mật khẩu phải có ít nhất 1 ký tự viết hoa và 1 ký tự đặc biệt!");
+            }
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-            user.setRole(ERole.student  );
+            user.setRole(ERole.student);
             userRepository.save(user);
 
             return ResponseEntity.ok("User registered successfully!");
@@ -60,9 +73,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     // Kiểm tra xem người dùng đã tồn tại trong Firebase Authentication hay không
     private boolean isUserExists(String email) {
         try {
-            return userRepository.existsByEmail(email);
-        } catch (Exception e) {
-            e.printStackTrace();
+            FirebaseAuth.getInstance().getUserByEmail(email);
+            return true; // Người dùng đã tồn tại
+        } catch (FirebaseAuthException e) {
+
             return false;
         }
     }

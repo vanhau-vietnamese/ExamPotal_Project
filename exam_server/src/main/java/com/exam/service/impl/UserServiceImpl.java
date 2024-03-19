@@ -12,6 +12,7 @@ import com.exam.model.UserQuizResult;
 import com.exam.repository.QuizRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
+import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +34,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<UserResponse> getProfile() {
         String jwt = jwtAuthenticationFilter.getJwt();
-        System.out.println("jwt: "+jwt);
-        String email = jwtUtils.extractUserName(jwt);
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
         System.out.println("email: "+email);
-        String firebaseId = jwtUtils.extractFirebaseId(jwt);
+        String firebaseId = decodedToken.getUid();
         System.out.println("firebase: "+firebaseId);
 
         User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
@@ -76,62 +77,4 @@ public class UserServiceImpl implements UserService {
         user.setRole(ERole.student);
         return ResponseEntity.ok(userRepository.save(user));
     }
-//    private final UserRepository userRepository;
-//    private final JwtUtils jwtUtils;
-//    private final UserDetailsServiceImpl userDetailsService;
-//    private final PasswordEncoder passwordEncoder;
-//    @Override
-//    public ResponseEntity<?> getAllUser() {
-//        return ResponseEntity.ok(userRepository.getAllUser());
-//    }
-//
-//    @Override
-//    public ResponseEntity<UserResponse> getUser(Long id) {
-//        User user = userRepository.findById(id).get();
-//        UserResponse userResponse = new UserResponse();
-//        try{
-//            if(user != null){
-//                userResponse.setName(user.getName());
-//                userResponse.setUsername(user.getUsername());
-//                userResponse.setPassword(user.getPassword());
-//                userResponse.setEmail(user.getEmail());
-//                userResponse.setRole(user.getRole());
-//
-//                return ResponseEntity.ok(userResponse);
-//            }
-//        }catch (Exception ex){
-//            ex.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-//
-//    @Override
-//    public void deleteUser(Long id) {
-//        User user = userRepository.findById(id).get();
-//        if(user != null){
-//            userRepository.deleteById(id);
-//        }
-//    }
-//
-//    @Override
-//    public ResponseEntity<String> updateUser(User userRequest) {
-//        String username = userDetailsService.getUserDetail().getUsername();
-//        User user = userRepository.findByUsername(username);
-//        if(user != null){
-//            user.setName(userRequest.getName());
-//            user.setUsername(userRequest.getUsername());
-//            user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-//            user.setEmail(userRequest.getEmail());
-//
-//            userRepository.save(user);
-//            return ResponseEntity.ok("Update User Successful");
-//        }
-//        return ResponseEntity.badRequest().body("User Not Exists");
-//    }
-//
-//    @Override
-//    public ResponseEntity<?> getUsersOfQuiz(Long id) {
-//        return null;
-//    }
 }

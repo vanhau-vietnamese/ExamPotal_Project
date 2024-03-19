@@ -1,4 +1,4 @@
-package com.exam.service.impl;
+package com.exam.service;
 
 import com.exam.model.QuestionType;
 import org.springframework.http.ResponseEntity;
