@@ -11,8 +11,10 @@ axiosClient.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.authorization = token;
+    
   }
   return config;
+
 });
 
 axiosClient.interceptors.response.use(

@@ -23,7 +23,6 @@ export default function DetailExam() {
       <div className="flex mt-3 ">
         <div className=" w-4/6 max-h-screen overflow-auto rounded-md shadow-sm">
           <DetailExamItem></DetailExamItem>
-          <DetailExamItem></DetailExamItem>
         </div>
         <div className="border border-green-200 w-2/6 max-h-[300px] ml-3 rounded-md p-3 shadow-md">
           Thông tin

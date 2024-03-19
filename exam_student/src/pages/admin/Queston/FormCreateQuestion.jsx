@@ -4,6 +4,7 @@ import { Button } from '~/components';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
+import axios from 'axios';
 
 FormCreateQuestion.propTypes = {
   onClose: PropTypes.func,
@@ -19,7 +20,11 @@ const useForm = () => {
   useEffect(() => {
     if (optionInputRefs.current.length > 0) {
       const lastIndex = optionInputRefs.current.length - 1;
-      optionInputRefs.current[lastIndex].focus();
+      const lastOptionInputRef = optionInputRefs.current[lastIndex];
+
+      if (lastOptionInputRef && lastOptionInputRef.current) {
+        lastOptionInputRef.current.focus();
+      }
     }
   }, [options]);
 
@@ -63,15 +68,28 @@ const useForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log({
-      question,
-      options,
-      correctOptions,
-      answerType,
-    });
+    try {
+      const response = await axios.post('/question/add', {
+        question: question,
+        options: options,
+        correctOptions: correctOptions,
+        answerType: answerType,
+      });
+
+      // Xử lý phản hồi từ backend (nếu cần)
+      console.log('Response:', response.data);
+
+      // Xóa dữ liệu form sau khi đã gửi thành công
+      setQuestion('');
+      setOptions([]);
+      setCorrectOptions([]);
+      setAnswerType('single');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return {
@@ -106,7 +124,7 @@ export default function FormCreateQuestion({ onClose }) {
     handleRemoveOption,
     handleKeyDown,
     handleSubmit,
-  } = useForm(); // Sử dụng useForm hook
+  } = useForm();
 
   return (
     <div className="flex items-center justify-center pt-6">
@@ -155,7 +173,7 @@ export default function FormCreateQuestion({ onClose }) {
                   <button
                     type="button"
                     onClick={() => handleRemoveOption(index)}
-                    className="px-3 py-2 text-sm text-black bg-transparent border border-red-500 rounded-md hover:bg-red-500 hover:text-white"
+                    className="px-3 py-2 ml-1 text-sm text-black bg-transparent border border-red-500 rounded-md hover:bg-red-500 hover:text-white"
                   >
                     Xóa
                   </button>
@@ -183,7 +201,7 @@ export default function FormCreateQuestion({ onClose }) {
           <div className="flex">
             <button
               type="submit"
-              className="max-w-fit px-4 py-2 m-4 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+              className="max-w-fit px-4 py-2 m-4 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
             >
               Tạo câu hỏi
             </button>

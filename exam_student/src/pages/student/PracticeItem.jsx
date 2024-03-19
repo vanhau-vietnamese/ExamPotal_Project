@@ -22,7 +22,7 @@ export default function PracticeItem() {
               Nhu Tranh o day
             </p>
             <p>
-              <Question />{' '}
+              <Question />
             </p>
           </div>
         </div>

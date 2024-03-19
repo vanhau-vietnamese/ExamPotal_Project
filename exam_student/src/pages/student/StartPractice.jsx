@@ -10,7 +10,6 @@ export default function StartPractice() {
 
       <div className="max-w-[700px] ">
         <DetailExamItem></DetailExamItem>
-        <DetailExamItem></DetailExamItem>
       </div>
     </div>
   );

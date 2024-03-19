@@ -1,13 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import { SignInPage, SignUpPage } from '~/pages/auth';
-import { AdminMain, Question } from '~/pages/admin';
+import { AdminMain } from '~/pages/admin';
 import { StartPractice, StudentMain } from '~/pages/student';
 import NotFound from '~/pages/NotFound';
 
 import router from './const';
 import { Navigate } from 'react-router-dom';
 import { DetailExam, ExamList } from '~/pages/admin/Exam';
+import { QuestionList } from '~/pages/admin/Queston';
 
 const routes = createBrowserRouter([
   {
@@ -28,7 +29,7 @@ const routes = createBrowserRouter([
 
           {
             path: 'question',
-            element: <Question />,
+            element: <QuestionList />,
           },
           {
             path: 'exam',

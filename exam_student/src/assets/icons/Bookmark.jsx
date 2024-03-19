@@ -5,7 +5,7 @@ export default function Bookmark() {
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="orange"
+      stroke="currentColor"
       className="w-10 h-10"
     >
       <path

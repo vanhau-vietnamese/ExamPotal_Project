@@ -5,7 +5,7 @@ export default function Clock() {
       fill="none"
       viewBox="0 0 24 24"
       strokeWidth={1.5}
-      stroke="red"
+      stroke="currentColor"
       className="w-4 h-4"
     >
       <path

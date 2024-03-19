@@ -1,7 +1,7 @@
 import { DatatestQuestion } from '~/DatatestQuestion';
 import OptionItem from '~/layouts/components/OptionItem';
 
-export default function DetailExamItem() {
+export default function Question() {
   return (
     <div className="p-3">
       {DatatestQuestion.map((item) => (
