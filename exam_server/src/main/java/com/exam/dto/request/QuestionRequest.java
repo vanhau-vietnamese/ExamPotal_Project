@@ -3,6 +3,9 @@ package com.exam.dto.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class QuestionRequest {
@@ -11,4 +14,5 @@ public class QuestionRequest {
     private String questionTypeId;
     private String status;
     private Long quizId;
+    private List<AnswerRequest> answerRequestList = new ArrayList<>();
 }

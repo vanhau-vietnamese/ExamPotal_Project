@@ -28,7 +28,7 @@ public class Question {
     @Column(name = "content", columnDefinition = "JSON")
     private String content;
     @Column(name = "status")
-    private String status;
+    private String status ;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("questions")
@@ -39,7 +39,7 @@ public class Question {
     private Timestamp createdAt  = new Timestamp(System.currentTimeMillis());
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
+    @JsonIgnore 
     private Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
 
 }

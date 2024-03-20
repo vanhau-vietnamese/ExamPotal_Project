@@ -1,20 +1,16 @@
 package com.exam.service.impl;
 
+import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.QuestionRequest;
-import com.exam.model.Question;
-import com.exam.model.QuestionType;
-import com.exam.model.Quiz;
-import com.exam.model.QuizQuestion;
-import com.exam.repository.QuestionRepository;
-import com.exam.repository.QuestionTypeRepository;
-import com.exam.repository.QuizQuestionRepository;
-import com.exam.repository.QuizRepository;
+import com.exam.model.*;
+import com.exam.repository.*;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -25,14 +21,15 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuizQuestionRepository quizQuestionRepository;
     private final QuestionTypeRepository questionTypeRepository;
     private final QuizRepository quizRepository;
+    private final AnswerRepository answerRepository;
     @Override
     public ResponseEntity<?> addQuestion(QuestionRequest questionRequest) {
         QuestionType questionType = questionTypeRepository.findByAlias(questionRequest.getQuestionTypeId());
+        System.out.println("questionType: "+questionType);
 
         Question question = new Question();
         question.setMedia(questionRequest.getMedia());
         question.setContent(questionRequest.getContent());
-        question.setStatus(question.getStatus());
         question.setQuestionType(questionType);
 
         questionRepository.save(question);
@@ -44,7 +41,26 @@ public class QuestionServiceImpl implements QuestionService {
         quizQuestion.setQuestion(question);
         quizQuestionRepository.save(quizQuestion);
 
+        List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
+        int size = questionRequest.getAnswerRequestList().size();
+        System.out.println("size: "+size);
+        // add answer
+        for(int i=0; i<size; i++){
+            addListAnswer(answerList.get(i), question);
+        }
+
         return ResponseEntity.ok(question);
+    }
+
+    private void addListAnswer(AnswerRequest answerRequest, Question question){
+        Answer answer = new Answer();
+        answer.setMedia(answerRequest.getMedia());
+        answer.setContent(answerRequest.getContent());
+        answer.setCorrect(answerRequest.isCorrect());
+        System.out.println("isCorrect: "+answerRequest.isCorrect());
+        answer.setQuestion(question);
+
+        answerRepository.save(answer);
     }
 
     @Override
