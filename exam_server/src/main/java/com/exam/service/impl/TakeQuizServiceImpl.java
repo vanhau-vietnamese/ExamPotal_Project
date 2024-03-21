@@ -3,18 +3,15 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.QuestionChoiceRequest;
+import com.exam.dto.request.StartQuizRequest;
 import com.exam.dto.request.SubmitRequest;
 import com.exam.dto.response.SubmitResponse;
-import com.exam.model.Quiz;
-import com.exam.model.User;
-import com.exam.model.UserQuizResult;
-import com.exam.repository.AnswerRepository;
-import com.exam.repository.QuizRepository;
-import com.exam.repository.UserQuizResultRepository;
-import com.exam.repository.UserRepository;
+import com.exam.model.*;
+import com.exam.repository.*;
 import com.exam.service.TakeQuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,13 +29,18 @@ public class TakeQuizServiceImpl implements TakeQuizService {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final UserQuizResultRepository userQuizResultRepository;
+    private final QuizQuestionRepository quizQuestionRepository;
+    private final QuestionRepository questionRepository;
+    private final UserQuestionChoiceRepository userQuestionChoiceRepository;
 
-
-    public void startQuiz(Long quizId){
+    public ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest){
         // Lấy thời gian nhấn bắt đầu là tời gian hiện tai
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-        Quiz quiz = quizRepository.findById(quizId).get();
+        Quiz quiz = quizRepository.findById(startQuizRequest.getQuizId()).get();
+        if(quiz == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz Not Exists");
+        }
 
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -52,9 +54,17 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setUser(user);
 
         userQuizResultRepository.save(userQuizResult);
+        return ResponseEntity.status(HttpStatus.OK).body("Start Successfully. You can start taking the test");
     }
     @Override
     public ResponseEntity<?> submitQuiz(SubmitRequest submitRequest) {
+        String jwt = jwtAuthenticationFilter.getJwt();
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
+        User user = userRepository.findByEmail(email);
+
+        Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).get();
+
         List<QuestionChoiceRequest> answers = submitRequest.getAnswers();
         int totalAnswer = answers.size();
         int totalScore = 0;
@@ -63,7 +73,9 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         float capture;
         for (QuestionChoiceRequest answer : answers) {
             List<Long> selectedOptions = answer.getSelectedOptions();
-            List<Long> correctAnswerIds = answerRepository.getCorrectAnswerFromQuestion(submitRequest.getQuizId());
+            System.out.println("abc: "+answer.getQuestionId());
+            System.out.println("123: "+answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId()));
+            List<Long> correctAnswerIds = answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId());
             if(selectedOptions.isEmpty()){
                 // đáp án k đc đê trống
                 return ResponseEntity.badRequest().body("Đáp án k đc null");
@@ -73,21 +85,24 @@ public class TakeQuizServiceImpl implements TakeQuizService {
                     totalScore++;
                     numberOfCorrect++;
                 }
-
             }
+            Question question = questionRepository.findById(answer.getQuestionId()).get();
+
+            // lưu đáp án của student vào db
+            QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
+
+            UserQuestionChoice userQuestionChoice = new UserQuestionChoice();
+            userQuestionChoice.setQuizQuestion(quizQuestion);
+            userQuestionChoice.setSelectedOptions(answer.getSelectedOptions());
+            userQuestionChoice.setUser(user);
+            userQuestionChoiceRepository.save(userQuestionChoice);
         }
         numberOfIncorrect = totalAnswer - numberOfCorrect;
 
         capture = (float)numberOfCorrect/totalAnswer;
-        String formattedCapture = String.format("%.2f%%", capture);
+        String formattedCapture = String.format("%.2f%%", capture * 100);
 
-        String jwt = jwtAuthenticationFilter.getJwt();
-        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
-        String email = decodedToken.getEmail();
-        User user = userRepository.findByEmail(email);
-
-        Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).get();
-
+        // lưu kết quả bài exam
         saveUserQuizResult(totalScore, formattedCapture, user, quiz);
 
         SubmitResponse submitResponse = new SubmitResponse();
@@ -115,6 +130,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
     private boolean validateScore(List<Long> selectedOptions, List<Long> correctAnswerIds) {
         Set<Long> setSelectOptions = listToSet(selectedOptions);
         Set<Long> setCorrectAnswers = listToSet(correctAnswerIds);
+        System.out.println("absdbasd: "+setCorrectAnswers.equals(setSelectOptions));
         return setCorrectAnswers.equals(setSelectOptions);
     }
     public static Set<Long> listToSet(List<Long> list) {

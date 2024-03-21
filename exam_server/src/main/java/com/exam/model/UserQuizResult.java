@@ -21,7 +21,7 @@ public class UserQuizResult {
     private Long id;
     @Column(name = "marks", nullable = true)
     private int marks;
-    @Column(name = "capture", columnDefinition = "JSON")
+    @Column(name = "capture")
     private String capture;
     @Column(name = "startTime")
     private Timestamp startTime;

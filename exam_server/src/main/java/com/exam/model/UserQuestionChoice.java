@@ -17,7 +17,7 @@ public class UserQuestionChoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ElementCollection
+    @ElementCollection()
     @Column(name = "selectedOptions")
     private List<Long> selectedOptions = new ArrayList<>();
     @ManyToOne(fetch = FetchType.EAGER)

@@ -1,5 +1,6 @@
 package com.exam.controller;
 
+import com.exam.dto.request.StartQuizRequest;
 import com.exam.dto.request.SubmitRequest;
 import com.exam.model.Quiz;
 import com.exam.model.User;
@@ -23,8 +24,8 @@ public class TakeQuizController {
     private final TakeQuizService takeQuizService;
 
     @PostMapping("/start-quiz")
-    public void startQuiz(@RequestBody Long quizId){
-        takeQuizService.startQuiz(quizId);
+    public ResponseEntity<?> startQuiz(@RequestBody StartQuizRequest startQuizRequest){
+        return takeQuizService.startQuiz(startQuizRequest);
     }
     @PostMapping("/submit")
     public ResponseEntity<?> submitQuiz(@RequestBody SubmitRequest submitRequest){

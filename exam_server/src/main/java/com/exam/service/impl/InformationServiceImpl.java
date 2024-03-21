@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 public class InformationServiceImpl implements InformationService {
     @Override
     public ResponseEntity<?> statistics() {
-        
         return null;
     }
 }

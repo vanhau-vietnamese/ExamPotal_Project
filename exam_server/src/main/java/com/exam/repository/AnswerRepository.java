@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    @Query("SELECT ans.id FROM Answer ans WHERE ans.question.id =: questionId AND ans.isCorrect = true")
+    @Query("SELECT ans.id FROM Answer ans WHERE ans.question.id = :questionId AND ans.isCorrect = true")
     public List<Long> getCorrectAnswerFromQuestion(@Param("questionId") Long questionId);
 
 }
