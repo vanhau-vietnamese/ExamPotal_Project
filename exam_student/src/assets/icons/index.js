@@ -5,6 +5,8 @@ import ChartPie from './ChartPie';
 import DocumentText from './DocumentText';
 import Search from './Search';
 import Notification from './Notification';
+import BookOpen from './BookOpen';
+import LogOut from './LogOut';
 
 export default {
   Email,
@@ -14,4 +16,6 @@ export default {
   DocumentText,
   Search,
   Notification,
+  BookOpen,
+  LogOut,
 };

@@ -4,13 +4,13 @@ import { Backdrop, Loading } from '~/components';
 import { useAuth } from '~/hooks';
 import { router } from '~/routes';
 import { Header, SideBar } from './components';
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 function DashBoardLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!loading) {
       if (!user) {
         navigate(router.signIn, { replace: true });

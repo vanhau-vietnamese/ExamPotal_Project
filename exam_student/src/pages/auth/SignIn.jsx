@@ -1,23 +1,36 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Icons from '~/assets/icons';
 import images from '~/assets/images';
-import { Button, FormInput } from '~/components';
+import { Button, FormInput, Loading } from '~/components';
 import { useAuth } from '~/hooks';
 import { router } from '~/routes';
 import { FormSignInInput } from '~/validations';
 
 function SignInPage() {
-  const { signInWithSocial } = useAuth();
-
+  const { signInWithSocial, signInWithEmailPassword } = useAuth();
+  const [isLoging, setIsLoging] = useState(false);
   const {
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
   } = useForm({ resolver: zodResolver(FormSignInInput), mode: 'onBlur' });
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = handleSubmit(async (data) => {
+    setIsLoging(true);
+    try {
+      await signInWithEmailPassword({
+        email: data.email,
+        password: data.password,
+      });
+    } catch (error) {
+      setIsLoging(false);
+      toast.error(error.message, { toastId: 'sign_in' });
+    }
+  });
 
   return (
     <div className="flex items-center justify-center w-full h-full">
@@ -56,25 +69,35 @@ function SignInPage() {
               <div className="text-left">
                 <Button
                   type="submit"
-                  className="w-full px-5 py-2 text-[16px] text-white bg-primary shadow-success hover:shadow-success_hover"
+                  disable={isLoging || isSubmitting}
+                  className="w-full px-5 py-2 text-sm text-white bg-primary shadow-success hover:shadow-success_hover disabled:hover:shadow-none"
                 >
-                  Đăng nhập
+                  <div className="flex items-center justify-center w-full h-full">
+                    {isLoging || isSubmitting ? (
+                      <>
+                        <Loading size="small" />
+                        <p>Đang đăng nhập</p>
+                      </>
+                    ) : (
+                      <p>Đăng nhập</p>
+                    )}
+                  </div>
                 </Button>
               </div>
             </form>
-            <div className="text-[14px] font-semibold text-center m-[12px_auto] text-icon">
+            <div className="text-sm font-semibold text-center m-[12px_auto] text-icon">
               <span>Hoặc đăng nhập bằng</span>
             </div>
             <div className="flex items-center gap-8 w-full">
               <Button
-                className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
+                className="flex items-center justify-center p-2 flex-1 gap-2 text-gray-800 bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-sm"
                 onClick={() => signInWithSocial('google')}
               >
                 <img src={images.google} alt="google_logo" />
                 <p>Google</p>
               </Button>
               <Button
-                className="flex items-center justify-center p-2 flex-1 gap-2 text-icon bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-[15px]"
+                className="flex items-center justify-center p-2 flex-1 gap-2 text-gray-800 bg-strike shadow-sidebar hover:bg-[#c0c1cd] text-sm"
                 onClick={() => signInWithSocial('facebook')}
               >
                 <img src={images.facebook} alt="facebook_logo" />
@@ -84,8 +107,8 @@ function SignInPage() {
             <div className="flex items-center justify-center">
               <p className="mt-4 font-semibold text-icon text-[15px]">
                 Bạn chưa có tài khoản?{' '}
-                <Link to={router.signUp} className="text-primary font-bold underline">
-                  Đăng ký tại đây
+                <Link to={router.signUp} className="text-primary font-bold hover:underline">
+                  Đăng ký ngay
                 </Link>
               </p>
             </div>

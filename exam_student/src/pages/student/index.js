@@ -1,1 +1,1 @@
-export { default as StudentMain } from './StudentMain';
+export { default as StudentExcises } from './StudentExcises';

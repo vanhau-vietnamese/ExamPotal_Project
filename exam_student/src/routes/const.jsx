@@ -9,7 +9,7 @@ const router = {
   signUp: '/auth/sign-up',
 };
 
-export const SidebarNavLinks = [
+export const AdminNavLinks = [
   {
     path: `${router.admin}/overview`,
     name: 'Dashboard',
@@ -19,6 +19,14 @@ export const SidebarNavLinks = [
     path: router.question,
     name: 'Danh sách câu hỏi',
     icon: <Icons.DocumentText />,
+  },
+];
+
+export const StudentNavLinks = [
+  {
+    path: `${router.student}/excises`,
+    name: 'Luyệnt tập',
+    icon: <Icons.BookOpen />,
   },
 ];
 
