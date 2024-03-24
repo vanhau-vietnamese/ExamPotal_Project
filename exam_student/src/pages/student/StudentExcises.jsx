@@ -1,6 +1,6 @@
 import ExamStudent from './ExamStudent';
 
-function StudentMain() {
+function StudentExcises() {
   return (
     <div>
       <ExamStudent></ExamStudent>
@@ -8,4 +8,4 @@ function StudentMain() {
   );
 }
 
-export default StudentMain;
+export default StudentExcises;

@@ -13,7 +13,7 @@ const router = {
   listQuestionChosse: '/admin/exam/listQuestionChosse',
 };
 
-export const SidebarNavLinks = [
+export const AdminNavLinks = [
   {
     path: `${router.admin}/overview`,
     name: 'Dashboard',
@@ -28,6 +28,14 @@ export const SidebarNavLinks = [
     path: router.exam,
     name: 'Danh sách bài tập',
     icon: <Icons.Academic />,
+  },
+];
+
+export const StudentNavLinks = [
+  {
+    path: `${router.student}/excises`,
+    name: 'Luyệnt tập',
+    icon: <Icons.BookOpen />,
   },
 ];
 

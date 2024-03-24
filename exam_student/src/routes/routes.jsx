@@ -1,14 +1,12 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
-import { SignInPage, SignUpPage } from '~/pages/auth';
-import { AdminMain } from '~/pages/admin';
-import { StartPractice, StudentMain } from '~/pages/student';
 import NotFound from '~/pages/NotFound';
-
-import router from './const';
-import { Navigate } from 'react-router-dom';
+import { AdminMain } from '~/pages/admin';
 import { DetailExam, ExamList } from '~/pages/admin/Exam';
 import { QuestionList } from '~/pages/admin/Queston';
+import { SignInPage, SignUpPage } from '~/pages/auth';
+import { StartPractice, StudentExcises } from '~/pages/student';
+import router from './const';
 
 const routes = createBrowserRouter([
   {
@@ -51,7 +49,11 @@ const routes = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <StudentMain />,
+            element: <Navigate to={`${router.student}/excises`} />,
+          },
+          {
+            path: 'excises',
+            element: <StudentExcises />,
           },
           {
             path: 'practice',

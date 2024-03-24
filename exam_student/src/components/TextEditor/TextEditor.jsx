@@ -15,7 +15,7 @@ export default function TextEditor({ data, onChange }) {
     extensions,
     content: data,
     autofocus: false,
-    onUpdate: ({ editor }) => onChange(editor.getJSON()),
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
 
   const toggleHeading = useCallback(

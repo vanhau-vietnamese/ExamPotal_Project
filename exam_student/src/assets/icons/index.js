@@ -9,6 +9,8 @@ import Academic from './Academic';
 import Bookmark from './Bookmark';
 import Clock from './Clock';
 import Question from './Question';
+import BookOpen from './BookOpen';
+import LogOut from './LogOut';
 
 export default {
   Email,
@@ -22,4 +24,6 @@ export default {
   Bookmark,
   Clock,
   Question,
+  BookOpen,
+  LogOut,
 };
