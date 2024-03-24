@@ -38,7 +38,7 @@ function Header() {
               </div>
             </Button>
             {openMenu && (
-              <div className="absolute top-full right-0 bg-slate-100 rounded-md w-full min-w-[150px] min-h-[80px] shadow-xl">
+              <div className="absolute top-full right-0 bg-slate-100 rounded-md w-full min-w-[250px] min-h-[80px] shadow-xl">
                 <div className="flex flex-col p-2">
                   <div className="flex flex-col justify-center items-end mb-2 text-icon">
                     <p className="font-semibold text-sm">{user ? user.fullName : 'Unknown'}</p>
