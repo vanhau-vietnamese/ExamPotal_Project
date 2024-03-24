@@ -24,7 +24,7 @@ const CreateLanguages = () => {
     if (newLanguage.trim() !== '') {
       try {
         const response = await axiosClient.post('/category/add', {
-          language: newLanguage,
+          title: newLanguage,
         });
         console.log('Response:', response.data);
         const updatedLanguages = [...languages, newLanguage];

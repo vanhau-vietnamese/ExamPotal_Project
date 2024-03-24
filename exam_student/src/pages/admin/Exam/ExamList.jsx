@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import Search from '~/assets/icons/Search';
 import { TestData } from '~/TestData';
 import { router } from '~/routes';
 import { Backdrop, Button } from '~/components';
@@ -23,7 +22,6 @@ export default function ExamList() {
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex items-center">
-              <Search />
               <input
                 type="text"
                 id="table-search"

@@ -1,4 +1,3 @@
-import Search from '~/assets/icons/Search';
 import DetailExamItem from './DetailExamItem';
 
 export default function DetailExam() {
@@ -8,9 +7,7 @@ export default function DetailExam() {
         <div className="pb-4 bg-white sticky">
           <label className="sr-only">Search</label>
           <div className="relative m-2 p-2 ">
-            <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-              <Search />
-            </div>
+            <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none"></div>
             <input
               type="text"
               id="table-search"

@@ -4,3 +4,4 @@ export { default as FormCreateExam } from './FormCreateExam';
 export { default as DetailExam } from './DetailExam';
 export { default as DetailExamItem } from './DetailExamItem';
 export { default as CreateLanguages } from './CreateLanguages';
+export { default as DetailQuestionChosse } from './DetailQuestionChosse';

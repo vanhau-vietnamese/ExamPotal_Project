@@ -19,7 +19,6 @@ export default function PracticeItem() {
             <p>Thông tin cơ bản</p>
             <p className="flex">
               <Clock />
-              Nhu Tranh o day
             </p>
             <p>
               <Question />

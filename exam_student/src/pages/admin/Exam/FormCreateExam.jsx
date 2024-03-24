@@ -6,19 +6,39 @@ import 'react-datepicker/dist/react-datepicker.css';
 import PropTypes from 'prop-types';
 import { Question } from '~/layouts/components';
 import { Link } from 'react-router-dom';
+import { DatatestQuestion } from '~/DatatestQuestion';
+import { useEffect } from 'react';
+import DetailQuestionChosse from './DetailQuestionChosse';
 
 const FormCreateExam = ({ onClose }) => {
   const { control, handleSubmit } = useForm();
   const [showQuestionList, setShowQuestionList] = useState(false);
 
+  // quản lý chọn câu hỏi từ component con
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
+
+  const handleQuestionSelect = (questionID) => {
+    if (selectedQuestions && selectedQuestions.includes(questionID)) {
+      // ktra câu hỏi có bị chọn trùng không, nếu chọn lại lần nữa thì loại khỏi danh sách
+      setSelectedQuestions(selectedQuestions.filter((id) => id !== questionID));
+    } else {
+      setSelectedQuestions([...selectedQuestions, questionID]);
+    }
+  };
+
+  const contentQuestionByID = () => {
+    return DatatestQuestion.filter((question) => selectedQuestions.includes(question.id)); // trả về 1 mảng câu hỏi được chọn
+  };
+
+  useEffect(() => {
+    console.log(selectedQuestions);
+  }, [selectedQuestions]);
+
   const handleFormSubmit = (data) => {
-    // Xử lý logic khi submit form
     console.log(data);
   };
 
   const handleChooseFromBank = () => {
-    // Xử lý khi người dùng chọn câu hỏi từ kho
-    // Chuyển hướng hoặc hiển thị modal/form cho người dùng chọn câu hỏi từ kho
     console.log('Chọn câu hỏi từ kho');
     // Cập nhật state để hiển thị danh sách câu hỏi
     setShowQuestionList(true);
@@ -26,7 +46,7 @@ const FormCreateExam = ({ onClose }) => {
 
   return (
     <div className="flex items-center justify-center pt-6">
-      <div className="container mx-auto p-4 bg-slate-100 rounded-md max-w-[1000px]">
+      <div className="container mx-auto p-4 bg-slate-100 rounded-md w-full">
         <h3 className="mb-5">Tạo bài tập</h3>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="w-full">
           <div className="flex flex-wrap -mx-3 mb-4">
@@ -73,7 +93,11 @@ const FormCreateExam = ({ onClose }) => {
               </div>
             </div>
             <div>
-              <Button type="button" onClick={handleChooseFromBank}>
+              <Button
+                type="button"
+                onClick={handleChooseFromBank}
+                className="border border-gray-400 p-2 ml-3"
+              >
                 Chọn câu hỏi
               </Button>
             </div>
@@ -81,14 +105,13 @@ const FormCreateExam = ({ onClose }) => {
 
           {showQuestionList && (
             <div className="mb-4">
-              <div className="flex">
+              <div className="flex text-sm">
                 <Link className="text-lg font-semibold mb-2 mr-5">Danh sách câu hỏi</Link>
-                <p> | </p>
-                <Link className="text-lg font-semibold mb-2 ml-5">Chi tiết câu hỏi</Link>
               </div>
               <div className="bg-gray-400 w-full rounded-md">
                 <div className="max-h-[500px] overflow-y-auto">
-                  <Question></Question>
+                  <Question onQuestionSelect={handleQuestionSelect} />
+                  <DetailQuestionChosse questions={contentQuestionByID()} />
                 </div>
               </div>
             </div>

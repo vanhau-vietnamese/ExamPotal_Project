@@ -1,219 +1,234 @@
+import { useForm } from 'react-hook-form';
+import { Button } from '~/components';
 import PropTypes from 'prop-types';
 import TextEditor from '~/components/TextEditor/TextEditor';
-import { Button } from '~/components';
 import { useState } from 'react';
-import { useRef } from 'react';
+import QuestionType from './QuestionType';
 import { useEffect } from 'react';
-import axios from 'axios';
+import { axiosClient } from '~/apis';
 
-FormCreateQuestion.propTypes = {
-  onClose: PropTypes.func,
-};
+export default function FormCreateQuestion({ onClose }) {
+  const { handleSubmit } = useForm();
+  const [question, setQuestion] = useState([]);
+  const [selectedQuestionType, setSelectedQuestionType] = useState(''); // lưu gtri lựa chọn loại câu hỏi đơn hay đa
+  const [options, setOptions] = useState([]); // lưu giá trị các lựa chọn loại đáp án - thêm /xóa
+  const [answerType, setAnswerType] = useState('Đơn');
+  const [selectedAnswer, setSelectedAnswer] = useState([]); // lưu giá trị đáp án đúng đã chọn
+  const [questionList, setquestionList] = useState([]); // lưu nội dung câu hỏi
+  const [error, setError] = useState(''); // kiểm tra khi submit có chọn đáp án chưa
 
-const useForm = () => {
-  const [question, setQuestion] = useState('');
-  const [options, setOptions] = useState([]);
-  const [correctOptions, setCorrectOptions] = useState([]);
-  const [answerType, setAnswerType] = useState('single');
-  const optionInputRefs = useRef([]);
-
-  useEffect(() => {
-    if (optionInputRefs.current.length > 0) {
-      const lastIndex = optionInputRefs.current.length - 1;
-      const lastOptionInputRef = optionInputRefs.current[lastIndex];
-
-      if (lastOptionInputRef && lastOptionInputRef.current) {
-        lastOptionInputRef.current.focus();
-      }
-    }
-  }, [options]);
-
-  const handleAddOption = () => {
-    setOptions([...options, '']);
+  // sự kiện nhán thay đổi loại câu hỏi đơn hay đa
+  const handleQuestionTypeChange = (selectedType) => {
+    const parsedData = JSON.parse(selectedType); // chuyen chuoi thanh oject
+    setAnswerType(parsedData.displayName);
+    console.log('Check: ', typeof parsedData.alias);
+    //
+    setSelectedQuestionType(parsedData.alias);
   };
 
-  const handleOptionChange = (index, value) => {
-    const updatedOptions = [...options];
-    updatedOptions[index] = value;
-    setOptions(updatedOptions);
-  };
+  function handleQuestionChange(value) {
+    const newArray = Array.from(value);
+    setQuestion(newArray);
+    // xử lý lấy nd câu hỏi đã nhập
+    const questionArray = Array.from(value.content);
+    // chuyển thành JSON
+    const jsonQuestionArray = JSON.stringify(questionArray);
+    console.log('JSON Question Array:', jsonQuestionArray);
 
-  const handleToggleCorrectOption = (index) => {
-    if (answerType === 'single') {
-      // Nếu loại đáp án là "Đơn", chỉ cho phép chọn một lựa chọn
-      setCorrectOptions([index]);
+    setquestionList(questionArray);
+  }
+
+  // thêm đáp án
+  function addOption() {
+    const newOptions = [...options];
+    newOptions.push('');
+    setOptions(newOptions);
+  }
+  // xóa đáp án
+  function deleteOption(index) {
+    const newOptions = [...options];
+    newOptions.splice(index, 1);
+    setOptions(newOptions);
+  }
+
+  // xử lý chọn đáp án
+  const handleAnswerChange = (index) => {
+    if (answerType === 'Đơn') {
+      // Nếu đang ở chế độ chọn đơn, chỉ lưu một đáp án
+      setSelectedAnswer([index]);
     } else {
-      // Nếu loại đáp án là "Đa", cho phép chọn nhiều lựa chọn
-      if (correctOptions.includes(index)) {
-        const updatedCorrectOptions = correctOptions.filter((option) => option !== index);
-        setCorrectOptions(updatedCorrectOptions);
+      // Nếu đang ở chế độ chọn đa, xử lý lưu nhiều đáp án
+      const answerExists = selectedAnswer.includes(index);
+
+      if (answerExists) {
+        // Nếu đáp án đã chọn đã tồn tại, loại bỏ nó khỏi mảng
+        const newSelectedAnswers = selectedAnswer.filter((answerIndex) => answerIndex !== index);
+        setSelectedAnswer(newSelectedAnswers);
       } else {
-        setCorrectOptions([...correctOptions, index]);
+        // Nếu đáp án đã chọn chưa tồn tại, thêm đáp án vào mảng
+        const newSelectedAnswers = [...selectedAnswer, index];
+        setSelectedAnswer(newSelectedAnswers);
       }
     }
   };
 
-  const handleRemoveOption = (index) => {
-    const updatedOptions = [...options];
-    updatedOptions.splice(index, 1);
-    setOptions(updatedOptions);
-    const updatedCorrectOptions = correctOptions.filter((option) => option !== index);
-    setCorrectOptions(updatedCorrectOptions);
-  };
+  //
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddOption();
+  const onSubmit = async () => {
+    // Kiểm tra điều kiện dựa trên loại câu hỏi và số lượng đáp án đã chọn
+
+    let result;
+    if (answerType === 'Đơn' && selectedAnswer.length === 1) {
+      result = [options[selectedAnswer[0]]];
+      console.log('ĐƠN', result);
+      setError(null);
+    } else if (answerType === 'Đa' && selectedAnswer.length >= 2) {
+      result = selectedAnswer.map((i) => options[i]);
+      console.log('ĐA', result);
+      setError(null);
+    } else if (selectedAnswer.length === 0) {
+      // Không đáp ứng điều kiện, hiển thị thông báo lỗi
+      setError(() => {
+        alert('Vui lòng chọn đáp án hợp lệ!');
+      });
+      console.log('Lỗi: ', error);
+      return;
     }
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    //
+    const oject = {
+      content: options,
+      correct: result,
+    };
+    console.log('LOG OJECT', oject);
 
+    //xử lý API
     try {
-      const response = await axios.post('/question/add', {
-        question: question,
-        options: options,
-        correctOptions: correctOptions,
-        answerType: answerType,
+      // Gửi dữ liệu form đến máy chủ sử dụng Axios
+      const response = await axiosClient.post('/question/add', {
+        content: questionList, // questionContent
+        questionTypeId: selectedQuestionType, // questionType
+        // answerRequestList: options, // optionsList
+        // correct: result, // iscorrect
+        answerRequestList: [oject],
       });
 
-      // Xử lý phản hồi từ backend (nếu cần)
+      // Xử lý kết quả từ server nếu cần
       console.log('Response:', response.data);
 
-      // Xóa dữ liệu form sau khi đã gửi thành công
-      setQuestion('');
+      // Đặt lại form sau khi gửi thành công
+      setQuestion([]);
+      setSelectedQuestionType('');
       setOptions([]);
-      setCorrectOptions([]);
-      setAnswerType('single');
+      selectedAnswer([]);
     } catch (error) {
       console.error('Error:', error);
     }
+
+    console.log('Nội dung câu hỏi:', questionList);
+    console.log('Các đáp án:', options);
+    console.log('ID:', answerType);
+    console.log('Đã chọn loại: ', selectedQuestionType);
+    console.log('Đáp án đúng: ', result);
+    console.log('LOG OJECT', oject);
   };
 
-  return {
-    question,
-    setQuestion,
-    options,
-    correctOptions,
-    answerType,
-    setAnswerType,
-    optionInputRefs,
-    handleAddOption,
-    handleOptionChange,
-    handleToggleCorrectOption,
-    handleRemoveOption,
-    handleKeyDown,
-    handleSubmit,
-  };
-};
-
-export default function FormCreateQuestion({ onClose }) {
-  const {
-    question,
-    setQuestion,
-    options,
-    correctOptions,
-    answerType,
-    setAnswerType,
-    optionInputRefs,
-    handleAddOption,
-    handleOptionChange,
-    handleToggleCorrectOption,
-    handleRemoveOption,
-    handleKeyDown,
-    handleSubmit,
-  } = useForm();
+  useEffect(() => {
+    console.log('Đáp án: ', selectedAnswer);
+  }, [selectedAnswer]);
 
   return (
-    <div className="flex items-center justify-center pt-6">
-      <div className="flex items-center justify-center bg-slate-50 w-full max-w-[800px] rounded-xl ">
-        <form onSubmit={handleSubmit} className="max-w-[700px] mx-auto p-5 w-full">
-          <div className="mb-4">
-            <label htmlFor="question" className="block mb-2 font-medium text-black">
-              Nhập câu hỏi
-            </label>
+    <div>
+      <div className="flex items-center justify-center pt-6">
+        <div className="container mx-auto p-4 bg-slate-100 rounded-md max-w-[650px]">
+          <h3 className="mb-5">Tạo câu hỏi</h3>
+          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+            <div>
+              <div className="w-full md:w-1/3 px-3 mb-4 md:mb-0">
+                <p>Nhập nội dung câu hỏi</p>
+                <TextEditor value={question} onChange={handleQuestionChange} />
+              </div>
+              <p className="ml-3">Chọn loại đáp án cho câu hỏi</p>
+              <div className="ml-3">
+                <QuestionType answerType={answerType} onChange={handleQuestionTypeChange} />
+              </div>
 
-            <TextEditor value={question} onChange={setQuestion} />
-          </div>
+              {/* jsx cho sự kiện chọn đơn thì cho chọn 1 đáp án, chọn đa thì cho chọn nhiều đáp án */}
+              <div className="mb-4 ml-3">
+                {options &&
+                  options.map((option, index) => (
+                    <div key={index} className="flex mb-2 items-center">
+                      {answerType === 'Đơn' ? (
+                        <input
+                          type="radio"
+                          name="answer"
+                          className="mr-2"
+                          onClick={() => handleAnswerChange(index)}
+                        />
+                      ) : (
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          onClick={() => handleAnswerChange(index)}
+                        />
+                      )}
 
-          <div className="mb-4">
-            <label className="block mb-2 font-medium text-black">Loại đáp án</label>
-            <select
-              value={answerType}
-              onChange={(e) => setAnswerType(e.target.value)}
-              className="px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="single">Đơn</option>
-              <option value="multiple">Đa</option>
-            </select>
-          </div>
+                      <input
+                        type="text"
+                        value={option}
+                        onChange={(event) => {
+                          const newOptions = [...options];
+                          newOptions[index] = event.target.value;
+                          setOptions(newOptions);
+                        }}
+                        className="px-3 py-2 mr-2 mt-3 w-full border border-gray-300 rounded-md outline-none focus:border-green-500"
+                      />
 
-          <div className="mb-4">
-            <label className="block mb-2 font-medium text-black">Lựa chọn</label>
-            {options &&
-              options.map((option, index) => (
-                <div key={index} className="flex mb-2 items-center">
-                  <input
-                    type={answerType === 'single' ? 'radio' : 'checkbox'} // Sử dụng radio hoặc checkbox tùy thuộc vào loại đáp án
-                    checked={correctOptions.includes(index)}
-                    onChange={() => handleToggleCorrectOption(index)}
-                    className="mr-2"
-                  />
-                  <input
-                    ref={(el) => (optionInputRefs.current[index] = el)}
-                    type="text"
-                    value={option}
-                    onChange={(e) => handleOptionChange(index, e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    className="flex-grow px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveOption(index)}
-                    className="px-3 py-2 ml-1 text-sm text-black bg-transparent border border-red-500 rounded-md hover:bg-red-500 hover:text-white"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              ))}
-            <button
-              type="button"
-              onClick={handleAddOption}
-              className="px-3 py-2 text-sm text-black bg-transparent border border-blue-500 rounded-md hover:bg-blue-500 hover:text-white"
-            >
-              Thêm đáp án
-            </button>
-          </div>
-          {correctOptions && correctOptions.length > 0 && (
-            <div className="mt-4">
-              <p className="mb-2 font-medium text-black">Câu trả lời đúng:</p>
-              <ul>
-                {correctOptions.map((index) => (
-                  <li key={index}>{options[index]}</li>
-                ))}
-              </ul>
+                      <button
+                        type="button"
+                        onClick={() => deleteOption(index)} //index để biết vị trí xóa
+                        className="px-3 py-2 ml-1 mt-3 text-sm text-black bg-transparent border border-red-500 rounded-md hover:bg-red-500 hover:text-white"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  ))}
+                <button
+                  type="button"
+                  onClick={addOption}
+                  className="px-3 py-2 mt-3 text-sm text-black bg-transparent border border-blue-500 rounded-md hover:bg-blue-500 hover:text-white"
+                >
+                  Thêm đáp án
+                </button>
+              </div>
             </div>
-          )}
 
-          <div className="flex">
-            <button
-              type="submit"
-              className="max-w-fit px-4 py-2 m-4 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600"
-            >
-              Tạo câu hỏi
-            </button>
-            <Button
-              onClick={onClose}
-              className="max-w-fit px-3 py-2 m-4 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
-            >
-              Thoát
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-center">
+              <Button
+                type="submit"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 w-32 h-12 text-sm rounded m-1"
+              >
+                Tạo câu hỏi
+              </Button>
+              <Button
+                type="button"
+                onClick={onClose}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 w-28 h-12 text-sm rounded m-1"
+              >
+                Thoát
+              </Button>
+              <div>
+                {question.map((item) => (
+                  <h1 key={item}>Nội dung: {item}</h1>
+                ))}
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
 }
+FormCreateQuestion.propTypes = {
+  onClose: PropTypes.func,
+};

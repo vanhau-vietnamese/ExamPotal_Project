@@ -1,4 +1,3 @@
-import Search from '~/assets/icons/Search';
 import QuestionItem from './QuestionItem';
 import { Backdrop, Button } from '~/components';
 import { useState } from 'react';
@@ -15,12 +14,10 @@ export default function ExamList() {
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
       <div className="pb-4 bg-white rounded-md">
         <div className="relative m-2 p-2 flex justify-between">
-          <div>
-            <CreateLanguages />
-          </div>
+          <CreateLanguages />
+
           <div className="flex items-center space-x-2">
             <div className="flex items-center">
-              <Search />
               <input
                 type="text"
                 id="table-search"
@@ -41,9 +38,9 @@ export default function ExamList() {
             <thead></thead>
             <tbody>
               <tr>
-                <th>
+                <td>
                   <QuestionItem></QuestionItem>
-                </th>
+                </td>
               </tr>
             </tbody>
           </table>

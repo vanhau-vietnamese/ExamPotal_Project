@@ -29,3 +29,7 @@ export const FormSignUpInput = z
     message: 'Passwords must match!',
     path: ['confirmPassword'],
   });
+
+  export const FormCreateQuestionInput = z.object({
+    
+  });

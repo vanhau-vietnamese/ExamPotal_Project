@@ -10,6 +10,7 @@ const router = {
   signIn: '/auth/sign-in',
   signUp: '/auth/sign-up',
   detailExam: '/admin/exam/detailExam',
+  listQuestionChosse: '/admin/exam/listQuestionChosse',
 };
 
 export const SidebarNavLinks = [
