@@ -49,10 +49,6 @@ public class User implements UserDetails{
     @JsonIgnore
     private Set<UserQuizResult> userQuizResults = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
-    private Set<UserQuestionChoice> userQuestionChoices = new HashSet<>();
-
     @Column(name = "role", columnDefinition = "TEXT", nullable = false, unique = false)
     @Enumerated(EnumType.STRING)
     private ERole role;

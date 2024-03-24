@@ -1,7 +1,5 @@
 package com.exam.service.impl;
 
-import com.exam.config.JwtAuthenticationFilter;
-import com.exam.config.JwtUtils;
 import com.exam.dto.request.RegisterRequest;
 import com.exam.model.ERole;
 import com.exam.model.User;
@@ -10,27 +8,21 @@ import com.exam.service.AuthenticationService;
 import com.exam.validate.ValidateUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
-import com.google.firebase.internal.FirebaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final ValidateUser validateUser;
     @Override
-    public ResponseEntity<String> registerUser(RegisterRequest registerRequest) {
+    public ResponseEntity<?> registerUser(RegisterRequest registerRequest) {
         try{
             // Kiểm tra xem nó có tồn tại trong firebase auth k?
             if (isUserExists(registerRequest.getEmail())) {
@@ -64,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setRole(ERole.student);
             userRepository.save(user);
 
-            return ResponseEntity.ok("User registered successfully!");
+            return ResponseEntity.ok(firebaseId);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user");
@@ -76,7 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             FirebaseAuth.getInstance().getUserByEmail(email);
             return true; // Người dùng đã tồn tại
         } catch (FirebaseAuthException e) {
-
             return false;
         }
     }

@@ -2,6 +2,7 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
+import com.exam.helper.AnswerObject;
 import com.exam.dto.request.QuestionChoiceRequest;
 import com.exam.dto.request.StartQuizRequest;
 import com.exam.dto.request.SubmitRequest;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,9 +31,8 @@ public class TakeQuizServiceImpl implements TakeQuizService {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final UserQuizResultRepository userQuizResultRepository;
-    private final QuizQuestionRepository quizQuestionRepository;
     private final QuestionRepository questionRepository;
-    private final UserQuestionChoiceRepository userQuestionChoiceRepository;
+    private final UserQuestionResultRepository userQuestionResultRepository;
 
     public ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest){
         // Lấy thời gian nhấn bắt đầu là tời gian hiện tai
@@ -63,47 +64,53 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         String email = decodedToken.getEmail();
         User user = userRepository.findByEmail(email);
 
-        Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).get();
+        Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).orElse(null);
 
         List<QuestionChoiceRequest> answers = submitRequest.getAnswers();
         int totalAnswer = answers.size();
         int totalScore = 0;
         int numberOfCorrect = 0;
         int numberOfIncorrect;
-        float capture;
+        float ratio;
+
+        UserQuizResult userQuizResult = userQuizResultRepository.findByUserAndQuiz(user, quiz);
         for (QuestionChoiceRequest answer : answers) {
             List<Long> selectedOptions = answer.getSelectedOptions();
-            System.out.println("abc: "+answer.getQuestionId());
-            System.out.println("123: "+answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId()));
+            // get Question from questionID
+            Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+            // get AnswerList of Question
+            List<Answer> answerList = answerRepository.getAnswerFromQuestion(answer.getQuestionId());
+            // Get id of the correct answer
             List<Long> correctAnswerIds = answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId());
-            if(selectedOptions.isEmpty()){
-                // đáp án k đc đê trống
-                return ResponseEntity.badRequest().body("Đáp án k đc null");
-            }
-            else{
-                if(validateScore(selectedOptions, correctAnswerIds)){
-                    totalScore++;
-                    numberOfCorrect++;
-                }
-            }
-            Question question = questionRepository.findById(answer.getQuestionId()).get();
 
-            // lưu đáp án của student vào db
-            QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
+            // create userQuestionResult to save to db
+            UserQuestionResult userQuestionResult = new UserQuestionResult();
+            boolean isQuestionAnswered = !selectedOptions.isEmpty();
+            boolean isCorrect = isQuestionAnswered && validateScore(selectedOptions, correctAnswerIds);
 
-            UserQuestionChoice userQuestionChoice = new UserQuestionChoice();
-            userQuestionChoice.setQuizQuestion(quizQuestion);
-            userQuestionChoice.setSelectedOptions(answer.getSelectedOptions());
-            userQuestionChoice.setUser(user);
-            userQuestionChoiceRepository.save(userQuestionChoice);
+            userQuestionResult.setDone(isQuestionAnswered);
+            userQuestionResult.setResult(isCorrect);
+
+            if (isCorrect) {
+                totalScore += question.getMarksOfQuestion();
+                numberOfCorrect++;
+            }
+
+            AnswersToChoose answersToChoose = getAnswersToChoose(answerList, selectedOptions);
+
+            userQuestionResult.setQuestionContent(question.getContent());
+            userQuestionResult.setAnswersToChoose(answersToChoose);
+            userQuestionResult.setMarkOfQuestion(question.getMarksOfQuestion());
+            userQuestionResult.setUserQuizResult(userQuizResult);
+            // save userQuestionResult
+            userQuestionResultRepository.save(userQuestionResult);
         }
-        numberOfIncorrect = totalAnswer - numberOfCorrect;
-
-        capture = (float)numberOfCorrect/totalAnswer;
-        String formattedCapture = String.format("%.2f%%", capture * 100);
-
         // lưu kết quả bài exam
-        saveUserQuizResult(totalScore, formattedCapture, user, quiz);
+        saveUserQuizResult(totalScore, userQuizResult);
+
+        numberOfIncorrect = totalAnswer - numberOfCorrect;
+        ratio = (float)numberOfCorrect/totalAnswer;
+        String formattedCapture = String.format("%.2f%%", ratio * 100);
 
         SubmitResponse submitResponse = new SubmitResponse();
         submitResponse.setMarks(totalScore);
@@ -111,33 +118,48 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         submitResponse.setNumberOfCorrect(numberOfCorrect);
         submitResponse.setUserId(user.getId());
         submitResponse.setNumberOfIncorrect(numberOfIncorrect);
-        submitResponse.setCapture(formattedCapture);
+        submitResponse.setRatio(formattedCapture);
         return ResponseEntity.ok(submitResponse);
 
     }
 
-    private void saveUserQuizResult(int totalScore, String formattedCapture, User user, Quiz quiz){
-        UserQuizResult userQuizResult = userQuizResultRepository.findByUserAndQuiz(user, quiz);
-        userQuizResult.setMarks(totalScore);
-        userQuizResult.setCapture(formattedCapture);
-        userQuizResult.setSubmitTime(new Timestamp(System.currentTimeMillis()));
+    private static AnswersToChoose getAnswersToChoose(List<Answer> answerList, List<Long> selectedOptions) {
+        List<AnswerObject> answerObjectList = new ArrayList<>();
 
-        String durationTime = userQuizResult.calculateDuration(userQuizResult.getStartTime(), userQuizResult.getSubmitTime());
-        userQuizResult.setDurationTime(durationTime);
-        userQuizResultRepository.save(userQuizResult);
+        // lặp qua mảng các answer của question để set các value cho answerObject
+        // đồng thời cũng add nó vào trong answerObjectList
+        for(Answer answer1 : answerList){
+            AnswerObject answerObject = new AnswerObject();
+            Long answerId = answer1.getId();
+            System.out.println("answerId: "+answerId);
+            answerObject.setId(answer1.getId());
+            answerObject.setMedia(answer1.getMedia());
+            answerObject.setContent(answer1.getContent());
+            // setSlect theo: nếu answerId tồn tại trong selectedOptions
+            answerObject.setSelect(selectedOptions.contains(answerId));
+            answerObject.setCorrectAnswer(answer1.isCorrect());
+            // add vao answerObjectList
+            answerObjectList.add(answerObject);
+        }
+        AnswersToChoose answersToChoose = new AnswersToChoose();
+        answersToChoose.setAnswers(answerObjectList);
+        return answersToChoose;
+    }
+
+    private void saveUserQuizResult(int totalScore, UserQuizResult userQuizResult){
+        if (userQuizResult != null) {
+            userQuizResult.setMarks(totalScore);
+            userQuizResult.setSubmitTime(new Timestamp(System.currentTimeMillis()));
+
+            String durationTime = userQuizResult.calculateDuration(userQuizResult.getStartTime(), userQuizResult.getSubmitTime());
+            userQuizResult.setDurationTime(durationTime);
+            userQuizResultRepository.save(userQuizResult);
+        }
     }
 
     private boolean validateScore(List<Long> selectedOptions, List<Long> correctAnswerIds) {
-        Set<Long> setSelectOptions = listToSet(selectedOptions);
-        Set<Long> setCorrectAnswers = listToSet(correctAnswerIds);
-        System.out.println("absdbasd: "+setCorrectAnswers.equals(setSelectOptions));
+        Set<Long> setSelectOptions = new HashSet<>(selectedOptions);
+        Set<Long> setCorrectAnswers = new HashSet<>(correctAnswerIds);
         return setCorrectAnswers.equals(setSelectOptions);
-    }
-    public static Set<Long> listToSet(List<Long> list) {
-        Set<Long> set = new HashSet<>();
-        for (Long num : list) {
-            set.add(num);
-        }
-        return set;
     }
 }

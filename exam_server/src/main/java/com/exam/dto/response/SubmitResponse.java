@@ -9,7 +9,7 @@ public class SubmitResponse {
     private String userId;
     private Long quizId;
     private int marks;
-    private String capture;
+    private String ratio;
     private int numberOfCorrect;
     private int numberOfIncorrect;
 }

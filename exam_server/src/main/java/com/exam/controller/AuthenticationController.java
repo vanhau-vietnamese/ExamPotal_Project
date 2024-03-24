@@ -11,9 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.TimeZone;
 
-@CrossOrigin(origins = "http://localhost:8080")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
@@ -21,7 +19,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest){
         return authenticationService.registerUser(registerRequest);
     }
 

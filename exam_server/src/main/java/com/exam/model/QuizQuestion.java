@@ -26,9 +26,4 @@ public class QuizQuestion {
     @ManyToOne
     @JoinColumn(name = "questionId")
     private Question question;
-
-    @OneToMany(mappedBy = "quizQuestion", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
-    private Set<UserQuestionChoice> userQuestionChoices;
-
 }

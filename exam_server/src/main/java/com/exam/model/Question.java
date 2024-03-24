@@ -29,6 +29,8 @@ public class Question {
     private String content;
     @Column(name = "status")
     private String status ;
+    @Column(name = "marksOfQuestion")
+    private Integer marksOfQuestion ;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("questions")

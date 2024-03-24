@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,8 +22,11 @@ public class UserQuizResult {
     private Long id;
     @Column(name = "marks", nullable = true)
     private int marks;
+
     @Column(name = "capture")
-    private String capture;
+    @OneToMany(mappedBy = "userQuizResult", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<UserQuestionResult> capture;
+
     @Column(name = "startTime")
     private Timestamp startTime;
     @Column(name = "submitTime")

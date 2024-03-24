@@ -35,7 +35,7 @@ public class Quiz {
     @Column(name = "durationMinutes")
     private int durationMinutes;
     @Column(name = "status")
-    private boolean status = false;
+    private boolean status = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("quizzes")

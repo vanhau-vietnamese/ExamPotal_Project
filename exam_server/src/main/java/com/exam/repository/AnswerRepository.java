@@ -13,4 +13,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Query("SELECT ans.id FROM Answer ans WHERE ans.question.id = :questionId AND ans.isCorrect = true")
     public List<Long> getCorrectAnswerFromQuestion(@Param("questionId") Long questionId);
 
+    @Query("SELECT ans FROM Answer ans WHERE ans.question.id = :questionId")
+    public List<Answer> getAnswerFromQuestion(@Param("questionId") Long quesLong);
 }
