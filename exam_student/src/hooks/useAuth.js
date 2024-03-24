@@ -61,7 +61,6 @@ export function useAuth() {
 
     signInWithPopup(authentication, provider)
       .then(async ({ user: data }) => {
-        console.log(data);
         localStorage.setItem('access_token', data.accessToken);
         getMe()
           .then((res) => setUser(res.data))
