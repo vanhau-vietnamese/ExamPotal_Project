@@ -1,5 +1,11 @@
+import ExamStudent from './ExamStudent';
+
 function StudentExcises() {
-  return <div>StudentExcises</div>;
+  return (
+    <div>
+      <ExamStudent></ExamStudent>
+    </div>
+  );
 }
 
 export default StudentExcises;

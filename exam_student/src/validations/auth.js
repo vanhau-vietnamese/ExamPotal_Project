@@ -24,3 +24,7 @@ export const FormSignUpInput = z
     message: 'Mật khẩu xác nhận không khớp!',
     path: ['confirmPassword'],
   });
+
+  export const FormCreateQuestionInput = z.object({
+    
+  });

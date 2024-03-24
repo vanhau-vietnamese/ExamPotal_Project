@@ -5,6 +5,10 @@ import ChartPie from './ChartPie';
 import DocumentText from './DocumentText';
 import Search from './Search';
 import Notification from './Notification';
+import Academic from './Academic';
+import Bookmark from './Bookmark';
+import Clock from './Clock';
+import Question from './Question';
 import BookOpen from './BookOpen';
 import LogOut from './LogOut';
 
@@ -16,6 +20,10 @@ export default {
   DocumentText,
   Search,
   Notification,
+  Academic,
+  Bookmark,
+  Clock,
+  Question,
   BookOpen,
   LogOut,
 };

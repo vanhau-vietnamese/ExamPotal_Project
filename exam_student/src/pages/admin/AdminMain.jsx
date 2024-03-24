@@ -1,9 +1,5 @@
 function AdminMain() {
-  return (
-    <div>
-      <p>Admin Main Page</p>
-    </div>
-  );
+  return <div>Over</div>;
 }
 
 export default AdminMain;

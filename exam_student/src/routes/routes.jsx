@@ -1,9 +1,11 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import NotFound from '~/pages/NotFound';
-import { AdminMain, Question } from '~/pages/admin';
+import { AdminMain } from '~/pages/admin';
+import { DetailExam, ExamList } from '~/pages/admin/Exam';
+import { QuestionList } from '~/pages/admin/Queston';
 import { SignInPage, SignUpPage } from '~/pages/auth';
-import { StudentExcises } from '~/pages/student';
+import { StartPractice, StudentExcises } from '~/pages/student';
 import router from './const';
 
 const routes = createBrowserRouter([
@@ -22,9 +24,23 @@ const routes = createBrowserRouter([
             path: 'overview',
             element: <AdminMain />,
           },
+
           {
             path: 'question',
-            element: <Question />,
+            element: <QuestionList />,
+          },
+          {
+            path: 'exam',
+            children: [
+              {
+                index: true,
+                element: <ExamList />,
+              },
+              {
+                path: 'detailExam',
+                element: <DetailExam />,
+              },
+            ],
           },
         ],
       },
@@ -38,6 +54,10 @@ const routes = createBrowserRouter([
           {
             path: 'excises',
             element: <StudentExcises />,
+          },
+          {
+            path: 'practice',
+            element: <StartPractice />,
           },
         ],
       },
