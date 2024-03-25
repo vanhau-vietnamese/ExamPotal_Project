@@ -2,6 +2,7 @@ package com.exam.service.impl;
 
 import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.QuestionRequest;
+import com.exam.dto.response.QuestionResponse;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.QuestionService;
@@ -9,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +53,6 @@ public class QuestionServiceImpl implements QuestionService {
         for(int i=0; i<size; i++){
             addListAnswer(answerList.get(i), question);
         }
-
         return ResponseEntity.ok(question);
     }
 
@@ -80,7 +79,24 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<?> getAllQuestions() {
-        return ResponseEntity.ok(questionRepository.findAll());
+        List<Question> questions = questionRepository.findAll();
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+
+        for(Question question : questions){
+            QuestionResponse questionResponse = new QuestionResponse();
+            questionResponse.setId(question.getId());
+            questionResponse.setContent(question.getContent());
+            questionResponse.setMedia(question.getMedia());
+            questionResponse.setCreatedAt(question.getCreatedAt());
+            questionResponse.setMarksOfQuestion(question.getMarksOfQuestion());
+            questionResponse.setQuestionType(question.getQuestionType());
+            questionResponse.setStatus(question.getStatus());
+            questionResponse.setAnswers(question.getAnswers());
+
+            questionResponses.add(questionResponse);
+        }
+
+        return ResponseEntity.ok(questionResponses);
     }
 
     @Override

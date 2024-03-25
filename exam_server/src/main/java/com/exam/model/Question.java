@@ -44,4 +44,8 @@ public class Question {
     @JsonIgnore 
     private Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Answer> answers = new HashSet<>();
+
 }

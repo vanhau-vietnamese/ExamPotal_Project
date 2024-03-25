@@ -3,10 +3,9 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.QuizRequest;
-import com.exam.model.Category;
-import com.exam.model.Quiz;
-import com.exam.model.User;
+import com.exam.model.*;
 import com.exam.repository.CategoryRepository;
+import com.exam.repository.QuizQuestionRepository;
 import com.exam.repository.QuizRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.QuizService;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final QuizQuestionRepository quizQuestionRepository;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
         return ResponseEntity.ok(quizRepository.findAll());
@@ -50,8 +51,22 @@ public class QuizServiceImpl implements QuizService {
 
         Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
         quiz.setCategory(category);
+        quizRepository.save(quiz);
 
-        return ResponseEntity.ok(quizRepository.save(quiz));
+        List<Long> listQuestionId = quizRequest.getListQuestionId();
+//        QuizQuestion quizQuestion
+        for(Long questionId : listQuestionId){
+            QuizQuestion quizQuestion = new QuizQuestion();
+            quizQuestion.setQuiz(quiz);
+
+            Question question = new Question();
+            question.setId(questionId);
+            quizQuestion.setQuestion(question);
+
+            quizQuestionRepository.save(quizQuestion);
+        }
+
+        return ResponseEntity.ok(quiz);
     }
 
     @Override

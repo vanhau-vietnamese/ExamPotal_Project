@@ -4,6 +4,8 @@ import com.exam.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -15,4 +17,5 @@ public class QuizRequest {
     private boolean status = false;
     private Long categoryId;
     private int durationMinutes;
+    private List<Long> listQuestionId;
 }
