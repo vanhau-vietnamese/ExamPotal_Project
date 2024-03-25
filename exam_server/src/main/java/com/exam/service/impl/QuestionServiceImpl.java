@@ -34,10 +34,15 @@ public class QuestionServiceImpl implements QuestionService {
 
         questionRepository.save(question);
 
-        Quiz quiz = quizRepository.findById(questionRequest.getQuizId()).get();
-
         QuizQuestion quizQuestion = new QuizQuestion();
-        quizQuestion.setQuiz(quiz);
+        if(questionRequest.getQuizId() == null){
+            quizQuestion.setQuiz(null);
+        }
+        else{
+            Optional<Quiz> quiz = quizRepository.findById(questionRequest.getQuizId());
+            quizQuestion.setQuiz(quiz.get());
+        }
+
         quizQuestion.setQuestion(question);
         quizQuestionRepository.save(quizQuestion);
 
