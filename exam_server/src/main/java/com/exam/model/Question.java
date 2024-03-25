@@ -25,7 +25,7 @@ public class Question {
     private Long id;
     @Column(name = "media", columnDefinition = "JSON")
     private String media;
-    @Column(name = "content", columnDefinition = "JSON")
+    @Column(name = "content")
     private String content;
     @Column(name = "status")
     private String status ;
