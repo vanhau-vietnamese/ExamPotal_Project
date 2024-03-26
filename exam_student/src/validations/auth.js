@@ -25,6 +25,4 @@ export const FormSignUpInput = z
     path: ['confirmPassword'],
   });
 
-  export const FormCreateQuestionInput = z.object({
-    
-  });
+  

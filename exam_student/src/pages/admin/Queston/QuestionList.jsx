@@ -3,13 +3,32 @@ import { Backdrop, Button } from '~/components';
 import { useState } from 'react';
 import FormCreateQuestion from './FormCreateQuestion';
 import { CreateLanguages } from '../Exam';
+import { useEffect } from 'react';
+import { axiosClient } from '~/apis';
 
-export default function ExamList() {
+export default function QuestionList() {
   const [isCreatingExam, setIsCreatingExam] = useState(false);
+  const [data, setData] = useState([]);
 
   const handleCreateExam = () => {
     setIsCreatingExam(true);
   };
+
+  //
+  // API
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axiosClient.get('/question/');
+        if (res.data) {
+          setData(res.data);
+        }
+      } catch (err) {
+        console.error('Lỗi: ', err);
+      }
+    })();
+  }, []);
+
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
       <div className="pb-4 bg-white rounded-md">
@@ -34,14 +53,16 @@ export default function ExamList() {
           </div>
         </div>
         <div className="max-h-[500px] overflow-y-auto">
-          <table>
+          <table className="w-full">
             <thead></thead>
             <tbody>
-              <tr>
-                <td>
-                  <QuestionItem></QuestionItem>
-                </td>
-              </tr>
+              {data.map((item) => {
+                <tr key={item.id}>
+                  <td>
+                    <QuestionItem item={item} />
+                  </td>
+                </tr>;
+              })}
             </tbody>
           </table>
         </div>

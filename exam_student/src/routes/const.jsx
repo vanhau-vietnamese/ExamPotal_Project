@@ -34,7 +34,7 @@ export const AdminNavLinks = [
 export const StudentNavLinks = [
   {
     path: `${router.student}/excises`,
-    name: 'Luyệnt tập',
+    name: 'Luyện tập',
     icon: <Icons.BookOpen />,
   },
 ];

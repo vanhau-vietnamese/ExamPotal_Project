@@ -1,42 +1,28 @@
 import { useForm } from 'react-hook-form';
 import { Button } from '~/components';
 import PropTypes from 'prop-types';
-import TextEditor from '~/components/TextEditor/TextEditor';
 import { useState } from 'react';
 import QuestionType from './QuestionType';
-import { useEffect } from 'react';
 import { axiosClient } from '~/apis';
+import { FormTextEditor } from '~/components/Form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormCreateQuestionInput } from '~/validations';
 
 export default function FormCreateQuestion({ onClose }) {
-  const { handleSubmit } = useForm();
-  const [question, setQuestion] = useState([]);
-  const [selectedQuestionType, setSelectedQuestionType] = useState(''); // lưu gtri lựa chọn loại câu hỏi đơn hay đa
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(FormCreateQuestionInput),
+    mode: 'onBlur',
+  });
+  //const [question, setQuestion] = useState([]);
   const [options, setOptions] = useState([]); // lưu giá trị các lựa chọn loại đáp án - thêm /xóa
-  const [answerType, setAnswerType] = useState('Đơn');
+  const [answerType, setAnswerType] = useState();
   const [selectedAnswer, setSelectedAnswer] = useState([]); // lưu giá trị đáp án đúng đã chọn
-  const [questionList, setquestionList] = useState([]); // lưu nội dung câu hỏi
   const [error, setError] = useState(''); // kiểm tra khi submit có chọn đáp án chưa
-
-  // sự kiện nhán thay đổi loại câu hỏi đơn hay đa
-  const handleQuestionTypeChange = (selectedType) => {
-    const parsedData = JSON.parse(selectedType); // chuyen chuoi thanh oject
-    setAnswerType(parsedData.displayName);
-    console.log('Check: ', typeof parsedData.alias);
-    //
-    setSelectedQuestionType(parsedData.alias);
-  };
-
-  function handleQuestionChange(value) {
-    const newArray = Array.from(value);
-    setQuestion(newArray);
-    // xử lý lấy nd câu hỏi đã nhập
-    const questionArray = Array.from(value.content);
-    // chuyển thành JSON
-    const jsonQuestionArray = JSON.stringify(questionArray);
-    console.log('JSON Question Array:', jsonQuestionArray);
-
-    setquestionList(questionArray);
-  }
 
   // thêm đáp án
   function addOption() {
@@ -53,7 +39,7 @@ export default function FormCreateQuestion({ onClose }) {
 
   // xử lý chọn đáp án
   const handleAnswerChange = (index) => {
-    if (answerType === 'Đơn') {
+    if (answerType.displayName === 'Đơn') {
       // Nếu đang ở chế độ chọn đơn, chỉ lưu một đáp án
       setSelectedAnswer([index]);
     } else {
@@ -74,19 +60,18 @@ export default function FormCreateQuestion({ onClose }) {
 
   //
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     // Kiểm tra điều kiện dựa trên loại câu hỏi và số lượng đáp án đã chọn
-
     let result;
-    if (answerType === 'Đơn' && selectedAnswer.length === 1) {
+    if (answerType.displayName === 'Đơn' && selectedAnswer.length === 1) {
       result = [options[selectedAnswer[0]]];
       console.log('ĐƠN', result);
       setError(null);
-    } else if (answerType === 'Đa' && selectedAnswer.length >= 2) {
+    } else if (answerType.displayName === 'Đa' && selectedAnswer.length >= 2) {
       result = selectedAnswer.map((i) => options[i]);
       console.log('ĐA', result);
       setError(null);
-    } else if (selectedAnswer.length === 0) {
+    } else {
       // Không đáp ứng điều kiện, hiển thị thông báo lỗi
       setError(() => {
         alert('Vui lòng chọn đáp án hợp lệ!');
@@ -95,62 +80,49 @@ export default function FormCreateQuestion({ onClose }) {
       return;
     }
 
-    //
-    const oject = {
-      content: options,
-      correct: result,
-    };
-    console.log('LOG OJECT', oject);
+    // oject content + correct
+    const resultObj = options.map((o) => ({
+      content: o,
+      correct: result.includes(o),
+    }));
+    console.log('obj', resultObj);
 
     //xử lý API
     try {
       // Gửi dữ liệu form đến máy chủ sử dụng Axios
       const response = await axiosClient.post('/question/add', {
-        content: questionList, // questionContent
-        questionTypeId: selectedQuestionType, // questionType
-        // answerRequestList: options, // optionsList
-        // correct: result, // iscorrect
-        answerRequestList: [oject],
+        content: data.content, // questionContent
+        questionTypeId: answerType.alias, // questionType
+        quizId: null,
+        answerRequestList: resultObj,
       });
 
       // Xử lý kết quả từ server nếu cần
       console.log('Response:', response.data);
 
-      // Đặt lại form sau khi gửi thành công
-      setQuestion([]);
-      setSelectedQuestionType('');
+      // reset form sau khi tạo thành công
+      reset({ content: '' });
       setOptions([]);
-      selectedAnswer([]);
+      setSelectedAnswer([]);
     } catch (error) {
       console.error('Error:', error);
     }
-
-    console.log('Nội dung câu hỏi:', questionList);
-    console.log('Các đáp án:', options);
-    console.log('ID:', answerType);
-    console.log('Đã chọn loại: ', selectedQuestionType);
-    console.log('Đáp án đúng: ', result);
-    console.log('LOG OJECT', oject);
   };
-
-  useEffect(() => {
-    console.log('Đáp án: ', selectedAnswer);
-  }, [selectedAnswer]);
 
   return (
     <div>
       <div className="flex items-center justify-center pt-6">
-        <div className="container mx-auto p-4 bg-slate-100 rounded-md max-w-[650px]">
+        <div className="container mx-auto p-4 bg-slate-100 rounded-md mt-10 max-w-[650px]">
           <h3 className="mb-5">Tạo câu hỏi</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="w-full">
             <div>
               <div className="w-full md:w-1/3 px-3 mb-4 md:mb-0">
                 <p>Nhập nội dung câu hỏi</p>
-                <TextEditor value={question} onChange={handleQuestionChange} />
+                <FormTextEditor control={control} name="content" error={errors.content?.message} />
               </div>
               <p className="ml-3">Chọn loại đáp án cho câu hỏi</p>
               <div className="ml-3">
-                <QuestionType answerType={answerType} onChange={handleQuestionTypeChange} />
+                <QuestionType onChange={setAnswerType} />
               </div>
 
               {/* jsx cho sự kiện chọn đơn thì cho chọn 1 đáp án, chọn đa thì cho chọn nhiều đáp án */}
@@ -158,10 +130,10 @@ export default function FormCreateQuestion({ onClose }) {
                 {options &&
                   options.map((option, index) => (
                     <div key={index} className="flex mb-2 items-center">
-                      {answerType === 'Đơn' ? (
+                      {answerType && answerType.displayName === 'Đơn' ? (
                         <input
                           type="radio"
-                          name="answer"
+                          name="answerRadio"
                           className="mr-2"
                           onClick={() => handleAnswerChange(index)}
                         />
@@ -174,6 +146,8 @@ export default function FormCreateQuestion({ onClose }) {
                       )}
 
                       <input
+                        required={true}
+                        name="answer"
                         type="text"
                         value={option}
                         onChange={(event) => {
@@ -217,11 +191,6 @@ export default function FormCreateQuestion({ onClose }) {
               >
                 Thoát
               </Button>
-              <div>
-                {question.map((item) => (
-                  <h1 key={item}>Nội dung: {item}</h1>
-                ))}
-              </div>
             </div>
           </form>
         </div>
