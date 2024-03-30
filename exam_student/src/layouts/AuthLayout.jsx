@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Backdrop, Loading } from '~/components';
 import { useAuth } from '~/hooks';
-import { router } from '~/routes';
+import { RoleRootRoute } from '~/routes/const';
 
 function AuthLayout() {
   const navigate = useNavigate();
@@ -11,9 +10,10 @@ function AuthLayout() {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate(user.role === 'student' ? router.student : router.admin, { replace: true });
+      navigate(RoleRootRoute[user.role], { replace: true });
     }
-  }, [loading, navigate, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
 
   return (
     <div className="min-h-screen app-wrapper">

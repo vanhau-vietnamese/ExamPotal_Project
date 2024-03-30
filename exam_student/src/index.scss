@@ -12,32 +12,40 @@
 }
 
 @layer base {
+
+  * {
+    &::-webkit-scrollbar {
+			@apply w-[8px];
+			-webkit-appearance: none;
+		}
+		&::-webkit-scrollbar-track {
+			@apply bg-transparent;
+		}
+		&::-webkit-scrollbar-thumb {
+			@apply bg-icon bg-opacity-70 rounded;
+		}
+  }
+
   html,
   body {
     @apply h-full text-base font-body;
     text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
-		&::-webkit-scrollbar {
-			@apply w-[8px];
-			-webkit-appearance: none;
-		}
-		&::-webkit-scrollbar-track {
-			@apply bg-[#e4e6e8];
-		}
-		&::-webkit-scrollbar-thumb {
-			@apply bg-slate-500 rounded;
-		}
   }
   h1 {
-    @apply text-3xl font-bold;
+    @apply text-xl font-bold;
   }
 
   h2 {
-    @apply text-2xl font-bold;
+    @apply text-lg font-bold;
   }
 
   h3 {
-    @apply text-xl font-bold;
+    @apply text-base font-bold;
+  }
+
+  span, p {
+    @apply text-sm font-medium;
   }
 
   kbd,
@@ -58,20 +66,38 @@
     transition: all 0.5s cubic-bezier(0.685, 0.0473, 0.346, 1);
   }
   .app-content--inner {
-    @apply flex flex-1 px-4;
+    @apply flex flex-1 p-5;
   }
 }
 /* Editor */
 .ProseMirror {
-  font-weight: 500;
   color: #3b3e66;
   margin-top: 4px;
   padding: 48px 8px 8px;
-  border: 2px solid #d1d2de;
   border-radius: 6px;
   width: 100%;
   height: 100%;
   min-height: 160px;
+  &[contenteditable='false'] {
+    font-weight: inherit;
+    width: unset;
+    height: unset;
+    padding: 0;
+    min-height: unset;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+}
+
+.tiptap .is-editor-empty:first-child::before {
+  font-size: 14px;
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 .editor-mini .ProseMirror {

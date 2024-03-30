@@ -14,7 +14,7 @@ export default function ExamList() {
   };
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-full">
+    <div className="relative overflow-x-auto sm:rounded-lg w-full">
       <div className="pb-4 bg-white">
         <div className="relative m-2 p-2 flex justify-between">
           <div>

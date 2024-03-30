@@ -5,23 +5,30 @@ import { useAuth } from '~/hooks';
 import { router } from '~/routes';
 import { Header, SideBar } from './components';
 import { useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { RoleRootRoute } from '~/routes/const';
 
 function DashBoardLayout() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { user, loading } = useAuth();
 
   useLayoutEffect(() => {
-    if (!loading) {
-      if (!user) {
-        navigate(router.signIn, { replace: true });
-      } else {
-        navigate(user.role === 'student' ? router.student : router.admin, { replace: true });
+    (() => {
+      if (!loading) {
+        if (!user) {
+          navigate(router.signIn, { replace: true });
+          return;
+        }
+        !pathname.startsWith(RoleRootRoute[user.role]) &&
+          navigate(RoleRootRoute[user.role], { replace: true });
       }
-    }
-  }, [loading, navigate, user]);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
 
   return (
-    <div className="app-wrapper bg-[#f8f9f9] min-h-screen">
+    <div className="app-wrapper bg-[#e8eaed] min-h-screen">
       {loading ? (
         <Backdrop opacity={0}>
           <div className="flex flex-col items-center justify-center w-full h-full">

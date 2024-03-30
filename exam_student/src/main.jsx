@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './index.scss';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <React.Fragment>
     <RouterProvider router={routes} />
     <ToastContainer
       position="top-center"
@@ -23,5 +23,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       pauseOnHover={false}
       theme="colored"
     />
-  </React.StrictMode>
+  </React.Fragment>
 );
