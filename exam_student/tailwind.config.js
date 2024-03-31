@@ -16,7 +16,8 @@ export default {
         danger: '#f83245',
       },
       boxShadow: {
-        invalid: '0 0 0 0.2rem #eb575733',
+        invalid: '0 0 0 0.15rem rgba(235, 87, 87, 0.2)',
+        valid: '0 0 0 0.15rem rgba(84, 184, 98,.2)',
         sidebar: '0 0 15px 0 rgba(34,41,47,.05)',
         success: '0 0.25rem 0.55rem rgba(0, 167, 111,.35)',
         success_hover: '0 0 6px 2px rgba(0, 167, 111,.7)',

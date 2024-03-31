@@ -65,7 +65,7 @@ export default function TextEditor({ data, onChange, placeholder, className }) {
 
   return (
     <div
-      className={`relative w-full bg-white min-w-[600px] rounded-md border-2 border-[#d1d2de] ${className}`}
+      className={`relative w-full bg-white min-w-[600px] rounded-md border border-[#d1d2de] ${className}`}
     >
       <div className="absolute top-0 left-0 z-10 flex items-center gap-2 w-full h-10 m-0 px-2 py-0 rounded-ss rounded-se bg-strike caret-primary">
         <ToolBarButton

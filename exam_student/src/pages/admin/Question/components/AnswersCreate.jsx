@@ -1,85 +1,79 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useId } from 'react';
 import { useController } from 'react-hook-form';
 import Icons from '~/assets/icons';
 import { Button } from '~/components';
-import AnswerItem from './AnswerItem';
 
 const InputType = {
   ['single_choice']: 'radio',
   ['multiple_choice']: 'checkbox',
 };
 
-export default function AnswersCreate({
-  control,
-  type = 'single_choice',
-  name,
-  label,
-  defaultValue,
-}) {
-  const { field } = useController({
+const InputTypeStyle = {
+  ['radio']: 'rounded-full',
+  ['checkbox']: 'rounded-md',
+};
+
+export default function AnswersCreate({ control, name, inputName, type, error, onRemove }) {
+  const id = useId();
+
+  const { field: fieldIsCorrect } = useController({
     control,
-    name,
-    shouldUnregister: true,
-    defaultValue: defaultValue || [],
+    name: `${name}.isCorrect`,
+    defaultValue: false,
   });
 
-  const [answers, setAnswers] = useState(field.value);
-
-  const handleChangeAnswer = (index, value) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = value;
-    setAnswers(newAnswers);
-    field.onChange(newAnswers);
-  };
-
-  const handleDeleteAnswer = (index) => {
-    if (answers.length === 1) return;
-    const newAnswers = answers.filter((_, i) => i !== index);
-    setAnswers(newAnswers);
-    field.onChange(newAnswers);
-  };
+  const { field: fieldContent } = useController({
+    control,
+    name: `${name}.content`,
+    defaultValue: '',
+  });
 
   return (
-    <div className="w-full mt-5">
-      <div className="flex items-center w-full justify-between mb-2">
-        <label className="block p-1 text-sm font-bold text-icon">
-          {label}
-          <strong className="text-error"> *</strong>
-        </label>
-
-        <Button
-          type="button"
-          className="p-1 text-sm text-primary flex items-center gap-1 hover:bg-primary hover:bg-opacity-10"
-          onClick={() => {
-            setAnswers([...answers, '']);
-            field.onChange([...answers, '']);
-          }}
+    <div className="inline-flex items-center gap-2">
+      <label htmlFor={id} className="relative flex items-center p-3 cursor-pointer">
+        <input
+          id={id}
+          type={InputType[type]}
+          checked={!!fieldIsCorrect.value}
+          className={`before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none border-2 border-strike checked:border-primary transition-all hover:border-primary ${
+            InputTypeStyle[InputType[type]]
+          }`}
+          {...fieldIsCorrect}
+          onChange={(e) => fieldIsCorrect.onChange(e.target.checked)}
+          name={inputName}
+        />
+        <span
+          className={`absolute text-white bg-primary transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100`}
         >
-          <Icons.Plus />
-          <span>Thêm đáp án</span>
-        </Button>
-      </div>
-      <div className="flex flex-col gap-4">
-        {answers.map((answer, index) => (
-          <AnswerItem
-            key={index}
-            type={InputType[type]}
-            value={answer}
-            deletable={index !== 0}
-            onChange={(value) => handleChangeAnswer(index, value)}
-            onDelete={() => handleDeleteAnswer(index)}
-          />
-        ))}
-      </div>
+          <Icons.Check />
+        </span>
+      </label>
+      <input
+        {...fieldContent}
+        type="text"
+        className={`flex-1 w-full px-4 py-2 border outline-none transition-all placeholder:font-medium text-sm text-[#3b3e66] font-semibold rounded-md ${
+          error
+            ? 'border-error focus:shadow-invalid'
+            : 'border-strike hover:border-green-400 focus:border-secondary focus:shadow-valid'
+        }`}
+        placeholder="Nhập đáp án..."
+      />
+      <Button
+        className="p-2 text-danger hover:bg-danger hover:bg-opacity-10 disabled:hover:bg-transparent"
+        onClick={onRemove}
+      >
+        <Icons.Trash />
+      </Button>
     </div>
   );
 }
 
 AnswersCreate.propTypes = {
   control: PropTypes.object,
-  type: PropTypes.string,
+  type: PropTypes.oneOf(['single_choice', 'multiple_choice']),
   name: PropTypes.string,
-  label: PropTypes.string,
-  defaultValue: PropTypes.array,
+  inputName: PropTypes.string,
+  error: PropTypes.object,
+  onRemove: PropTypes.func,
 };

@@ -15,8 +15,10 @@ import Eye from './Eye';
 import Trash from './Trash';
 import Pencil from './Pencil';
 import Plus from './Plus';
+import Check from './Check';
 
 export default {
+  Check,
   Plus,
   Pencil,
   Trash,

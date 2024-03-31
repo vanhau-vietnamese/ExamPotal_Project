@@ -1,16 +1,18 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { createQuestion, getAllCategories, getQuestionTypes } from '~/apis';
+import Icons from '~/assets/icons';
 import { Button, FormSelect } from '~/components';
 import FormEditor from '~/components/Form/FormEditor';
 import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { getAllCategories, getQuestionTypes } from '~/apis';
-import { toast } from 'react-toastify';
+import { useQuestionStore } from '~/store';
 
-export default function FormQuestionCreate({ onClose }) {
+export default function FormQuestionCreate({ onClose, defaultValues }) {
+  const addNewQuestion = useQuestionStore((state) => state.addNewQuestion);
   const {
     control,
     formState: { errors },
@@ -19,11 +21,16 @@ export default function FormQuestionCreate({ onClose }) {
   } = useForm({
     mode: 'onSubmit',
     resolver: zodResolver(FormQuestionCreateSchema),
+    defaultValues,
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'answers',
   });
 
   const [categories, setCategories] = useState([]);
   const [questionType, setQuestionType] = useState([]);
-
   const selectedQuestionType = watch('questionType');
 
   useEffect(() => {
@@ -56,7 +63,27 @@ export default function FormQuestionCreate({ onClose }) {
   }, []);
 
   const handleCreateQuestion = async (data) => {
-    console.log(data);
+    try {
+      const body = {
+        content: data.content,
+        categoryId: data.category,
+        questionTypeId: data.questionType,
+        answerRequestList: data.answers.map((answer) => ({
+          media: answer.media || null,
+          content: answer.content,
+          isCorrect: answer.isCorrect,
+        })),
+      };
+
+      const response = await createQuestion(body);
+      if (response) {
+        addNewQuestion(response);
+        toast.success('Tạo mới câu hỏi thành công', { toastId: 'create_question' });
+        onClose();
+      }
+    } catch (error) {
+      toast.error(error.message, { toastId: 'create_question' });
+    }
   };
 
   return (
@@ -97,12 +124,38 @@ export default function FormQuestionCreate({ onClose }) {
             required
             error={errors.content?.message}
           />
-          <AnswersCreate
-            control={control}
-            name="answers"
-            label="Đáp án câu hỏi"
-            type={selectedQuestionType}
-          />
+
+          <div className="w-full mt-5">
+            <div className="flex items-center w-full justify-between mb-2">
+              <label className="block p-1 text-sm font-bold text-icon">
+                {'Đáp án câu hỏi'}
+                <strong className="text-error"> *</strong>
+              </label>
+
+              <Button
+                type="button"
+                className="p-1 text-sm text-primary flex items-center gap-1 hover:bg-primary hover:bg-opacity-10 disabled:hover:bg-transparent"
+                onClick={() => append({ content: '', isCorrect: false })}
+                disable={!selectedQuestionType}
+              >
+                <Icons.Plus />
+                <span>Thêm đáp án</span>
+              </Button>
+            </div>
+            <div className="flex flex-col gap-4">
+              {fields.map((_, index) => (
+                <AnswersCreate
+                  key={_.id}
+                  control={control}
+                  name={`answers.${index}`}
+                  inputName="answers"
+                  error={errors?.answers?.[index]}
+                  type={selectedQuestionType}
+                  onRemove={() => remove(index)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
         <div className="flex items-center justify-end px-4 py-3 gap-x-5 border-t border-dashed border-strike">
           <Button
@@ -126,4 +179,5 @@ export default function FormQuestionCreate({ onClose }) {
 
 FormQuestionCreate.propTypes = {
   onClose: PropTypes.func.isRequired,
+  defaultValues: PropTypes.object,
 };

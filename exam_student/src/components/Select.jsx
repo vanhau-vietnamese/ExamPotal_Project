@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 function Select({ name, label, options, onChange, value, error, required, disabled, ...rest }) {
   return (
     <div className="w-full">
-      {label && (
-        <label htmlFor={name} className="text-sm font-bold text-icon">
-          {label}
-          {required && <strong className="text-error"> *</strong>}
-        </label>
-      )}
-      {error && <p className="text-sm font-semibold pointer-events-none text-error">{error}</p>}
+      <div className="flex items-center justify-between">
+        {label && (
+          <label htmlFor={name} className="text-sm font-bold text-icon">
+            {label}
+            {required && <strong className="text-error"> *</strong>}
+          </label>
+        )}
+        {error && <p className="text-xs font-semibold pointer-events-none text-error">{error}</p>}
+      </div>
       <select
         value={value}
         className={`text-sm flex-1 w-full px-4 py-[10px] font-body border outline-none rounded-md transition-all text-[#3b3e66] cursor-pointer disabled:bg-[#eeeff8] disabled:border-none disabled:cursor-auto font-medium ${

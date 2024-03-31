@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 
 export const useQuestionStore = create((set) => ({
-  loading: false,
+  isFetching: false,
   isEditing: false,
   questionList: [],
   targetQuestion: null,
-  setLoading: (loading) => set({ loading }),
+  setIsFetching: (isFetching) => set({ isFetching }),
   setIsEditing: (isEditing) => set({ isEditing }),
   setQuestionList: (questionList) => set({ questionList }),
+  addNewQuestion: (newQuestion) =>
+    set((state) => ({ questionList: [...state.questionList, newQuestion] })),
   setTargetQuestion: (targetQuestion) => set({ targetQuestion }),
 }));

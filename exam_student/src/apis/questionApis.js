@@ -17,3 +17,12 @@ export const getQuestionTypes = async () => {
     throw new Error('Failed to fetch question types');
   }
 };
+
+export const createQuestion = async (data) => {
+  try {
+    return (await axiosClient.post('/question/add', data)).data;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to create question');
+  }
+};
