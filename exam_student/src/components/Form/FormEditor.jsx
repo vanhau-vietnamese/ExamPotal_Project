@@ -2,15 +2,7 @@ import { useController } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Editor } from '../TextEditor';
 
-FormEditor.propTypes = {
-  control: PropTypes.object.isRequired,
-  name: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-};
-
-function FormEditor({ title, required, error, control, name }) {
+export default function FormEditor({ title, required, error, control, name, placeholder }) {
   const { field } = useController({ name, control, defaultValue: '' });
 
   return (
@@ -20,16 +12,24 @@ function FormEditor({ title, required, error, control, name }) {
           {title} {required && <strong className="text-error">*</strong>}
         </span>
         {(error || !field.value) && (
-          <p className="text-sm font-semibold pointer-events-none text-error">{error}</p>
+          <p className="text-xs font-semibold pointer-events-none text-error">{error}</p>
         )}
       </div>
       <Editor
         data={field.value}
         onChange={field.onChange}
-        className={`rounded-[5px] border ${error ? 'border-error' : 'border-slate-50'}`}
+        placeholder={placeholder}
+        className={`rounded-[5px] transition-all ${error ? '!border-error' : '!border-[#d1d2de]'}`}
       />
     </div>
   );
 }
 
-export default FormEditor;
+FormEditor.propTypes = {
+  control: PropTypes.object.isRequired,
+  name: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  required: PropTypes.bool,
+  placeholder: PropTypes.string,
+  error: PropTypes.string,
+};

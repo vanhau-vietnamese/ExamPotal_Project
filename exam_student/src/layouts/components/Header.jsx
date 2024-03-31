@@ -11,11 +11,9 @@ function Header() {
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
-    <div className="fixed w-[calc(100%-280px)] h-[64px] flex items-center py-1 backdrop-blur-[6px] ml-[280px] bg-[#e4e6e8] bg-opacity-15 z-[9999]">
+    <div className="fixed w-[calc(100%-280px)] h-[64px] flex items-center py-1 backdrop-blur-[6px] ml-[280px] bg-white  z-50 border-b border-dashed border-slate-300">
       <div className="flex items-center justify-between w-full px-4">
-        <div className="flex items-center gap-4 text-icon">
-          <Icons.Search />
-        </div>
+        <div className="flex items-center gap-4 text-icon">{/* Add on more feature */}</div>
         <div className="px-3 py-1 ml-3 rounded flex items-center gap-4 text-icon">
           <Icons.Notification />
           <div className="relative">

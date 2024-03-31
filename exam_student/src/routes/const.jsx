@@ -16,7 +16,7 @@ const router = {
 export const AdminNavLinks = [
   {
     path: `${router.admin}/overview`,
-    name: 'Dashboard',
+    name: 'Tổng quan',
     icon: <Icons.ChartPie />,
   },
   {
@@ -34,9 +34,14 @@ export const AdminNavLinks = [
 export const StudentNavLinks = [
   {
     path: `${router.student}/excises`,
-    name: 'Luyệnt tập',
+    name: 'Luyện tập',
     icon: <Icons.BookOpen />,
   },
 ];
+
+export const RoleRootRoute = {
+  ['admin']: router.admin,
+  ['student']: router.admin,
+};
 
 export default router;

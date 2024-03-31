@@ -10,7 +10,7 @@ Backdrop.propTypes = {
 function Backdrop({ children, className, opacity = 0 }) {
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 w-full h-full min-h-screen bg-black ${className}`}
+      className={`fixed inset-0 z-[9999] w-full h-full min-h-screen bg-black ${className}`}
       style={{ backgroundColor: `rgba(0, 0, 0, ${opacity})` }}
     >
       {children}

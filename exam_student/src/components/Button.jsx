@@ -9,10 +9,16 @@ Button.propTypes = {
 };
 
 function Button({ children, type = 'button', className, onClick, disable }) {
+  const handleClick = () => {
+    if (!disable && typeof onClick === 'function') {
+      onClick();
+    }
+  };
+
   return (
     <button
       type={type}
-      onClick={!disable && onClick}
+      onClick={handleClick}
       disabled={disable}
       className={`border-2 border-transparent text-center select-none transition-all duration-[350ms] font-semibold rounded-md disabled:opacity-50 ${className}`}
     >

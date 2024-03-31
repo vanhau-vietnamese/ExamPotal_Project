@@ -1,18 +1,17 @@
 import { EditorContent, useEditor } from '@tiptap/react';
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-import * as Icons from './Icons';
-import ToolBarButton from './ToolBarButton';
-import extensions from './extensions';
+import { Icons, Extensions } from './helper';
+import Placeholder from '@tiptap/extension-placeholder';
 
-TextEditor.propTypes = {
-  data: PropTypes.string,
-  onChange: PropTypes.func,
-};
-
-export default function TextEditor({ data, onChange }) {
+export default function TextEditor({ data, onChange, placeholder, className }) {
   const editor = useEditor({
-    extensions,
+    extensions: [
+      ...Extensions,
+      Placeholder.configure({
+        placeholder: placeholder || 'Nhập nội dung...',
+      }),
+    ],
     content: data,
     autofocus: false,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -65,8 +64,10 @@ export default function TextEditor({ data, onChange }) {
   }
 
   return (
-    <div className="relative w-full mb-12 bg-white min-w-[600px]">
-      <div className="absolute top-[2px] left-[2px] z-10 flex items-center gap-2 w-[calc(100%-4px)] h-10 m-0 px-2 py-0 rounded-ss rounded-se bg-strike">
+    <div
+      className={`relative w-full bg-white min-w-[600px] rounded-md border border-[#d1d2de] ${className}`}
+    >
+      <div className="absolute top-0 left-0 z-10 flex items-center gap-2 w-full h-10 m-0 px-2 py-0 rounded-ss rounded-se bg-strike caret-primary">
         <ToolBarButton
           icon={<Icons.HeadingOne />}
           isActive={editor.isActive('heading', { level: 1 })}
@@ -161,3 +162,29 @@ export default function TextEditor({ data, onChange }) {
     </div>
   );
 }
+
+function ToolBarButton({ icon, isActive, onClick, disabled }) {
+  return (
+    <button
+      className={`toolbar-button ${isActive ? 'active' : ''}`}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {icon}
+    </button>
+  );
+}
+
+TextEditor.propTypes = {
+  data: PropTypes.string,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  className: PropTypes.string,
+};
+
+ToolBarButton.propTypes = {
+  icon: PropTypes.node.isRequired,
+  isActive: PropTypes.bool,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+};

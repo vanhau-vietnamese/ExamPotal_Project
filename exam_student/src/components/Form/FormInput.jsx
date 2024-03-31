@@ -46,7 +46,7 @@ export default function FormInput({
           } ${
             error
               ? 'border-error focus:shadow-invalid'
-              : 'border-[#d1d2d] hover:border-primary60 focus:border-secondary'
+              : 'border-strike hover:border-green-400 focus:border-secondary'
           }	${className}`}
           {...rest}
           {...field}

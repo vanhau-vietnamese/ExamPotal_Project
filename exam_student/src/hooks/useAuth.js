@@ -84,10 +84,7 @@ export function useAuth() {
                 })
           );
       })
-      .catch((error) => {
-        setLoading(false);
-        toast.error(error.message, { toastId: 'social_login' });
-      });
+      .catch(() => setLoading(false));
   };
 
   const signInWithEmailPassword = ({ email, password }) =>

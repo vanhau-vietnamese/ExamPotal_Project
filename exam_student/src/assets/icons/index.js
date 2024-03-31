@@ -11,8 +11,18 @@ import Clock from './Clock';
 import Question from './Question';
 import BookOpen from './BookOpen';
 import LogOut from './LogOut';
+import Eye from './Eye';
+import Trash from './Trash';
+import Pencil from './Pencil';
+import Plus from './Plus';
+import Check from './Check';
 
 export default {
+  Check,
+  Plus,
+  Pencil,
+  Trash,
+  Eye,
   Email,
   Key,
   User,
