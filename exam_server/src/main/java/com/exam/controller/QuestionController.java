@@ -44,4 +44,9 @@ public class QuestionController {
     public ResponseEntity<?> getQuestionsOfQuiz(@PathVariable("quizId")Long id){
         return questionService.getQuestionsOfQuiz(id);
     }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<?> getQuestionsOfCategory(@PathVariable("categoryId")Long id){
+        return questionService.getQuestionsOfCategory(id);
+    }
 }

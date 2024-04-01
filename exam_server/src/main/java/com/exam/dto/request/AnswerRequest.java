@@ -11,6 +11,4 @@ public class AnswerRequest {
     private String media;
     private String content;
     private boolean isCorrect;
-    private Long questionId;
-
 }

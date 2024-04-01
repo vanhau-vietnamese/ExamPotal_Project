@@ -44,6 +44,10 @@ public class Category {
     @JsonIgnore
     private Set<Quiz> quizzes = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "category", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Question> questions = new LinkedHashSet<>();
+
     public Category(String title, String description) {
         this.title = title;
         this.description = description;

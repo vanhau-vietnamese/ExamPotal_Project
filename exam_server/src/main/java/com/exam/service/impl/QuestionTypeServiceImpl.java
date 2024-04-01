@@ -1,26 +1,29 @@
 package com.exam.service.impl;
 
-import com.exam.model.QuestionType;
-import com.exam.repository.QuestionTypeRepository;
+import com.exam.dto.response.QuestionTypeResponse;
+import com.exam.model.EQuestionType;
 import com.exam.service.QuestionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionTypeServiceImpl implements QuestionTypeService {
-    private final QuestionTypeRepository questionTypeRepository;
-    @Override
-    public ResponseEntity<?> addQuestionType(QuestionType questionType) {
-        if(questionTypeRepository.existsByDisplayName(questionType.getDisplayName())){
-            return ResponseEntity.badRequest().body("QuestionType already exists");
-        }
-        return ResponseEntity.ok(questionTypeRepository.save(questionType));
-    }
-
     @Override
     public ResponseEntity<?> getAllQuestionTypes() {
-        return ResponseEntity.ok(questionTypeRepository.findAll());
+        List<QuestionTypeResponse> questionTypeResponses = Arrays.stream(EQuestionType.values())
+                .map(questionType -> {
+                    QuestionTypeResponse response = new QuestionTypeResponse();
+                    response.setAlias(questionType.getAlias());
+                    response.setDisplayName(questionType.getDisplayName());
+                    return response;
+                }) // Lấy ra tên của mỗi phần tử enum
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(questionTypeResponses);
     }
 }

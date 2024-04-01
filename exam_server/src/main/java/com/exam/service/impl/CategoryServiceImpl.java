@@ -30,13 +30,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Override
     public Category getCategory(Long id) {
-        Optional<Category> category = categoryRepository.findById(id);
-        return category.orElse(null);
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
     }
     @Override
     public ResponseEntity<?> addCategory(CategoryRequest categoryRequest) {
         if(categoryRepository.existsByTitle(categoryRequest.getTitle())){
-            return ResponseEntity.badRequest().body("Category already exists");
+            throw new RuntimeException("Category Existed.");
         }
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -78,8 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
 
             return ResponseEntity.ok(categoryRepository.save(category.get()));
         }
-        return ResponseEntity.badRequest().body(null);
+        throw new RuntimeException("Category Not Found");
     }
-
-
 }

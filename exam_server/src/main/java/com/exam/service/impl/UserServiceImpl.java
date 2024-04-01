@@ -25,7 +25,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService {
+public class  UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final QuizRepository quizRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -36,12 +36,9 @@ public class UserServiceImpl implements UserService {
         String jwt = jwtAuthenticationFilter.getJwt();
         FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
         String email = decodedToken.getEmail();
-        System.out.println("email: "+email);
         String firebaseId = decodedToken.getUid();
-        System.out.println("firebase: "+firebaseId);
 
         User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
-        System.out.println("user:" + user);
 
         UserResponse userResponse = new UserResponse();
         // nếu tồn tại user chứa firebaseId and email
@@ -68,13 +65,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> addNewUser(UserRequest userRequest) {
+    public User addNewUser(UserRequest userRequest) {
         User user = new User();
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setFirebaseId(userRequest.getFirebaseId());
         user.setFullName(userRequest.getFullName());
         user.setRole(ERole.student);
-        return ResponseEntity.ok(userRepository.save(user));
+        return userRepository.save(user);
     }
 }

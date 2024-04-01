@@ -88,16 +88,6 @@ public class JwtUtils {
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
     public <T> Object extractClaim(String token, Function<Map<String, Object>, Object> claimsResolver){
-//        FirebaseToken decodedToken = null;
-//        try {
-//            decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
-//        } catch (FirebaseAuthException e) {
-//            throw new RuntimeException(e);
-//        }
-//        String uid = decodedToken.getUid();
-//        Claims claims = (Claims) decodedToken.getClaims();
-////        Claims claims = extractAllClaims(token);
-//        return claimsResolver.apply(claims);
         FirebaseToken decodedToken = null;
         try {
             decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);

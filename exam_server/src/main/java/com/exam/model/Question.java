@@ -32,10 +32,9 @@ public class Question {
     @Column(name = "marksOfQuestion")
     private Integer marksOfQuestion ;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("questions")
-    @JoinColumn(name = "questionType", referencedColumnName = "alias")
-    private QuestionType questionType;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "questionType")
+    private EQuestionType questionType;
 
     @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt  = new Timestamp(System.currentTimeMillis());
@@ -46,6 +45,9 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
-    private Set<Answer> answers = new HashSet<>();
+    private Set<Answer> answers = new LinkedHashSet<>();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("questions")
+    private Category category;
 }

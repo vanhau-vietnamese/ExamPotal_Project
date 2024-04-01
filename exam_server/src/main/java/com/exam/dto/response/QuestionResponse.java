@@ -20,7 +20,8 @@ public class QuestionResponse {
     private String content;
     private String status ;
     private Integer marksOfQuestion ;
-    private QuestionType questionType;
+    private QuestionTypeResponse questionType;
     private Timestamp createdAt;
     private Set<Answer> answers = new HashSet<>();
+    private CategoryResponse category;
 }

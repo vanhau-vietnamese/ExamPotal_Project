@@ -12,4 +12,5 @@ public interface QuestionService {
     public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest);
     public ResponseEntity<String> deleteQuestion(Long id);
     public ResponseEntity<?> getQuestionsOfQuiz(Long id);
+    public ResponseEntity<?> getQuestionsOfCategory(Long id);
 }
