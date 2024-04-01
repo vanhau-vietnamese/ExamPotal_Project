@@ -41,7 +41,7 @@ export const StudentNavLinks = [
 
 export const RoleRootRoute = {
   ['admin']: router.admin,
-  ['student']: router.admin,
+  ['student']: router.student,
 };
 
 export default router;

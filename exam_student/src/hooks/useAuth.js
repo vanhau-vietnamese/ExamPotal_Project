@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
@@ -64,25 +65,26 @@ export function useAuth() {
         localStorage.setItem('access_token', data.accessToken);
         getMe()
           .then((res) => setUser(res.data))
-          .catch(
-            async () =>
-              await createAccountWithSocial({
-                fullName: data.displayName,
-                email: data.email,
-                firebaseId: data.uid,
-                password: data.uid,
+          .catch(async () => {
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(data.uid, salt);
+
+            await createAccountWithSocial({
+              fullName: data.displayName,
+              email: data.email,
+              firebaseId: data.uid,
+              password: hash,
+            })
+              .then(() => {
+                setLoading(false);
               })
-                .then(() => {
-                  setLoading(false);
-                  navigate(router.root);
-                })
-                .catch((err) => {
-                  signOutFirebase(authentication);
-                  localStorage.removeItem('access_token');
-                  setLoading(false);
-                  toast.error(err.message, { toastId: 'user_fetching' });
-                })
-          );
+              .catch((err) => {
+                signOutFirebase(authentication);
+                localStorage.removeItem('access_token');
+                setLoading(false);
+                console.error(err.message);
+              });
+          });
       })
       .catch(() => setLoading(false));
   };
