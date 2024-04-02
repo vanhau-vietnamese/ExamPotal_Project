@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 
 export default function OptionItem({ options }) {
-  const correctAnswers = options.find((answer) => answer.correct === true);
+  const correctAnswers = options.find((answer) => answer.isCorrect === true);
   return (
     <div>
       {options.map((answers, index) => (
         <div key={index}>
-          <p>{answers.content}</p>
+          <p>
+            Đáp án {index + 1}: {answers.content}
+          </p>
         </div>
       ))}
       <label className="flex items-center mb-5">

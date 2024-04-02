@@ -1,15 +1,37 @@
+import { useEffect } from 'react';
 import { useState } from 'react';
-import { axiosClient } from '~/apis';
+import { toast } from 'react-toastify';
+import { axiosClient, getAllCategories } from '~/apis';
 
 const CreateLanguages = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [newLanguage, setNewLanguage] = useState('');
   const [languages, setLanguages] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const listCategories = await getAllCategories();
+
+        if (listCategories && listCategories.length > 0) {
+          setCategories(
+            listCategories.map((category) => ({
+              display: category.title,
+              value: category.id,
+            }))
+          );
+        }
+      } catch (error) {
+        toast.error(error.message, { toastId: 'fetch_question' });
+      }
+    })();
+  }, [categories]);
 
   const selectLanguage = (language) => {
     setSelectedLanguage(language);
@@ -51,25 +73,25 @@ const CreateLanguages = () => {
         onClick={toggleDropdown}
         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
-        {selectedLanguage ? selectedLanguage : 'Chọn ngôn ngữ'}
+        {selectedLanguage ? selectedLanguage : 'Danh mục'}
       </button>
       {isOpen && (
-        <div className="absolute left-0 mt-2 max-w-[150px] origin-top-left bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10">
-          {languages.map((language, index) => (
+        <div className="absolute left-0 mt-2 max-w-[200px] origin-top-left bg-white divide-y divide-gray-100 rounded-md shadow-lg ">
+          {categories.map((categoris, index) => (
             <button
               key={index}
-              onClick={() => selectLanguage(language)}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              onClick={() => selectLanguage(categoris.display)}
+              className="block px-4 py-2 text-sm text-gray-700 "
               role="menuitem"
             >
-              {language}
+              {categoris.display}
             </button>
           ))}
           <div className="px-4 py-2 text-sm">
             <input
               type="text"
               placeholder="Thêm ngôn ngữ mới..."
-              className="border border-gray-300 rounded-md shadow-sm px-2 py-1"
+              className="border border-gray-300 w-[150px] rounded-md shadow-sm px-2 py-1"
               value={newLanguage}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}

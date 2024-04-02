@@ -63,6 +63,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   }, []);
 
   const handleCreateQuestion = async (data) => {
+    //console.log('DATA', data);
     try {
       const body = {
         content: data.content,
@@ -71,11 +72,12 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
         answerRequestList: data.answers.map((answer) => ({
           media: answer.media || null,
           content: answer.content,
-          isCorrect: answer.isCorrect,
+          correct: answer.correct,
         })),
       };
 
       const response = await createQuestion(body);
+      console.log('RES', response);
       if (response) {
         addNewQuestion(response);
         toast.success('Tạo mới câu hỏi thành công', { toastId: 'create_question' });

@@ -1,10 +1,24 @@
 import moment from 'moment';
+import { useState } from 'react';
 import Icons from '~/assets/icons';
-import { Button, EditorViewer } from '~/components';
+import { Backdrop, Button, EditorViewer } from '~/components';
 import { useQuestionStore } from '~/store';
+import ViewDetailQuestion from './viewDetailQuestion';
 
 function QuestionTable() {
   const { questionList } = useQuestionStore((state) => state);
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState();
+
+  const openForm = () => {
+    setOpen(true);
+  };
+
+  const selectItem = (item) => {
+    setSelectedItem(item);
+  };
+
+  //console.log('HHH', selectedItem);
 
   return (
     <div className="mt-5 relative sm:rounded bg-white shadow-card w-full max-h-full overflow-hidden">
@@ -43,12 +57,28 @@ function QuestionTable() {
                 </td>
                 <td className="p-3 flex-shrink-0 min-w-[150px]">
                   <div className=" flex items-center justify-center gap-x-2">
-                    <Button className="text-xs rounded px-2 py-1 text-orange-500 hover:bg-orange-200 hover:bg-opacity-40">
+                    <Button
+                      onClick={() => {
+                        selectItem(question);
+                        openForm();
+                      }}
+                      className="text-xs rounded px-2 py-1 text-orange-500 hover:bg-orange-200 hover:bg-opacity-40"
+                    >
                       <Icons.Eye />
                     </Button>
+                    {open && selectedItem && (
+                      <Backdrop opacity={0.25}>
+                        <ViewDetailQuestion
+                          isSelect={selectedItem}
+                          onClose={() => setOpen(false)}
+                        />
+                      </Backdrop>
+                    )}
+
                     <Button className="text-xs rounded px-2 py-1 text-blue-500 hover:bg-blue-200 hover:bg-opacity-40">
                       <Icons.Pencil />
                     </Button>
+
                     <Button className="text-xs rounded px-2 py-1 text-danger hover:bg-red-200 hover:bg-opacity-40">
                       <Icons.Trash />
                     </Button>
