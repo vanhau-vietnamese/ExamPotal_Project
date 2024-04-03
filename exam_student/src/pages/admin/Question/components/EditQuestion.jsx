@@ -3,16 +3,17 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { createQuestion, getAllCategories, getQuestionTypes } from '~/apis';
+import { getAllCategories } from '~/apis';
 import Icons from '~/assets/icons';
-import { Button, FormSelect } from '~/components';
+import { Button, FormInput, FormSelect } from '~/components';
 import FormEditor from '~/components/Form/FormEditor';
 import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
 import { useQuestionStore } from '~/store';
 
-export default function FormQuestionCreate({ onClose, defaultValues }) {
-  const addNewQuestion = useQuestionStore((state) => state.addNewQuestion);
+export default function EditQuestion() {
+  const { setIsEditing, setTargetQuestion, targetQuestion } = useQuestionStore((state) => state);
+  console.log('TAGET', targetQuestion);
   const {
     control,
     formState: { errors },
@@ -21,7 +22,15 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   } = useForm({
     mode: 'onSubmit',
     resolver: zodResolver(FormQuestionCreateSchema),
-    defaultValues,
+    defaultValues: {
+      questionType: targetQuestion.questionType.displayName,
+      category: targetQuestion.category.id,
+      content: targetQuestion.content,
+      answers: targetQuestion.answers.map((item) => ({
+        content: item.content,
+        isCorrect: Boolean(item.correct),
+      })),
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -30,14 +39,12 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   });
 
   const [categories, setCategories] = useState([]);
-  const [questionType, setQuestionType] = useState([]);
   const selectedQuestionType = watch('questionType');
 
   useEffect(() => {
     (async () => {
       try {
         const listCategories = await getAllCategories();
-        const questionTypes = await getQuestionTypes();
 
         if (listCategories && listCategories.length > 0) {
           setCategories(
@@ -47,82 +54,62 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
             }))
           );
         }
-
-        if (questionTypes && questionTypes.length > 0) {
-          setQuestionType(
-            questionTypes.map((type) => ({
-              display: type.displayName,
-              value: type.alias,
-            }))
-          );
-        }
       } catch (error) {
         toast.error(error.message, { toastId: 'fetch_question' });
       }
     })();
   }, []);
 
-  const handleCreateQuestion = async (data) => {
+  const handleEditQuestion = async (data) => {
     console.log('DATA', data);
-    try {
-      const body = {
-        content: data.content,
-        categoryId: data.category,
-        questionTypeId: data.questionType,
-        answerRequestList: data.answers.map((answer) => ({
-          media: answer.media || null,
-          content: answer.content,
-          correct: answer.isCorrect,
-        })),
-      };
-
-      const response = await createQuestion(body);
-      console.log('RES', response);
-      if (response) {
-        addNewQuestion(response);
-        toast.success('Tạo mới câu hỏi thành công', { toastId: 'create_question' });
-        onClose();
-      }
-    } catch (error) {
-      toast.error(error.message, { toastId: 'create_question' });
-    }
+    // try {
+    //   const body = {
+    //     content: data.content,
+    //     categoryId: data.category,
+    //     questionTypeId: data.questionType,
+    //     answerRequestList: data.answers.map((answer) => ({
+    //       media: answer.media || null,
+    //       content: answer.content,
+    //       correct: answer.isCorrect,
+    //     })),
+    //   };
+    // } catch (error) {
+    //   toast.error(error.message, { toastId: 'create_question' });
+    // }
   };
 
   return (
     <div className="w-full h-full mx-auto max-w-5xl p-10">
       <form
         className="w-full h-full bg-white rounded-lg flex flex-col justify-between"
-        onSubmit={handleSubmit(handleCreateQuestion)}
+        onSubmit={handleSubmit(handleEditQuestion)}
       >
         <div className="text-gray-700 p-4 border-b border-dashed border-strike">
           <h3>Tạo mới câu hỏi</h3>
         </div>
         <div className="flex-1 max-h-[700px] overflow-y-auto p-4">
           <div className="flex items-center justify-between w-full gap-x-5 mb-5">
-            <FormSelect
+            <FormInput
               control={control}
               name="questionType"
-              label="Loại câu hỏi"
-              placeholder="Chọn loại câu hỏi..."
-              error={errors.questionType?.message}
+              title="Loại câu hỏi"
               required
-              options={questionType}
+              disabled
             />
             <FormSelect
               control={control}
               name="category"
               label="Danh mục"
-              placeholder="Chọn danh mục..."
               required
               error={errors.category?.message}
               options={categories}
+              className="mb-5"
             />
           </div>
           <FormEditor
             control={control}
             name="content"
             title="Nội dung câu hỏi"
-            placeholder="Nhập nội dung câu hỏi..."
             required
             error={errors.content?.message}
           />
@@ -163,7 +150,10 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
           <Button
             type="button"
             className="px-6 py-2 text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
-            onClick={onClose}
+            onClick={() => {
+              setTargetQuestion(null);
+              setIsEditing(false);
+            }}
           >
             Hủy bỏ
           </Button>
@@ -171,7 +161,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
             type="submit"
             className="px-6 py-2 text-sm text-white bg-primary shadow-success hover:shadow-success_hover"
           >
-            Tạo mới
+            Lưu
           </Button>
         </div>
       </form>
@@ -179,7 +169,6 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   );
 }
 
-FormQuestionCreate.propTypes = {
-  onClose: PropTypes.func.isRequired,
+EditQuestion.propTypes = {
   defaultValues: PropTypes.object,
 };

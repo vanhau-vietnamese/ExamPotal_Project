@@ -35,7 +35,7 @@ export default function AnswersCreate({ control, name, inputName, type, error, o
         <input
           id={id}
           type={InputType[type]}
-          checked={!!fieldIsCorrect.value}
+          checked={Boolean(fieldIsCorrect.value)}
           className={`before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none border-2 border-strike checked:border-primary transition-all hover:border-primary ${
             InputTypeStyle[InputType[type]]
           }`}
