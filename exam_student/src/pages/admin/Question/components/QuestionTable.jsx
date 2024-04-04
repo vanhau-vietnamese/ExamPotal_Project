@@ -11,7 +11,7 @@ function QuestionTable() {
       <table className="block w-full text-sm text-left rtl:text-right border-collapse">
         <thead className="text-[#3b3e66] uppercase text-xs block w-full">
           <tr className="bg-[#d1d2de] rounded-se w-full flex items-center">
-            <th className="p-3 w-[10%] ">Mã số</th>
+            <th className="p-3 w-[6%]">Mã số</th>
             <th className="p-3 flex-auto min-w-[200px]">Nội dung câu hỏi</th>
             <th className="p-3 flex-shrink-0 min-w-[200px]">Loại câu hỏi</th>
             <th className="p-3 flex-shrink-0 min-w-[160px]">Danh mục</th>
@@ -28,7 +28,7 @@ function QuestionTable() {
                 key={question.id}
                 className="flex items-center border-b border-[#d1d2de] transition-all hover:bg-[#d1d2de] hover:bg-opacity-30 h-[45px] font-semibold text-[#3b3e66]"
               >
-                <td className="p-3 w-[50px]">{question.id}</td>
+                <td className="p-3 w-[6%]">{question.id}</td>
                 <td className="p-3 flex-auto min-w-[200px] text-nowrap text-ellipsis overflow-hidden">
                   <EditorViewer content={question.content} />
                 </td>

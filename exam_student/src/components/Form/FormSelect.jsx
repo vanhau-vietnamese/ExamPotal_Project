@@ -11,7 +11,7 @@ export default function FormSelect({
   error,
   disabled,
   defaultValue,
-  className,
+  className = '',
 }) {
   const { field } = useController({ control, name, defaultValue });
   return (

@@ -5,25 +5,26 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { getAllCategories } from '~/apis';
 import Icons from '~/assets/icons';
-import { Button, FormInput, FormSelect } from '~/components';
+import { Button, FormSelect } from '~/components';
 import FormEditor from '~/components/Form/FormEditor';
+import { useQuestionStore } from '~/store';
 import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
-import { useQuestionStore } from '~/store';
 
 export default function EditQuestion() {
-  const { setIsEditing, setTargetQuestion, targetQuestion } = useQuestionStore((state) => state);
-  console.log('TAGET', targetQuestion);
+  const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes } = useQuestionStore(
+    (state) => state
+  );
   const {
     control,
     formState: { errors },
-    watch,
+    getValues,
     handleSubmit,
   } = useForm({
     mode: 'onSubmit',
     resolver: zodResolver(FormQuestionCreateSchema),
     defaultValues: {
-      questionType: targetQuestion.questionType.displayName,
+      questionType: targetQuestion.questionType.alias,
       category: targetQuestion.category.id,
       content: targetQuestion.content,
       answers: targetQuestion.answers.map((item) => ({
@@ -39,7 +40,6 @@ export default function EditQuestion() {
   });
 
   const [categories, setCategories] = useState([]);
-  const selectedQuestionType = watch('questionType');
 
   useEffect(() => {
     (async () => {
@@ -61,21 +61,21 @@ export default function EditQuestion() {
   }, []);
 
   const handleEditQuestion = async (data) => {
-    console.log('DATA', data);
-    // try {
-    //   const body = {
-    //     content: data.content,
-    //     categoryId: data.category,
-    //     questionTypeId: data.questionType,
-    //     answerRequestList: data.answers.map((answer) => ({
-    //       media: answer.media || null,
-    //       content: answer.content,
-    //       correct: answer.isCorrect,
-    //     })),
-    //   };
-    // } catch (error) {
-    //   toast.error(error.message, { toastId: 'create_question' });
-    // }
+    try {
+      const body = {
+        content: data.content,
+        categoryId: data.category,
+        questionTypeId: data.questionType,
+        answerRequestList: data.answers.map((answer) => ({
+          media: answer.media || null,
+          content: answer.content,
+          correct: answer.isCorrect,
+        })),
+      };
+      console.log('body', body);
+    } catch (error) {
+      toast.error(error.message, { toastId: 'create_question' });
+    }
   };
 
   return (
@@ -89,10 +89,11 @@ export default function EditQuestion() {
         </div>
         <div className="flex-1 max-h-[700px] overflow-y-auto p-4">
           <div className="flex items-center justify-between w-full gap-x-5 mb-5">
-            <FormInput
+            <FormSelect
               control={control}
               name="questionType"
-              title="Loại câu hỏi"
+              label="Loại câu hỏi"
+              options={questionTypes}
               required
               disabled
             />
@@ -103,7 +104,6 @@ export default function EditQuestion() {
               required
               error={errors.category?.message}
               options={categories}
-              className="mb-5"
             />
           </div>
           <FormEditor
@@ -125,7 +125,6 @@ export default function EditQuestion() {
                 type="button"
                 className="p-1 text-sm text-primary flex items-center gap-1 hover:bg-primary hover:bg-opacity-10 disabled:hover:bg-transparent"
                 onClick={() => append({ content: '', correct: false })}
-                disable={!selectedQuestionType}
               >
                 <Icons.Plus />
                 <span>Thêm đáp án</span>
@@ -139,7 +138,7 @@ export default function EditQuestion() {
                   name={`answers.${index}`}
                   inputName="answers"
                   error={errors?.answers?.[index]}
-                  type={selectedQuestionType}
+                  type={getValues('questionType')}
                   onRemove={() => remove(index)}
                 />
               ))}

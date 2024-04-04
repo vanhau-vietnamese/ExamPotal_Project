@@ -44,7 +44,9 @@ export default function AnswersCreate({ control, name, inputName, type, error, o
           name={inputName}
         />
         <span
-          className={`absolute text-white bg-primary transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100`}
+          className={`absolute text-white bg-primary transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100 ${
+            InputTypeStyle[InputType[type]]
+          }`}
         >
           <Icons.Check />
         </span>

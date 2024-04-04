@@ -1,24 +1,40 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getQuestions } from '~/apis';
-import { useQuestionStore } from '~/store';
-import { CreateQuestionModal, EditQuestion, QuestionTable, ViewDetailQuestion } from './components';
-import { Fragment } from 'react';
+import { getQuestionTypes, getQuestions } from '~/apis';
 import { Backdrop } from '~/components';
+import { useQuestionStore } from '~/store';
+import {
+  CreateQuestionModal,
+  FormEditQuestion,
+  QuestionTable,
+  ViewDetailQuestion,
+} from './components';
 
 function QuestionWrapper() {
-  const { setQuestionList, isEditing, targetQuestion } = useQuestionStore((state) => state);
+  const { setQuestionList, isEditing, targetQuestion, setQuestionType } = useQuestionStore(
+    (state) => state
+  );
 
   useEffect(() => {
     (async () => {
       try {
         const listQuestion = await getQuestions();
+        const questionTypes = await getQuestionTypes();
         setQuestionList(listQuestion);
+
+        if (questionTypes && questionTypes.length > 0) {
+          setQuestionType(
+            questionTypes.map((type) => ({
+              display: type.displayName,
+              value: type.alias,
+            }))
+          );
+        }
       } catch (error) {
         toast.error(error.message, { toastId: 'fetch_question' });
       }
     })();
-  }, [setQuestionList]);
+  }, [setQuestionList, setQuestionType]);
 
   return (
     <Fragment>
@@ -34,7 +50,10 @@ function QuestionWrapper() {
       {/* {!isEditing && !targetQuestion && <EditQuestion />}
       {isEditing && !targetQuestion && <ViewDetailQuestion />} */}
       {targetQuestion && (
-        <Backdrop opacity={0.25}> {isEditing ? <EditQuestion /> : <ViewDetailQuestion />}</Backdrop>
+        <Backdrop opacity={0.25}>
+          {' '}
+          {isEditing ? <FormEditQuestion /> : <ViewDetailQuestion />}
+        </Backdrop>
       )}
     </Fragment>
   );

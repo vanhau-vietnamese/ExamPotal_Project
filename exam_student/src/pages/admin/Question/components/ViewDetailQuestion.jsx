@@ -4,7 +4,7 @@ import { useQuestionStore } from '~/store';
 
 function ViewDetailQuestion() {
   const { targetQuestion, setTargetQuestion } = useQuestionStore((state) => state);
-  console.log('HJJJJ', typeof setTargetQuestion);
+
   return (
     <div className="w-full h-full mx-auto max-w-[800px] p-10">
       <form className="w-full h-full bg-white rounded-lg flex flex-col justify-between">

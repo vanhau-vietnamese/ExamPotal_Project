@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { createQuestion, getAllCategories, getQuestionTypes } from '~/apis';
+import { createQuestion, getAllCategories } from '~/apis';
 import Icons from '~/assets/icons';
 import { Button, FormSelect } from '~/components';
 import FormEditor from '~/components/Form/FormEditor';
+import { useQuestionStore } from '~/store';
 import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
-import { useQuestionStore } from '~/store';
 
 export default function FormQuestionCreate({ onClose, defaultValues }) {
-  const addNewQuestion = useQuestionStore((state) => state.addNewQuestion);
+  const { addNewQuestion, questionTypes } = useQuestionStore((state) => state);
   const {
     control,
     formState: { errors },
@@ -30,29 +30,18 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   });
 
   const [categories, setCategories] = useState([]);
-  const [questionType, setQuestionType] = useState([]);
   const selectedQuestionType = watch('questionType');
 
   useEffect(() => {
     (async () => {
       try {
         const listCategories = await getAllCategories();
-        const questionTypes = await getQuestionTypes();
 
         if (listCategories && listCategories.length > 0) {
           setCategories(
             listCategories.map((category) => ({
               display: category.title,
               value: category.id,
-            }))
-          );
-        }
-
-        if (questionTypes && questionTypes.length > 0) {
-          setQuestionType(
-            questionTypes.map((type) => ({
-              display: type.displayName,
-              value: type.alias,
             }))
           );
         }
@@ -106,7 +95,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
               placeholder="Chọn loại câu hỏi..."
               error={errors.questionType?.message}
               required
-              options={questionType}
+              options={questionTypes}
             />
             <FormSelect
               control={control}
