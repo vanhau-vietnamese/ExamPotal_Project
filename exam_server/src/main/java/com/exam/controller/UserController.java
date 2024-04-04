@@ -20,7 +20,7 @@ public class UserController {
         return userService.getProfile();
     }
     @PostMapping("/add")
-    public ApiResponse<User> addNewUser(@RequestBody @Valid UserRequest  userRequest){
+    public ApiResponse<User> addNewUser(@RequestBody UserRequest  userRequest){
         ApiResponse<User> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.addNewUser(userRequest));
         return apiResponse;

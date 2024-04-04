@@ -56,6 +56,8 @@ public class QuizServiceImpl implements QuizService {
         List<Long> listQuestionId = quizRequest.getListQuestionId();
 //        QuizQuestion quizQuestion
         for(Long questionId : listQuestionId){
+            //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
+
             QuizQuestion quizQuestion = new QuizQuestion();
             quizQuestion.setQuiz(quiz);
 

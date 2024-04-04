@@ -1,12 +1,15 @@
 package com.exam.dto.response;
 
-import com.exam.model.Quiz;
-import com.exam.model.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 
+@Getter
+@Setter
 public class StatisticResponse {
-    private User user;
+    private String fullName;
+    private String email;
     private int marks;
     private Timestamp startTime;
     private Timestamp submitTime;
@@ -14,6 +17,6 @@ public class StatisticResponse {
     private int rank;
     private int numberOfCorrect;
     private int numberOfIncorrect;
-    private Quiz quiz;
+    private QuizResponse quizResponse;
 
 }

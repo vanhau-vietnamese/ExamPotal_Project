@@ -9,13 +9,10 @@ import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +25,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public ResponseEntity<?> addQuestion(QuestionRequest questionRequest) {
         boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
-
         if(!questionTypeValid){
             return ResponseEntity.badRequest().body("Question Type Not Existed");
         }
@@ -55,14 +51,22 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         quizQuestion.setQuestion(question);
+        quizQuestion.setMarksOfQuestion(questionRequest.getMarkOfQuestion());
+
         quizQuestionRepository.save(quizQuestion);
 
         List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
         int size = questionRequest.getAnswerRequestList().size();
+
+        Set<Answer> answers = new LinkedHashSet<>();
         // add answer
         for(int i=0; i<size; i++){
-            addListAnswer(answerList.get(i), question);
+            Answer answer = new Answer();
+            addListAnswer(answerList.get(i), question, answer);
+            answers.add(answer);
         }
+        question.setAnswers(answers);
+
 
         QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
         questionTypeResponse.setAlias(question.getQuestionType().getAlias());
@@ -72,8 +76,65 @@ public class QuestionServiceImpl implements QuestionService {
         return ResponseEntity.ok(questionResponse);
     }
 
-    private void addListAnswer(AnswerRequest answerRequest, Question question){
-        Answer answer = new Answer();
+    @Override
+    public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
+        Optional<Question> questionOptional = questionRepository.findById(id);
+        System.out.println("AAAAAAAAAAAAAAA1");
+        if(questionOptional.isPresent()){
+            Question question = questionOptional.get();
+            boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
+
+            if(!questionTypeValid){
+                return ResponseEntity.badRequest().body("Question Type Not Existed");
+            }
+            System.out.println("AAAAAAAAAAAAAAA12");
+
+            EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
+
+            Optional<Category> categoryOptional = categoryRepository.findById(question.getId());
+            System.out.println("AAAAAAAAAAAAAAA123");
+            if(!categoryOptional.isPresent()){
+                // neeus tồn tai thì mới cho phép question set thành category khác
+                // còn nếu k tồn tại thì thông báo, category k tòn tài, bạn nên add trc khi edit question
+                return ResponseEntity.badRequest().body("Category not exists. You need to add category before adding question");
+            }
+
+            question.setMedia(questionRequest.getMedia());
+            question.setContent(questionRequest.getContent());
+            question.setQuestionType(questionType);
+            question.setStatus(questionRequest.getStatus());
+            question.setCategory(categoryOptional.get());
+            questionRepository.save(question);
+
+
+            // update markofQuestion trong quizQuestion
+            QuizQuestion quizQuestion = quizQuestionRepository.findByQuestionIdAndQuizId(id, questionRequest.getQuizId());
+            quizQuestion.setMarksOfQuestion(questionRequest.getMarkOfQuestion());
+
+            quizQuestionRepository.save(quizQuestion);
+
+            // add answer của question
+            List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
+            int size = questionRequest.getAnswerRequestList().size();
+            // add answer
+            for(int i=0; i<size; i++){
+                Optional<Answer> answerOptional = answerRepository.findById(answerList.get(i).getAnswerId());
+                Answer answer = answerOptional.get();
+                addListAnswer(answerList.get(i), question, answer);
+            }
+
+            QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
+            questionTypeResponse.setAlias(question.getQuestionType().getAlias());
+            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
+
+            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+
+            return ResponseEntity.ok(questionResponse);
+        }
+        return ResponseEntity.badRequest().body("Not Found Question");
+    }
+
+    private void addListAnswer(AnswerRequest answerRequest, Question question, Answer answer){
         answer.setMedia(answerRequest.getMedia());
         answer.setContent(answerRequest.getContent());
         answer.setCorrect(answerRequest.isCorrect());
@@ -90,8 +151,7 @@ public class QuestionServiceImpl implements QuestionService {
 
             QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
             questionTypeResponse.setAlias(question.getQuestionType().getAlias());
-            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
-
+            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());  
             QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
 
             return ResponseEntity.ok(questionResponse);
@@ -120,47 +180,11 @@ public class QuestionServiceImpl implements QuestionService {
         questionResponse.setContent(question.getContent());
         questionResponse.setMedia(question.getMedia());
         questionResponse.setCreatedAt(question.getCreatedAt());
-        questionResponse.setMarksOfQuestion(question.getMarksOfQuestion());
         questionResponse.setQuestionType(questionTypeResponse);
         questionResponse.setStatus(question.getStatus());
         questionResponse.setAnswers(question.getAnswers());
         questionResponse.setCategory(categoryResponse);
         return questionResponse;
-    }
-
-    @Override
-    public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
-        Optional<Question> questionOptional = questionRepository.findById(id);
-
-        if(questionOptional.isPresent()){
-            Question question = questionOptional.get();
-            boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
-
-            if(!questionTypeValid){
-                return ResponseEntity.badRequest().body("Question Type Not Existed");
-            }
-
-            EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
-
-            Optional<Category> categoryOptional = categoryRepository.findById(question.getId());
-
-            question.setMedia(questionRequest.getMedia());
-            question.setContent(questionRequest.getContent());
-            question.setQuestionType(questionType);
-            question.setStatus(questionRequest.getStatus());
-            question.setCategory(categoryOptional.get());
-
-            questionRepository.save(question);
-
-            QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
-            questionTypeResponse.setAlias(question.getQuestionType().getAlias());
-            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
-
-            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
-
-            return ResponseEntity.ok(questionResponse);
-        }
-        return ResponseEntity.badRequest().body("Not Found Question");
     }
 
     @Override
@@ -174,6 +198,18 @@ public class QuestionServiceImpl implements QuestionService {
         List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = questionRepository.getQuestionsOfQuiz(quizId);
         if(quiz.isPresent()){
+            for (Question question : questions){
+                QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
+                questionTypeResponse.setAlias(question.getQuestionType().getAlias());
+                questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
+
+                QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz.get(), question);
+
+
+                QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+
+                questionResponses.add(questionResponse);
+            }
             GetQuestionResponseList(questionResponses, questions);
             return ResponseEntity.ok(questionResponses);
         }

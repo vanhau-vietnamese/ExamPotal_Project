@@ -29,8 +29,8 @@ public class Question {
     private String content;
     @Column(name = "status")
     private String status ;
-    @Column(name = "marksOfQuestion")
-    private Integer marksOfQuestion ;
+//    @Column(name = "marksOfQuestion")
+//    private Integer marksOfQuestion ;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "questionType")

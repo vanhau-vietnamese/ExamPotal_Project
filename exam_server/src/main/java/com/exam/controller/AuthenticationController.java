@@ -6,6 +6,7 @@ import com.exam.dto.request.RegisterRequest;
 import com.exam.model.ERole;
 import com.exam.model.User;
 import com.exam.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest){
+    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest registerRequest){
         return authenticationService.registerUser(registerRequest);
     }
 

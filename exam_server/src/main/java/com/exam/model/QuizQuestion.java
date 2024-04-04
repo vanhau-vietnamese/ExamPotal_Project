@@ -26,4 +26,8 @@ public class QuizQuestion {
     @ManyToOne
     @JoinColumn(name = "questionId")
     private Question question;
+
+    @Column(name = "marksOfQuestion")
+    private Integer marksOfQuestion ;
+
 }

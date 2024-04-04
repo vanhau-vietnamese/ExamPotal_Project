@@ -33,6 +33,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
     private final UserQuizResultRepository userQuizResultRepository;
     private final QuestionRepository questionRepository;
     private final UserQuestionResultRepository userQuestionResultRepository;
+    private final QuizQuestionRepository quizQuestionRepository;
 
     public ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest){
         // Lấy thời gian nhấn bắt đầu là tời gian hiện tai
@@ -67,6 +68,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).orElse(null);
 
         List<QuestionChoiceRequest> answers = submitRequest.getAnswers();
+        System.out.println("AAAAAAAAAAA");
         int totalAnswer = answers.size();
         int totalScore = 0;
         int numberOfCorrect = 0;
@@ -74,10 +76,14 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         float ratio;
 
         UserQuizResult userQuizResult = userQuizResultRepository.findByUserAndQuiz(user, quiz);
+        System.out.println("AAAAAAAAAAA1");
         for (QuestionChoiceRequest answer : answers) {
             List<Long> selectedOptions = answer.getSelectedOptions();
             // get Question from questionID
-            Question question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+            Question  question = questionRepository.findById(answer.getQuestionId()).orElse(null);
+            System.out.println("AAAAAAAAAAA2");
+            QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
+
             // get AnswerList of Question
             List<Answer> answerList = answerRepository.getAnswerFromQuestion(answer.getQuestionId());
             // Get id of the correct answer
@@ -92,7 +98,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             userQuestionResult.setResult(isCorrect);
 
             if (isCorrect) {
-                totalScore += question.getMarksOfQuestion();
+                totalScore += quizQuestion.getMarksOfQuestion();
                 numberOfCorrect++;
             }
 
@@ -100,7 +106,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
 
             userQuestionResult.setQuestionContent(question.getContent());
             userQuestionResult.setAnswersToChoose(answersToChoose);
-            userQuestionResult.setMarkOfQuestion(question.getMarksOfQuestion());
+            userQuestionResult.setMarkOfQuestion(quizQuestion.getMarksOfQuestion());
             userQuestionResult.setUserQuizResult(userQuizResult);
             // save userQuestionResult
             userQuestionResultRepository.save(userQuestionResult);
@@ -121,6 +127,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         submitResponse.setRatio(formattedCapture);
         return ResponseEntity.ok(submitResponse);
 
+//        return null;
     }
 
     private static AnswersToChoose getAnswersToChoose(List<Answer> answerList, List<Long> selectedOptions) {
@@ -131,7 +138,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         for(Answer answer1 : answerList){
             AnswerObject answerObject = new AnswerObject();
             Long answerId = answer1.getId();
-            System.out.println("answerId: "+answerId);
             answerObject.setId(answer1.getId());
             answerObject.setMedia(answer1.getMedia());
             answerObject.setContent(answer1.getContent());
