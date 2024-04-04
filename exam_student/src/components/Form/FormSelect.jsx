@@ -10,8 +10,10 @@ export default function FormSelect({
   options = [],
   error,
   disabled,
+  defaultValue,
+  className = '',
 }) {
-  const { field } = useController({ control, name });
+  const { field } = useController({ control, name, defaultValue });
   return (
     <Select
       label={label}
@@ -22,6 +24,7 @@ export default function FormSelect({
       required={required}
       value={field.value}
       onChange={field.onChange}
+      className={className}
     />
   );
 }
@@ -34,4 +37,6 @@ FormSelect.propTypes = {
   required: PropTypes.bool,
   error: PropTypes.string,
   disabled: PropTypes.bool,
+  defaultValue: PropTypes.array,
+  className: PropTypes.string,
 };

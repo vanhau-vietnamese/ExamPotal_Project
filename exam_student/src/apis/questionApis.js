@@ -26,3 +26,12 @@ export const createQuestion = async (data) => {
     throw new Error('Failed to create question');
   }
 };
+
+export const getQuestion = async (data) => {
+  try {
+    return (await axiosClient.get('/question/', data)).data;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to create question');
+  }
+};

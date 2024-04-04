@@ -1,33 +1,61 @@
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getQuestions } from '~/apis';
+import { getQuestionTypes, getQuestions } from '~/apis';
+import { Backdrop } from '~/components';
 import { useQuestionStore } from '~/store';
-import { CreateQuestionModal, QuestionTable } from './components';
+import {
+  CreateQuestionModal,
+  FormEditQuestion,
+  QuestionTable,
+  ViewDetailQuestion,
+} from './components';
 
 function QuestionWrapper() {
-  const { setQuestionList } = useQuestionStore((state) => state);
+  const { setQuestionList, isEditing, targetQuestion, setQuestionType } = useQuestionStore(
+    (state) => state
+  );
 
   useEffect(() => {
     (async () => {
       try {
         const listQuestion = await getQuestions();
+        const questionTypes = await getQuestionTypes();
         setQuestionList(listQuestion);
+
+        if (questionTypes && questionTypes.length > 0) {
+          setQuestionType(
+            questionTypes.map((type) => ({
+              display: type.displayName,
+              value: type.alias,
+            }))
+          );
+        }
       } catch (error) {
         toast.error(error.message, { toastId: 'fetch_question' });
       }
     })();
-  }, [setQuestionList]);
+  }, [setQuestionList, setQuestionType]);
 
   return (
-    <div className="w-full px-4">
-      <div className="flex items-center w-full justify-between">
-        <div />
-        <CreateQuestionModal />
+    <Fragment>
+      <div className="w-full px-4">
+        <div className="flex items-center w-full justify-between">
+          <div />
+          <CreateQuestionModal />
+        </div>
+        <div className="mt-4 w-full h-[calc(100%-4rem)]">
+          <QuestionTable />
+        </div>
       </div>
-      <div className="mt-4 w-full h-[calc(100%-4rem)]">
-        <QuestionTable />
-      </div>
-    </div>
+      {/* {!isEditing && !targetQuestion && <EditQuestion />}
+      {isEditing && !targetQuestion && <ViewDetailQuestion />} */}
+      {targetQuestion && (
+        <Backdrop opacity={0.25}>
+          {' '}
+          {isEditing ? <FormEditQuestion /> : <ViewDetailQuestion />}
+        </Backdrop>
+      )}
+    </Fragment>
   );
 }
 

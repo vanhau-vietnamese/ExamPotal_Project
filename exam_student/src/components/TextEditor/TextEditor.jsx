@@ -166,6 +166,7 @@ export default function TextEditor({ data, onChange, placeholder, className }) {
 function ToolBarButton({ icon, isActive, onClick, disabled }) {
   return (
     <button
+      type="button"
       className={`toolbar-button ${isActive ? 'active' : ''}`}
       disabled={disabled}
       onClick={onClick}

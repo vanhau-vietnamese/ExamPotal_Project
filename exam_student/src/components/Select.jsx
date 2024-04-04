@@ -1,11 +1,22 @@
 import PropTypes from 'prop-types';
 
-function Select({ name, label, options, onChange, value, error, required, disabled, ...rest }) {
+function Select({
+  name,
+  label,
+  options,
+  onChange,
+  value,
+  error,
+  required,
+  disabled,
+  className,
+  ...rest
+}) {
   return (
-    <div className="w-full">
+    <div className={`w-full ${className}`}>
       <div className="flex items-center justify-between">
         {label && (
-          <label htmlFor={name} className="text-sm font-bold text-icon">
+          <label htmlFor={name} className="text-sm font-bold text-icon mb-1">
             {label}
             {required && <strong className="text-error"> *</strong>}
           </label>
@@ -46,4 +57,5 @@ Select.propTypes = {
   required: PropTypes.bool,
   placeholder: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  className: PropTypes.string,
 };

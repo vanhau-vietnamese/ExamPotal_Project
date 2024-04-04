@@ -11,6 +11,7 @@ export default function FormInput({
   error,
   icon,
   className = '',
+  disabled,
   ...rest
 }) {
   const { field } = useController({
@@ -41,13 +42,16 @@ export default function FormInput({
           type={type}
           id={name}
           autoComplete="off"
-          className={`flex-1 w-full px-4 py-[10px] border outline-none transition-all placeholder:font-medium disabled:bg-[#eeeff8] disabled:border-transparent text-sm font-semibold ${
+          className={`flex-1 w-full px-4 py-[10px] border outline-none transition-all placeholder:font-medium disabled:bg-[#dee0ec] text-sm font-semibold ${
             icon ? 'rounded-e-md' : 'rounded-md'
           } ${
             error
               ? 'border-error focus:shadow-invalid'
               : 'border-strike hover:border-green-400 focus:border-secondary'
-          }	${className}`}
+          }
+          disabled:hover:border-strike disabled:text-gray-500
+          ${className}`}
+          disabled={disabled}
           {...rest}
           {...field}
         />
@@ -65,5 +69,6 @@ FormInput.propTypes = {
   defaultValue: PropTypes.string,
   error: PropTypes.string,
   icon: PropTypes.node,
+  disabled: PropTypes.bool,
   className: PropTypes.string,
 };
