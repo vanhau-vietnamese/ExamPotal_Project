@@ -41,19 +41,6 @@ public class QuestionServiceImpl implements QuestionService {
 
         questionRepository.save(question);
 
-        QuizQuestion quizQuestion = new QuizQuestion();
-        if(questionRequest.getQuizId() == null){
-            quizQuestion.setQuiz(null);
-        }
-        else{
-            Optional<Quiz> quiz = quizRepository.findById(questionRequest.getQuizId());
-            quizQuestion.setQuiz(quiz.get());
-        }
-        quizQuestion.setQuestion(question);
-        quizQuestion.setMarksOfQuestion(questionRequest.getMarkOfQuestion());
-
-        quizQuestionRepository.save(quizQuestion);
-
         List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
         int size = questionRequest.getAnswerRequestList().size();
 
@@ -91,7 +78,7 @@ public class QuestionServiceImpl implements QuestionService {
 
             EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
 
-            Optional<Category> categoryOptional = categoryRepository.findById(question.getId());
+            Optional<Category> categoryOptional = categoryRepository.findById(questionRequest.getCategoryId());
             System.out.println("AAAAAAAAAAAAAAA123");
             if(!categoryOptional.isPresent()){
                 // neeus tồn tai thì mới cho phép question set thành category khác
@@ -105,13 +92,6 @@ public class QuestionServiceImpl implements QuestionService {
             question.setStatus(questionRequest.getStatus());
             question.setCategory(categoryOptional.get());
             questionRepository.save(question);
-
-
-            // update markofQuestion trong quizQuestion
-            QuizQuestion quizQuestion = quizQuestionRepository.findByQuestionIdAndQuizId(id, questionRequest.getQuizId());
-            quizQuestion.setMarksOfQuestion(questionRequest.getMarkOfQuestion());
-
-            quizQuestionRepository.save(quizQuestion);
 
             // add answer của question
             List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
