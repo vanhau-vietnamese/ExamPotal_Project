@@ -14,7 +14,15 @@ const InputTypeStyle = {
   ['checkbox']: 'rounded-md',
 };
 
-export default function AnswersCreate({ control, name, inputName, type, error, onRemove }) {
+export default function AnswersCreate({
+  control,
+  name,
+  inputName,
+  type,
+  error,
+  onRemove,
+  onRadioChange,
+}) {
   const id = useId();
 
   const { field: fieldIsCorrect } = useController({
@@ -40,7 +48,11 @@ export default function AnswersCreate({ control, name, inputName, type, error, o
             InputTypeStyle[InputType[type]]
           }`}
           {...fieldIsCorrect}
-          onChange={(e) => fieldIsCorrect.onChange(e.target.checked)}
+          onChange={(e) =>
+            InputType[type] === 'radio'
+              ? onRadioChange()
+              : fieldIsCorrect.onChange(e.target.checked)
+          }
           name={inputName}
         />
         <span
@@ -77,5 +89,6 @@ AnswersCreate.propTypes = {
   name: PropTypes.string,
   inputName: PropTypes.string,
   error: PropTypes.object,
+  onRadioChange: PropTypes.func,
   onRemove: PropTypes.func,
 };

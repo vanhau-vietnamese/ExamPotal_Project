@@ -34,7 +34,7 @@ export default function EditQuestion() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: 'answers',
   });
@@ -78,6 +78,19 @@ export default function EditQuestion() {
     }
   };
 
+  const onRadioChange = (index) => {
+    if (targetQuestion?.questionType.alias === 'single_choice') {
+      const updatedAnswers = getValues('answers').map((answer, i) => {
+        if (i === index) {
+          return { ...answer, isCorrect: true };
+        } else {
+          return { ...answer, isCorrect: false };
+        }
+      });
+      return replace(updatedAnswers);
+    }
+  };
+
   return (
     <div className="w-full h-full mx-auto max-w-5xl p-10">
       <form
@@ -85,7 +98,7 @@ export default function EditQuestion() {
         onSubmit={handleSubmit(handleEditQuestion)}
       >
         <div className="text-gray-700 p-4 border-b border-dashed border-strike">
-          <h3>Tạo mới câu hỏi</h3>
+          <h3>Chỉnh sửa câu hỏi</h3>
         </div>
         <div className="flex-1 max-h-[700px] overflow-y-auto p-4">
           <div className="flex items-center justify-between w-full gap-x-5 mb-5">
@@ -138,7 +151,8 @@ export default function EditQuestion() {
                   name={`answers.${index}`}
                   inputName="answers"
                   error={errors?.answers?.[index]}
-                  type={getValues('questionType')}
+                  type={targetQuestion?.questionType.alias}
+                  onRadioChange={() => onRadioChange(index)}
                   onRemove={() => remove(index)}
                 />
               ))}
