@@ -17,6 +17,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
     control,
     formState: { errors },
     watch,
+    getValues,
     handleSubmit,
   } = useForm({
     mode: 'onSubmit',
@@ -24,7 +25,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
     defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: 'answers',
   });
@@ -52,7 +53,6 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   }, []);
 
   const handleCreateQuestion = async (data) => {
-    console.log('DATA', data);
     try {
       const body = {
         content: data.content,
@@ -74,6 +74,19 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
       }
     } catch (error) {
       toast.error(error.message, { toastId: 'create_question' });
+    }
+  };
+
+  const onRadioChange = (index) => {
+    if (selectedQuestionType === 'single_choice') {
+      const updatedAnswers = getValues('answers').map((answer, i) => {
+        if (i === index) {
+          return { ...answer, isCorrect: true };
+        } else {
+          return { ...answer, isCorrect: false };
+        }
+      });
+      return replace(updatedAnswers);
     }
   };
 
@@ -126,7 +139,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
               <Button
                 type="button"
                 className="p-1 text-sm text-primary flex items-center gap-1 hover:bg-primary hover:bg-opacity-10 disabled:hover:bg-transparent"
-                onClick={() => append({ content: '', correct: false })}
+                onClick={() => append({ content: '', isCorrect: false })}
                 disable={!selectedQuestionType}
               >
                 <Icons.Plus />
@@ -142,6 +155,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
                   inputName="answers"
                   error={errors?.answers?.[index]}
                   type={selectedQuestionType}
+                  onRadioChange={() => onRadioChange(index)}
                   onRemove={() => remove(index)}
                 />
               ))}
