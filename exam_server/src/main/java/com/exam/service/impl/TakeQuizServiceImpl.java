@@ -76,16 +76,13 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         float ratio;
 
         UserQuizResult userQuizResult = userQuizResultRepository.findByUserAndQuiz(user, quiz);
-        System.out.println("AAAAAAAAAAA1");
         for (QuestionChoiceRequest answer : answers) {
             List<Long> selectedOptions = answer.getSelectedOptions();
             // get Question from questionID
             Question  question = questionRepository.findById(answer.getQuestionId()).orElse(null);
-            System.out.println("AAAAAAAAAAA2");
             QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
-
             // get AnswerList of Question
-            List<Answer> answerList = answerRepository.getAnswerFromQuestion(answer.getQuestionId());
+            List<Answer> answerList = answerRepository.findAllByQuestion(question);
             // Get id of the correct answer
             List<Long> correctAnswerIds = answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId());
 
@@ -111,10 +108,10 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             // save userQuestionResult
             userQuestionResultRepository.save(userQuestionResult);
         }
-        // lưu kết quả bài exam
-        saveUserQuizResult(totalScore, userQuizResult);
-
         numberOfIncorrect = totalAnswer - numberOfCorrect;
+        // lưu kết quả bài exam
+        saveUserQuizResult(totalScore, userQuizResult, numberOfCorrect, numberOfIncorrect);
+
         ratio = (float)numberOfCorrect/totalAnswer;
         String formattedCapture = String.format("%.2f%%", ratio * 100);
 
@@ -126,8 +123,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         submitResponse.setNumberOfIncorrect(numberOfIncorrect);
         submitResponse.setRatio(formattedCapture);
         return ResponseEntity.ok(submitResponse);
-
-//        return null;
     }
 
     private static AnswersToChoose getAnswersToChoose(List<Answer> answerList, List<Long> selectedOptions) {
@@ -152,10 +147,12 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         return answersToChoose;
     }
 
-    private void saveUserQuizResult(int totalScore, UserQuizResult userQuizResult){
+    private void saveUserQuizResult(int totalScore, UserQuizResult userQuizResult, int numberOfCorrect, int numberOfIncorrect){
         if (userQuizResult != null) {
             userQuizResult.setMarks(totalScore);
             userQuizResult.setSubmitTime(new Timestamp(System.currentTimeMillis()));
+            userQuizResult.setNumberOfCorrect(numberOfCorrect);
+            userQuizResult.setNumberOfIncorrect(numberOfIncorrect);
 
             String durationTime = userQuizResult.calculateDuration(userQuizResult.getStartTime(), userQuizResult.getSubmitTime());
             userQuizResult.setDurationTime(durationTime);

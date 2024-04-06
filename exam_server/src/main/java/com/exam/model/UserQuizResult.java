@@ -33,7 +33,10 @@ public class UserQuizResult {
     private Timestamp submitTime;
     @Column(name = "duration")
     private String durationTime;
-
+    @Column(name = "numberOfCorrect")
+    private Integer numberOfCorrect;
+    @Column(name = "numberOfIncorrect")
+    private Integer numberOfIncorrect;
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "userId")

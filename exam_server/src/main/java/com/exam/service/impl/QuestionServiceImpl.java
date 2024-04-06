@@ -49,7 +49,6 @@ public class QuestionServiceImpl implements QuestionService {
             Optional<Quiz> quiz = quizRepository.findById(questionRequest.getQuizId());
             quizQuestion.setQuiz(quiz.get());
         }
-
         quizQuestion.setQuestion(question);
         quizQuestion.setMarksOfQuestion(questionRequest.getMarkOfQuestion());
 
@@ -78,12 +77,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
-        Optional<Question> questionOptional = questionRepository.findById(id);
+        Question question = questionRepository.findById(id).get();
         System.out.println("AAAAAAAAAAAAAAA1");
-        if(questionOptional.isPresent()){
-            Question question = questionOptional.get();
-            boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
+        if(question != null){
+            List<Answer> answers = answerRepository.findAllByQuestion(question);
+            answerRepository.deleteAll(answers);
 
+            boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
             if(!questionTypeValid){
                 return ResponseEntity.badRequest().body("Question Type Not Existed");
             }
@@ -116,12 +116,15 @@ public class QuestionServiceImpl implements QuestionService {
             // add answer của question
             List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
             int size = questionRequest.getAnswerRequestList().size();
+
+            Set<Answer> answersPost = new LinkedHashSet<>();
             // add answer
             for(int i=0; i<size; i++){
-                Optional<Answer> answerOptional = answerRepository.findById(answerList.get(i).getAnswerId());
-                Answer answer = answerOptional.get();
+                Answer answer = new Answer();
                 addListAnswer(answerList.get(i), question, answer);
+                answersPost.add(answer);
             }
+            question.setAnswers(answersPost);
 
             QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
             questionTypeResponse.setAlias(question.getQuestionType().getAlias());
@@ -196,20 +199,8 @@ public class QuestionServiceImpl implements QuestionService {
     public ResponseEntity<?> getQuestionsOfQuiz(Long quizId) {
         Optional<Quiz> quiz = quizRepository.findById(quizId);
         List<QuestionResponse> questionResponses = new ArrayList<>();
-        List<Question> questions = questionRepository.getQuestionsOfQuiz(quizId);
+        List<Question> questions = quizQuestionRepository.getQuestionsOfQuiz(quizId);
         if(quiz.isPresent()){
-            for (Question question : questions){
-                QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
-                questionTypeResponse.setAlias(question.getQuestionType().getAlias());
-                questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
-
-                QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz.get(), question);
-
-
-                QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
-
-                questionResponses.add(questionResponse);
-            }
             GetQuestionResponseList(questionResponses, questions);
             return ResponseEntity.ok(questionResponses);
         }

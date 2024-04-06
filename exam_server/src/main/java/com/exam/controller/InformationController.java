@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/admin")
 public class InformationController {
     private final InformationService informationService;
     @GetMapping("/statistics")
