@@ -8,12 +8,16 @@ import com.exam.dto.response.QuestionTypeResponse;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.QuestionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
@@ -53,7 +57,6 @@ public class QuestionServiceImpl implements QuestionService {
         }
         question.setAnswers(answers);
 
-
         QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
         questionTypeResponse.setAlias(question.getQuestionType().getAlias());
         questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
@@ -62,13 +65,15 @@ public class QuestionServiceImpl implements QuestionService {
         return ResponseEntity.ok(questionResponse);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
         Question question = questionRepository.findById(id).get();
         System.out.println("AAAAAAAAAAAAAAA1");
         if(question != null){
-            List<Answer> answers = answerRepository.findAllByQuestion(question);
-            answerRepository.deleteAll(answers);
+//            List<Answer> answers = answerRepository.findAllByQuestion(question);
+//            answerRepository.deleteAll(answers);
+            answerRepository.deleteByQuestionId(id);
 
             boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
             if(!questionTypeValid){
@@ -122,6 +127,7 @@ public class QuestionServiceImpl implements QuestionService {
         answer.setContent(answerRequest.getContent());
         answer.setCorrect(answerRequest.isCorrect());
         answer.setQuestion(question);
+        answer.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
         answerRepository.save(answer);
     }

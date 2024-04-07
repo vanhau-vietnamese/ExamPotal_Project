@@ -13,9 +13,8 @@ public class QuizRequest {
     private String title;
     private String description;
     private int maxMarks;
-    private int numberOfQuestions;
     private boolean status = false;
     private Long categoryId;
     private int durationMinutes;
-    private List<Long> listQuestionId;
+    private List<QuizQuestionRequest> listQuestion;
 }

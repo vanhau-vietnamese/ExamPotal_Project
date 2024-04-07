@@ -2,6 +2,7 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
+import com.exam.dto.request.QuizQuestionRequest;
 import com.exam.dto.request.QuizRequest;
 import com.exam.model.*;
 import com.exam.repository.CategoryRepository;
@@ -47,27 +48,26 @@ public class QuizServiceImpl implements QuizService {
         quiz.setCreateBy(user);
         quiz.setDurationMinutes(quizRequest.getDurationMinutes());
         quiz.setStatus(quiz.isStatus());
-        quiz.setNumberOfQuestions(quizRequest.getNumberOfQuestions());
+        quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
 
         Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
         quiz.setCategory(category);
         quizRepository.save(quiz);
 
-        List<Long> listQuestionId = quizRequest.getListQuestionId();
+        List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
 //        QuizQuestion quizQuestion
-        for(Long questionId : listQuestionId){
+        for(QuizQuestionRequest questionRequest : listQuestionRequest){
             //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
+            Question question = new Question();
+            question.setId(questionRequest.getQuestionId());
 
             QuizQuestion quizQuestion = new QuizQuestion();
             quizQuestion.setQuiz(quiz);
-
-            Question question = new Question();
-            question.setId(questionId);
             quizQuestion.setQuestion(question);
+            quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
 
             quizQuestionRepository.save(quizQuestion);
         }
-
         return ResponseEntity.ok(quiz);
     }
 
@@ -92,29 +92,48 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public ResponseEntity<?> updateQuiz(Long id, QuizRequest quizRequest) {
-        Optional<Quiz> quizOptional = quizRepository.findById(id);
-        if(quizOptional.isPresent()){
-            Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
-
-            // get jwt from request
-            String jwt = jwtAuthenticationFilter.getJwt();
-            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
-            String email = decodedToken.getEmail();
-            User user = userRepository.findByEmail(email);
-
-            Quiz quiz = quizOptional.get();
-            quiz.setTitle(quizRequest.getTitle());
-            quiz.setDescription(quizRequest.getDescription());
-            quiz.setMaxMarks(quizRequest.getMaxMarks());
-            quiz.setStatus(quizRequest.isStatus());
-            quiz.setCategory(category);
-            quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            quiz.setNumberOfQuestions(quizRequest.getNumberOfQuestions());
-            quiz.setCreateBy(user);
-
-            return ResponseEntity.ok(quizRepository.save(quiz));
-        }
-        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+//        Quiz quiz = quizRepository.findById(id).get();
+//        if(quiz != null){
+//            Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
+//
+//            // get jwt from request
+//            String jwt = jwtAuthenticationFilter.getJwt();
+//            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+//            String email = decodedToken.getEmail();
+//            User user = userRepository.findByEmail(email);
+//
+//            quiz.setTitle(quizRequest.getTitle());
+//            quiz.setDescription(quizRequest.getDescription());
+//            quiz.setMaxMarks(quizRequest.getMaxMarks());
+//            quiz.setStatus(quizRequest.isStatus());
+//            quiz.setCategory(category);
+//            quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+//            quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
+//            quiz.setCreateBy(user);
+//
+//            // delete quizQuestion cos quiz
+//            List<QuizRequest> quizQuestion
+//
+//            List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
+////        QuizQuestion quizQuestion
+//            for(QuizQuestionRequest questionRequest : listQuestionRequest){
+//                //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
+//                Question question = new Question();
+//                question.setId(questionRequest.getQuestionId());
+//
+//                QuizQuestion quizQuestion = new QuizQuestion();
+//                quizQuestion.setQuiz(quiz);
+//                quizQuestion.setQuestion(question);
+//                quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
+//
+//                quizQuestionRepository.save(quizQuestion);
+//            }
+//
+//            return ResponseEntity.ok(quizRepository.save(quiz));
+//        }
+//
+//        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+        return null;
     }
 
     @Override
