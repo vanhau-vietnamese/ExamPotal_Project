@@ -20,7 +20,6 @@ public class QuestionResponse {
     private Long id;
     private String media;
     private String content;
-    private String status ;
     private QuestionTypeResponse questionType;
     private Timestamp createdAt;
     private Set<Answer> answers = new HashSet<>();

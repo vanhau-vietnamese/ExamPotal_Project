@@ -33,30 +33,33 @@ public class QuestionServiceImpl implements QuestionService {
             return ResponseEntity.badRequest().body("Question Type Not Existed");
         }
 
-        EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
+        // Kiểm tra category
+        Optional<Category> optionalCategory = categoryRepository.findById(questionRequest.getCategoryId());
+        if (!optionalCategory.isPresent()) {
+            return ResponseEntity.badRequest().body("Category not found");
+        }
+        Category category = optionalCategory.get();
 
-        Optional<Category> category = categoryRepository.findById(questionRequest.getCategoryId());
-
+        // Tạo và lưu câu hỏi
         Question question = new Question();
         question.setMedia(questionRequest.getMedia());
         question.setContent(questionRequest.getContent());
-        question.setQuestionType(questionType);
-        question.setCategory(category.get());
-
+        question.setQuestionType(EQuestionType.getByAlias(questionRequest.getQuestionTypeId()));
+        question.setCategory(category);
+        question.setStatus(EStatus.Active);
         questionRepository.save(question);
 
-        List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
-        int size = questionRequest.getAnswerRequestList().size();
-
+        // Tạo và lưu các câu trả lời của câu hỏi
         Set<Answer> answers = new LinkedHashSet<>();
-        // add answer
-        for(int i=0; i<size; i++){
+        for (AnswerRequest answerRequest : questionRequest.getAnswerRequestList()) {
             Answer answer = new Answer();
-            addListAnswer(answerList.get(i), question, answer);
+            addListAnswer(answerRequest, question, answer);
             answers.add(answer);
         }
         question.setAnswers(answers);
+        questionRepository.save(question);
 
+        // Tạo và trả về phản hồi
         QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
         questionTypeResponse.setAlias(question.getQuestionType().getAlias());
         questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
@@ -68,58 +71,52 @@ public class QuestionServiceImpl implements QuestionService {
     @Transactional
     @Override
     public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest) {
-        Question question = questionRepository.findById(id).get();
-        System.out.println("AAAAAAAAAAAAAAA1");
-        if(question != null){
-//            List<Answer> answers = answerRepository.findAllByQuestion(question);
-//            answerRepository.deleteAll(answers);
-            answerRepository.deleteByQuestionId(id);
-
-            boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
-            if(!questionTypeValid){
-                return ResponseEntity.badRequest().body("Question Type Not Existed");
-            }
-            System.out.println("AAAAAAAAAAAAAAA12");
-
-            EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
-
-            Optional<Category> categoryOptional = categoryRepository.findById(questionRequest.getCategoryId());
-            System.out.println("AAAAAAAAAAAAAAA123");
-            if(!categoryOptional.isPresent()){
-                // neeus tồn tai thì mới cho phép question set thành category khác
-                // còn nếu k tồn tại thì thông báo, category k tòn tài, bạn nên add trc khi edit question
-                return ResponseEntity.badRequest().body("Category not exists. You need to add category before adding question");
-            }
-
-            question.setMedia(questionRequest.getMedia());
-            question.setContent(questionRequest.getContent());
-            question.setQuestionType(questionType);
-            question.setStatus(questionRequest.getStatus());
-            question.setCategory(categoryOptional.get());
-            questionRepository.save(question);
-
-            // add answer của question
-            List<AnswerRequest> answerList = questionRequest.getAnswerRequestList();
-            int size = questionRequest.getAnswerRequestList().size();
-
-            Set<Answer> answersPost = new LinkedHashSet<>();
-            // add answer
-            for(int i=0; i<size; i++){
-                Answer answer = new Answer();
-                addListAnswer(answerList.get(i), question, answer);
-                answersPost.add(answer);
-            }
-            question.setAnswers(answersPost);
-
-            QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
-            questionTypeResponse.setAlias(question.getQuestionType().getAlias());
-            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
-
-            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
-
-            return ResponseEntity.ok(questionResponse);
+        Optional<Question> optionalQuestion = questionRepository.findById(id);
+        if (!optionalQuestion.isPresent()) {
+            return ResponseEntity.badRequest().body("Question not found");
         }
-        return ResponseEntity.badRequest().body("Not Found Question");
+
+        Question question = optionalQuestion.get();
+
+        // Kiểm tra loại câu hỏi
+        EQuestionType questionType = EQuestionType.getByAlias(questionRequest.getQuestionTypeId());
+        if (questionType == null) {
+            return ResponseEntity.badRequest().body("Question type not found");
+        }
+
+        // Kiểm tra category
+        Optional<Category> optionalCategory = categoryRepository.findById(questionRequest.getCategoryId());
+        if (!optionalCategory.isPresent()) {
+            return ResponseEntity.badRequest().body("Category not found");
+        }
+
+        // Cập nhật thông tin của câu hỏi
+        question.setMedia(questionRequest.getMedia());
+        question.setContent(questionRequest.getContent());
+        question.setQuestionType(questionType);
+        question.setCategory(optionalCategory.get());
+        question.setStatus(EStatus.Active);
+        questionRepository.save(question);
+
+        // Xóa các câu trả lời cũ của câu hỏi
+        answerRepository.deleteByQuestionId(id);
+
+        // Thêm các câu trả lời mới
+        Set<Answer> answers = new LinkedHashSet<>();
+        for (AnswerRequest answerRequest : questionRequest.getAnswerRequestList()) {
+            Answer answer = new Answer();
+            addListAnswer(answerRequest, question, answer);
+            answers.add(answer);
+        }
+        question.setAnswers(answers);
+
+        // Tạo và trả về phản hồi
+        QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
+        questionTypeResponse.setAlias(question.getQuestionType().getAlias());
+        questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
+
+        QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+        return ResponseEntity.ok(questionResponse);
     }
 
     private void addListAnswer(AnswerRequest answerRequest, Question question, Answer answer){
@@ -150,7 +147,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<?> getAllQuestions() {
-        List<Question> questions = questionRepository.findAll();
+        List<Question> questions = questionRepository.findAllByStatus(EStatus.Active);
         List<QuestionResponse> questionResponses = new ArrayList<>();
 
         GetQuestionResponseList(questionResponses, questions);
@@ -170,7 +167,6 @@ public class QuestionServiceImpl implements QuestionService {
         questionResponse.setMedia(question.getMedia());
         questionResponse.setCreatedAt(question.getCreatedAt());
         questionResponse.setQuestionType(questionTypeResponse);
-        questionResponse.setStatus(question.getStatus());
         questionResponse.setAnswers(question.getAnswers());
         questionResponse.setCategory(categoryResponse);
         return questionResponse;
@@ -178,7 +174,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<String> deleteQuestion(Long id) {
-        return null;
+        Question question = questionRepository.findById(id).get();
+        question.setStatus(EStatus.Deleted);
+        questionRepository.save(question);
+        return ResponseEntity.ok("Deleted Successfully");
     }
 
     @Override

@@ -12,7 +12,6 @@ public class QuestionRequest {
     private String media;
     private String content;
     private String questionTypeId;
-    private String status;
     private Long categoryId;
     private List<AnswerRequest> answerRequestList = new ArrayList<>();
 }

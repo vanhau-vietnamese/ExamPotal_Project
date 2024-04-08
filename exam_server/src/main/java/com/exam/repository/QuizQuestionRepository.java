@@ -3,7 +3,9 @@ package com.exam.repository;
 import com.exam.model.Question;
 import com.exam.model.Quiz;
 import com.exam.model.QuizQuestion;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,4 +20,9 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     List<Question> getQuestionsOfQuiz(@Param("quizId") Long quiz_id);
 
     List<QuizQuestion> findAllByQuiz(Quiz quiz);
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM QuizQuestion qq WHERE qq.quiz.id = :quizId")
+    void deleteByQuizId(@Param("quizId") Long quizId);
 }

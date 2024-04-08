@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -92,48 +94,83 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public ResponseEntity<?> updateQuiz(Long id, QuizRequest quizRequest) {
-//        Quiz quiz = quizRepository.findById(id).get();
-//        if(quiz != null){
-//            Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
-//
-//            // get jwt from request
-//            String jwt = jwtAuthenticationFilter.getJwt();
-//            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
-//            String email = decodedToken.getEmail();
-//            User user = userRepository.findByEmail(email);
-//
-//            quiz.setTitle(quizRequest.getTitle());
-//            quiz.setDescription(quizRequest.getDescription());
-//            quiz.setMaxMarks(quizRequest.getMaxMarks());
-//            quiz.setStatus(quizRequest.isStatus());
-//            quiz.setCategory(category);
-//            quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-//            quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
-//            quiz.setCreateBy(user);
-//
-//            // delete quizQuestion cos quiz
-//            List<QuizRequest> quizQuestion
-//
-//            List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
-////        QuizQuestion quizQuestion
-//            for(QuizQuestionRequest questionRequest : listQuestionRequest){
-//                //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
-//                Question question = new Question();
-//                question.setId(questionRequest.getQuestionId());
-//
-//                QuizQuestion quizQuestion = new QuizQuestion();
-//                quizQuestion.setQuiz(quiz);
-//                quizQuestion.setQuestion(question);
-//                quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
-//
-//                quizQuestionRepository.save(quizQuestion);
-//            }
-//
-//            return ResponseEntity.ok(quizRepository.save(quiz));
-//        }
-//
-//        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
-        return null;
+        Quiz quiz = quizRepository.findById(id).get();
+        if(quiz != null){
+            Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
+            // get jwt from request
+            String jwt = jwtAuthenticationFilter.getJwt();
+            FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+            String email = decodedToken.getEmail();
+            User user = userRepository.findByEmail(email);
+
+            quiz.setTitle(quizRequest.getTitle());
+            quiz.setDescription(quizRequest.getDescription());
+            quiz.setMaxMarks(quizRequest.getMaxMarks());
+            quiz.setStatus(quizRequest.isStatus());
+            quiz.setCategory(category);
+            quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
+            quiz.setCreateBy(user);
+            quiz.setDurationMinutes(quizRequest.getDurationMinutes());
+
+            quizRepository.save(quiz);
+
+            // delete quizQuestion cos quiz
+            List<QuizQuestion> quizQuestionList = quizQuestionRepository.findAllByQuiz(quiz);
+            List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
+//        QuizQuestion quizQuestion
+
+            if(!areListEqual(quizQuestionList, listQuestionRequest)){
+                quizQuestionRepository.deleteByQuizId(id);
+
+                for(QuizQuestionRequest questionRequest : listQuestionRequest){
+                    //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
+                    Question question = new Question();
+                    question.setId(questionRequest.getQuestionId());
+
+                    QuizQuestion quizQuestion = new QuizQuestion();
+                    quizQuestion.setQuiz(quiz);
+                    quizQuestion.setQuestion(question);
+                    quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
+
+                    quizQuestionRepository.save(quizQuestion);
+                }
+
+            }
+            else{
+                System.out.println("abcdef");
+            }
+            return ResponseEntity.ok(quiz);
+        }
+
+        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+
+    }
+
+    private static boolean areListEqual(List<QuizQuestion> quizQuestionList,List<QuizQuestionRequest> listQuestionRequest){
+        if(quizQuestionList.size() != listQuestionRequest.size()){
+            return false;
+        }
+
+        Map<Long, Integer> map = new HashMap<>();
+        for(QuizQuestion itemQuizQuestion : quizQuestionList){
+            map.put(itemQuizQuestion.getQuestion().getId(), itemQuizQuestion.getMarksOfQuestion());
+        }
+
+        for(QuizQuestionRequest item : listQuestionRequest){
+            if(!map.containsKey(item.getQuestionId())){
+                return false;
+            }
+            else{
+                Integer marks = map.get(item.getQuestionId());
+                if(marks == null || !marks.equals(item.getMarksOfQuestion())){
+                    return false;
+                }
+                return true;
+            }
+
+        }
+        return true;
     }
 
     @Override

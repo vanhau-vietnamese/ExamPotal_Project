@@ -27,6 +27,7 @@ public class QuestionController {
 
     @GetMapping("/")
     public ResponseEntity<?> getAllQuestions(){
+        System.out.println("getAllQuestions");
         return questionService.getAllQuestions();
     }
 
@@ -35,7 +36,7 @@ public class QuestionController {
         return questionService.editQuestion(id, questionRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/delete/{id}")
     public ResponseEntity<String> deleteQuestion(@PathVariable("id")Long id){
         return questionService.deleteQuestion(id);
     }

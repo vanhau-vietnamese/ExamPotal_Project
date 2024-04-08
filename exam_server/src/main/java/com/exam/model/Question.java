@@ -27,10 +27,10 @@ public class Question {
     private String media;
     @Column(name = "content")
     private String content;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status ;
-//    @Column(name = "marksOfQuestion")
-//    private Integer marksOfQuestion ;
+    private EStatus status;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "questionType")
