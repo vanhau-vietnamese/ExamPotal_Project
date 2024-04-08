@@ -38,7 +38,7 @@ function QuestionWrapper() {
 
   return (
     <Fragment>
-      <div className="w-full px-4">
+      <div className="w-full">
         <div className="flex items-center w-full justify-between">
           <div />
           <CreateQuestionModal />
