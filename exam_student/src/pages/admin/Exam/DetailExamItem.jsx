@@ -1,5 +1,5 @@
 import { DatatestQuestion } from '~/DatatestQuestion';
-import OptionItem from '~/layouts/components/OptionItem';
+import AnswerList from '~/layouts/components/AnswerList';
 
 export default function DetailExamItem() {
   return (
@@ -9,7 +9,7 @@ export default function DetailExamItem() {
           <h2 className="text-sm font-semibold ml-5 mt-5">{item.question}</h2>
           <ul className="ml-4 space-y-2">
             <li>
-              <OptionItem options={item.content} />
+              <AnswerList answers={item.content} />
               <label className="flex items-center mb-5">
                 <div className="flex">
                   <span className="font-bold text-green-700">{item.isCorrect}</span>

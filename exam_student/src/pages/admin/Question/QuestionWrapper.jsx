@@ -47,8 +47,7 @@ function QuestionWrapper() {
           <QuestionTable />
         </div>
       </div>
-      {/* {!isEditing && !targetQuestion && <EditQuestion />}
-      {isEditing && !targetQuestion && <ViewDetailQuestion />} */}
+
       {targetQuestion && (
         <Backdrop opacity={0.25}>
           {' '}

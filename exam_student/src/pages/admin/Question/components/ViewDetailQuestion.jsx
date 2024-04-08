@@ -1,40 +1,136 @@
-import { Button, EditorViewer } from '~/components';
-import { OptionItem } from '~/layouts/components';
+import { zodResolver } from '@hookform/resolvers/zod';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { getAllCategories } from '~/apis';
+import { Button, EditorViewer, FormSelect } from '~/components';
 import { useQuestionStore } from '~/store';
+import { FormQuestionCreateSchema } from '~/validations';
+import AnswersCreate from './AnswersCreate';
 
-function ViewDetailQuestion() {
-  const { targetQuestion, setTargetQuestion } = useQuestionStore((state) => state);
+export default function EditQuestion() {
+  const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes } = useQuestionStore(
+    (state) => state
+  );
+  const {
+    control,
+    formState: { errors },
+  } = useForm({
+    mode: 'onSubmit',
+    resolver: zodResolver(FormQuestionCreateSchema),
+    defaultValues: {
+      questionType: targetQuestion.questionType.alias,
+      category: targetQuestion.category.id,
+      content: targetQuestion.content,
+      answers: targetQuestion.answers.map((item) => ({
+        content: item.content,
+        isCorrect: Boolean(item.correct),
+      })),
+    },
+  });
+
+  const { fields } = useFieldArray({
+    control,
+    name: 'answers',
+  });
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const listCategories = await getAllCategories();
+
+        if (listCategories && listCategories.length > 0) {
+          setCategories(
+            listCategories.map((category) => ({
+              display: category.title,
+              value: category.id,
+            }))
+          );
+        }
+      } catch (error) {
+        toast.error(error.message, { toastId: 'fetch_question' });
+      }
+    })();
+  }, []);
 
   return (
-    <div className="w-full h-full mx-auto max-w-[800px] p-10">
+    <div className="w-full h-full mx-auto max-w-5xl p-10">
       <form className="w-full h-full bg-white rounded-lg flex flex-col justify-between">
-        {targetQuestion && (
-          <div key={targetQuestion.id} className="p-3 flex flex-col">
-            <h1 className="m-5 justify-between">Chi tiết câu hỏi: {targetQuestion.id} </h1>
-            <h3 className="text-[16px] font-semibold ml-5 mt-3">
-              Loại câu hỏi: {targetQuestion.questionType.displayName}
-            </h3>
-            <div className="border border-gray bg-white m-1 rounded-md shadow-md w-80%">
-              <div className="m-5">
-                <EditorViewer content={targetQuestion.content} />
-              </div>
-
-              <ul className="ml-4 space-y-2">
-                <OptionItem options={targetQuestion.answers} />
-              </ul>
+        <div className="text-gray-700 p-4 border-b border-dashed border-strike">
+          <h3>Chỉnh sửa câu hỏi</h3>
+        </div>
+        <div className="flex-1 max-h-[700px] overflow-y-auto p-4">
+          <div className="flex items-center justify-between w-full gap-x-5 mb-5">
+            <FormSelect
+              control={control}
+              name="questionType"
+              label="Loại câu hỏi"
+              options={questionTypes}
+              required
+              disabled
+            />
+            <FormSelect
+              control={control}
+              name="category"
+              label="Danh mục"
+              required
+              error={errors.category?.message}
+              options={categories}
+              disabled
+            />
+          </div>
+          <div>
+            <label className="block p-1 text-sm font-bold text-icon">
+              {'Nội dung câu hỏi'}
+              <strong className="text-error"> *</strong>
+            </label>
+            <div className="border border-spacing-1 rounded-md p-5">
+              <EditorViewer content={targetQuestion.content} />
             </div>
           </div>
-        )}
 
-        <Button
-          className="px-6 py-2 m-5 w-[100px] text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
-          onClick={() => setTargetQuestion(null)}
-        >
-          Thoát
-        </Button>
+          <div className="w-full mt-5">
+            <div className="flex items-center w-full justify-between mb-2">
+              <label className="block p-1 text-sm font-bold text-icon">
+                {'Đáp án câu hỏi'}
+                <strong className="text-error"> *</strong>
+              </label>
+            </div>
+            <div className="flex flex-col gap-4">
+              {fields.map((_, index) => (
+                <AnswersCreate
+                  key={_.id}
+                  control={control}
+                  name={`answers.${index}`}
+                  inputName="answers"
+                  readOnly={true}
+                  error={errors?.answers?.[index]}
+                  type={targetQuestion?.questionType.alias}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-end px-4 py-3 gap-x-5 border-t border-dashed border-strike">
+          <Button
+            type="button"
+            className="px-6 py-2 text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
+            onClick={() => {
+              setTargetQuestion(null);
+              setIsEditing(false);
+            }}
+          >
+            Hủy bỏ
+          </Button>
+        </div>
       </form>
     </div>
   );
 }
 
-export default ViewDetailQuestion;
+EditQuestion.propTypes = {
+  defaultValues: PropTypes.object,
+};

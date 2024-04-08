@@ -11,4 +11,15 @@ export const useQuestionStore = create((set) => ({
   addNewQuestion: (newQuestion) =>
     set((state) => ({ questionList: [...state.questionList, newQuestion] })),
   setTargetQuestion: (targetQuestion) => set({ targetQuestion }),
+  updateQuestion: (targetQuestion) => set((state)=>{ 
+    const indexQues = state.questionList.findIndex((question)=>{
+      return question.id === targetQuestion.id
+    });
+    if(indexQues === -1){
+      return state;
+    }
+    const cloneList = [...state.questionList];
+    cloneList[indexQues] = targetQuestion;
+    return { questionList: cloneList }
+  }),
 }));

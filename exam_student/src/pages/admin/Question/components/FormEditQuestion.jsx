@@ -1,9 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { getAllCategories } from '~/apis';
+import { editQuestion, getAllCategories } from '~/apis';
 import Icons from '~/assets/icons';
 import { Button, FormSelect } from '~/components';
 import FormEditor from '~/components/Form/FormEditor';
@@ -12,9 +11,8 @@ import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
 
 export default function EditQuestion() {
-  const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes } = useQuestionStore(
-    (state) => state
-  );
+  const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes, updateQuestion } =
+    useQuestionStore((state) => state);
   const {
     control,
     formState: { errors },
@@ -41,6 +39,8 @@ export default function EditQuestion() {
 
   const [categories, setCategories] = useState([]);
 
+  //
+
   useEffect(() => {
     (async () => {
       try {
@@ -63,8 +63,10 @@ export default function EditQuestion() {
   const handleEditQuestion = async (data) => {
     try {
       const body = {
+        media: 'null',
+        status: 'true',
         content: data.content,
-        categoryId: data.category,
+        categoryId: parseInt(data.category),
         questionTypeId: data.questionType,
         answerRequestList: data.answers.map((answer) => ({
           media: answer.media || null,
@@ -72,10 +74,20 @@ export default function EditQuestion() {
           correct: answer.isCorrect,
         })),
       };
-      console.log('body', body);
+
+      const response = await editQuestion(targetQuestion.id, body);
+      if (response) {
+        updateQuestion(response);
+        onClose();
+        toast.success('Cập nhật câu hỏi thành công', { toastId: 'update_question' });
+      }
     } catch (error) {
-      toast.error(error.message, { toastId: 'create_question' });
+      toast.error(error);
     }
+  };
+  const onClose = () => {
+    setTargetQuestion(null);
+    setIsEditing(false);
   };
 
   const onRadioChange = (index) => {
@@ -163,10 +175,7 @@ export default function EditQuestion() {
           <Button
             type="button"
             className="px-6 py-2 text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
-            onClick={() => {
-              setTargetQuestion(null);
-              setIsEditing(false);
-            }}
+            onClick={() => onClose()}
           >
             Hủy bỏ
           </Button>
@@ -181,7 +190,3 @@ export default function EditQuestion() {
     </div>
   );
 }
-
-EditQuestion.propTypes = {
-  defaultValues: PropTypes.object,
-};
