@@ -46,7 +46,7 @@ function DashBoardLayout() {
           </div>
           <div className="relative app-main">
             <Header />
-            <div className="app-content !pl-[280px] pt-16">
+            <div className="app-content !pl-[250px] pt-16">
               <div className="app-content--inner">
                 <Outlet />
               </div>

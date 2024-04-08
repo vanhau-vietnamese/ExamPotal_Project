@@ -2,7 +2,15 @@ import { useController } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Editor } from '../TextEditor';
 
-export default function FormEditor({ title, required, error, control, name, placeholder }) {
+export default function FormEditor({
+  title,
+  required,
+  error,
+  control,
+  name,
+  placeholder,
+  disabled,
+}) {
   const { field } = useController({ name, control, defaultValue: '' });
 
   return (
@@ -19,6 +27,7 @@ export default function FormEditor({ title, required, error, control, name, plac
         data={field.value}
         onChange={field.onChange}
         placeholder={placeholder}
+        disabled={disabled}
         className={`rounded-[5px] transition-all ${error ? '!border-error' : '!border-[#d1d2de]'}`}
       />
     </div>
@@ -31,5 +40,6 @@ FormEditor.propTypes = {
   title: PropTypes.string,
   required: PropTypes.bool,
   placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
   error: PropTypes.string,
 };

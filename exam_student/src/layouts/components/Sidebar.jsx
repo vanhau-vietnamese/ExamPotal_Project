@@ -17,7 +17,7 @@ const RoleRouterLink = {
 function Sidebar() {
   const user = useUserStore((state) => state.user);
   return (
-    <div className="fixed left-0 flex flex-col h-full w-[280px] z-50 border-r border-dashed border-slate-300 bg-white">
+    <div className="fixed left-0 flex flex-col h-full w-[250px] z-50 border-r border-dashed border-slate-300 bg-white">
       <div className="relative flex items-center justify-between px-6 py-0 mb-3 min-h-16 border-b border-dashed border-strike">
         <Link to={RoleRouterLink[user?.role]?.root || '#'} className="flex items-end gap-x-2">
           <div className="flex items-center w-10 h-10 rounded-full">

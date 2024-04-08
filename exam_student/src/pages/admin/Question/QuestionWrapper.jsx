@@ -38,7 +38,7 @@ function QuestionWrapper() {
 
   return (
     <Fragment>
-      <div className="w-full px-4">
+      <div className="w-full">
         <div className="flex items-center w-full justify-between">
           <div />
           <CreateQuestionModal />
@@ -47,8 +47,7 @@ function QuestionWrapper() {
           <QuestionTable />
         </div>
       </div>
-      {/* {!isEditing && !targetQuestion && <EditQuestion />}
-      {isEditing && !targetQuestion && <ViewDetailQuestion />} */}
+
       {targetQuestion && (
         <Backdrop opacity={0.25}>
           {' '}

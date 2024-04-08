@@ -27,9 +27,9 @@ export const createQuestion = async (data) => {
   }
 };
 
-export const getQuestion = async (data) => {
+export const editQuestion = async (id, body) => {
   try {
-    return (await axiosClient.get('/question/', data)).data;
+    return (await axiosClient.put(`/question/edit/${id}`, body)).data;
   } catch (error) {
     console.error(error);
     throw new Error('Failed to create question');

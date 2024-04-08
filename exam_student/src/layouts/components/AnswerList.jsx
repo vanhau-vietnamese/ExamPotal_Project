@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 
-export default function OptionItem({ options }) {
-  const correctAnswers = options.filter((answer) => answer.correct === true);
+export default function AnswerList({ answers }) {
+  const correctAnswers = answers.filter((item) => item.correct === true);
 
   return (
     <div className="mt-5">
-      {options.map((answer, index) => (
+      {answers.map((answer, index) => (
         <div key={index}>
           <p>
             Đáp án {index + 1}: {answer.content}
@@ -14,7 +14,7 @@ export default function OptionItem({ options }) {
       ))}
       <label className="flex items-center mb-5">
         <div className="flex">
-          {correctAnswers.length > 0 && (
+          {correctAnswers && correctAnswers.length > 0 && (
             <div>
               <p className="mt-5 font-bold text-green-700 ">Đáp án đúng:</p>
               {correctAnswers.map((correctAnswer, index) => (
@@ -28,6 +28,6 @@ export default function OptionItem({ options }) {
   );
 }
 
-OptionItem.propTypes = {
-  options: PropTypes.array.isRequired,
+AnswerList.propTypes = {
+  answers: PropTypes.array.isRequired,
 };
