@@ -31,7 +31,7 @@ function Header() {
               </div>
               <div className="relative p-1 border border-primary rounded-full">
                 <div className="rounded-xl overflow-hidden w-[32px] h-[32px] ">
-                  <img src={images.logo} alt="avatar" className="object-cover" />
+                  <img src={user.avatar || images.logo} alt="avatar" className="object-cover" />
                 </div>
               </div>
             </Button>

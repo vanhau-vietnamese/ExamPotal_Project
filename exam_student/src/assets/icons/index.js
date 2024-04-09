@@ -16,8 +16,12 @@ import Trash from './Trash';
 import Pencil from './Pencil';
 import Plus from './Plus';
 import Check from './Check';
+import Exclamation from './Exclamation';
+import CheckCircle from './CheckCircle';
 
 export default {
+  Exclamation,
+  CheckCircle,
   Check,
   Plus,
   Pencil,

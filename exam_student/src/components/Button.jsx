@@ -20,7 +20,7 @@ function Button({ children, type = 'button', className, onClick, disable }) {
       type={type}
       onClick={handleClick}
       disabled={disable}
-      className={`border-2 border-transparent text-center select-none transition-all duration-[350ms] font-semibold rounded-md disabled:opacity-50 ${className}`}
+      className={`border text-center select-none transition-all duration-[350ms] font-semibold rounded-md disabled:opacity-50 ${className}`}
     >
       {children}
     </button>
