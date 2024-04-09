@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class SubmitRequest {
+    private Long userQuizResultId;
     private Long quizId;
     private List<QuestionChoiceRequest> answers = new ArrayList<>();
 }

@@ -2,16 +2,17 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
+import com.exam.dto.response.*;
 import com.exam.helper.AnswerObject;
 import com.exam.dto.request.QuestionChoiceRequest;
 import com.exam.dto.request.StartQuizRequest;
 import com.exam.dto.request.SubmitRequest;
-import com.exam.dto.response.SubmitResponse;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.TakeQuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,57 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setUser(user);
 
         userQuizResultRepository.save(userQuizResult);
-        return ResponseEntity.status(HttpStatus.OK).body("Start Successfully. You can start taking the test");
+
+
+        // response bài làm lên cho học sinh làm
+        List<Question> questionList = quizQuestionRepository.getQuestionsOfQuiz(startQuizRequest.getQuizId());
+
+        List<QuestionResponse> questionResponseList = new ArrayList<>();
+
+        for(Question question : questionList){
+            // setQuestionTypeReponse
+            QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
+            questionTypeResponse.setAlias(question.getQuestionType().getAlias());
+            questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
+
+            // setCategoryReponse
+            CategoryResponse categoryResponse = new CategoryResponse();
+            categoryResponse.setId(question.getCategory().getId());
+            categoryResponse.setTitle(question.getCategory().getTitle());
+            categoryResponse.setDescription(question.getCategory().getDescription());
+
+            Set<Answer> answerList = answerRepository.findAllByQuestion(question);
+
+            QuestionResponse questionResponse = new QuestionResponse();
+            questionResponse.setId(question.getId());
+            questionResponse.setQuestionType(questionTypeResponse);
+            questionResponse.setMedia(question.getMedia());
+            questionResponse.setCreatedAt(question.getCreatedAt());
+            questionResponse.setCategory(categoryResponse);
+            questionResponse.setAnswers(answerList);
+
+            questionResponseList.add(questionResponse);
+        }
+
+        StartQuizResponse startQuizResponse = getStartQuizResponse(startQuizRequest, quiz, questionResponseList, userQuizResult);
+
+        return ResponseEntity.status(HttpStatus.OK).body(startQuizResponse);
     }
+
+    @NotNull
+    private static StartQuizResponse getStartQuizResponse(StartQuizRequest startQuizRequest, Quiz quiz, List<QuestionResponse> questionResponseList, UserQuizResult userQuizResult) {
+        StartQuizResponse startQuizResponse = new StartQuizResponse();
+        startQuizResponse.setUserQuizResultId(userQuizResult.getId());
+        startQuizResponse.setQuizId(startQuizRequest.getQuizId());
+        startQuizResponse.setTitle(quiz.getTitle());
+        startQuizResponse.setDescription(quiz.getDescription());
+        startQuizResponse.setNumberOfQuestions(quiz.getNumberOfQuestions());
+        startQuizResponse.setMaxMarks(quiz.getMaxMarks());
+        startQuizResponse.setDurationMinutes(quiz.getDurationMinutes());
+        startQuizResponse.setQuestionResponseList(questionResponseList);
+        return startQuizResponse;
+    }
+
     @Override
     public ResponseEntity<?> submitQuiz(SubmitRequest submitRequest) {
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -68,21 +118,20 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         Quiz quiz = quizRepository.findById(submitRequest.getQuizId()).orElse(null);
 
         List<QuestionChoiceRequest> answers = submitRequest.getAnswers();
-        System.out.println("AAAAAAAAAAA");
         int totalAnswer = answers.size();
         int totalScore = 0;
         int numberOfCorrect = 0;
         int numberOfIncorrect;
         float ratio;
 
-        UserQuizResult userQuizResult = userQuizResultRepository.findByUserAndQuiz(user, quiz);
+        UserQuizResult userQuizResult = userQuizResultRepository.findById(submitRequest.getUserQuizResultId()).get();
         for (QuestionChoiceRequest answer : answers) {
             List<Long> selectedOptions = answer.getSelectedOptions();
             // get Question from questionID
             Question  question = questionRepository.findById(answer.getQuestionId()).orElse(null);
             QuizQuestion quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
             // get AnswerList of Question
-            List<Answer> answerList = answerRepository.findAllByQuestion(question);
+            Set<Answer> answerList = answerRepository.findAllByQuestion(question);
             // Get id of the correct answer
             List<Long> correctAnswerIds = answerRepository.getCorrectAnswerFromQuestion(answer.getQuestionId());
 
@@ -125,7 +174,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         return ResponseEntity.ok(submitResponse);
     }
 
-    private static AnswersToChoose getAnswersToChoose(List<Answer> answerList, List<Long> selectedOptions) {
+    private static AnswersToChoose getAnswersToChoose(Set<Answer> answerList, List<Long> selectedOptions) {
         List<AnswerObject> answerObjectList = new ArrayList<>();
 
         // lặp qua mảng các answer của question để set các value cho answerObject

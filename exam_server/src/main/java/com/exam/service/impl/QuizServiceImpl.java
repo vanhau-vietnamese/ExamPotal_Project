@@ -137,12 +137,8 @@ public class QuizServiceImpl implements QuizService {
                 }
 
             }
-            else{
-                System.out.println("abcdef");
-            }
             return ResponseEntity.ok(quiz);
         }
-
         return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
 
     }

@@ -22,6 +22,6 @@ public class QuestionResponse {
     private String content;
     private QuestionTypeResponse questionType;
     private Timestamp createdAt;
-    private Set<Answer> answers = new HashSet<>();
+    private Set<Answer> answers = new LinkedHashSet<>();
     private CategoryResponse category;
 }

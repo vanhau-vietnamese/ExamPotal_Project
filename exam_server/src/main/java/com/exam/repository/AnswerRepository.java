@@ -10,13 +10,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Query("SELECT ans.id FROM Answer ans WHERE ans.question.id = :questionId AND ans.isCorrect = true")
     public List<Long> getCorrectAnswerFromQuestion(@Param("questionId") Long questionId);
 
-    public List<Answer> findAllByQuestion(Question question);
+    public Set<Answer> findAllByQuestion(Question question);
 
     @Transactional
     @Modifying
