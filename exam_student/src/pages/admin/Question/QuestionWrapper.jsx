@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { getQuestionTypes, getQuestions } from '~/apis';
 import { Backdrop } from '~/components';
@@ -6,12 +6,27 @@ import { useQuestionStore } from '~/store';
 import {
   CreateQuestionModal,
   FormEditQuestion,
+  QuestionDelete,
   QuestionTable,
   ViewDetailQuestion,
 } from './components';
 
+const ModalFormObj = {
+  ['view']: (
+    <Backdrop opacity={0.25}>
+      <ViewDetailQuestion />
+    </Backdrop>
+  ),
+  ['edit']: (
+    <Backdrop opacity={0.25}>
+      <FormEditQuestion />
+    </Backdrop>
+  ),
+  ['delete']: <QuestionDelete />,
+};
+
 function QuestionWrapper() {
-  const { setQuestionList, isEditing, targetQuestion, setQuestionType } = useQuestionStore(
+  const { setQuestionList, modal, targetQuestion, setQuestionType } = useQuestionStore(
     (state) => state
   );
 
@@ -37,7 +52,7 @@ function QuestionWrapper() {
   }, [setQuestionList, setQuestionType]);
 
   return (
-    <Fragment>
+    <>
       <div className="w-full">
         <div className="flex items-center w-full justify-between">
           <div />
@@ -48,13 +63,8 @@ function QuestionWrapper() {
         </div>
       </div>
 
-      {targetQuestion && (
-        <Backdrop opacity={0.25}>
-          {' '}
-          {isEditing ? <FormEditQuestion /> : <ViewDetailQuestion />}
-        </Backdrop>
-      )}
-    </Fragment>
+      {targetQuestion && modal && ModalFormObj[modal]}
+    </>
   );
 }
 

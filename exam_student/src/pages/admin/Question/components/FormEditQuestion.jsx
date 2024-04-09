@@ -11,7 +11,7 @@ import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
 
 export default function EditQuestion() {
-  const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes, updateQuestion } =
+  const { openModal, setTargetQuestion, targetQuestion, questionTypes, updateQuestion } =
     useQuestionStore((state) => state);
   const {
     control,
@@ -87,7 +87,7 @@ export default function EditQuestion() {
   };
   const onClose = () => {
     setTargetQuestion(null);
-    setIsEditing(false);
+    openModal(null);
   };
 
   const onRadioChange = (index) => {
@@ -104,7 +104,7 @@ export default function EditQuestion() {
   };
 
   return (
-    <div className="w-full h-full mx-auto max-w-5xl p-10">
+    <div className="w-full h-full mx-auto max-w-5xl p-10 animate-fade-down animate-duration-500">
       <form
         className="w-full h-full bg-white rounded-lg flex flex-col justify-between"
         onSubmit={handleSubmit(handleEditQuestion)}
@@ -174,7 +174,7 @@ export default function EditQuestion() {
         <div className="flex items-center justify-end px-4 py-3 gap-x-5 border-t border-dashed border-strike">
           <Button
             type="button"
-            className="px-6 py-2 text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
+            className="px-6 py-2 text-sm !border border-solid !border-danger text-danger hover:bg-danger hover:bg-opacity-10"
             onClick={() => onClose()}
           >
             Hủy bỏ

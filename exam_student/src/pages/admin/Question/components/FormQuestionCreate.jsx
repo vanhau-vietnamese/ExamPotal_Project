@@ -66,7 +66,6 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
       };
 
       const response = await createQuestion(body);
-      console.log('RES', response);
       if (response) {
         addNewQuestion(response);
         toast.success('Tạo mới câu hỏi thành công', { toastId: 'create_question' });
@@ -91,7 +90,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   };
 
   return (
-    <div className="w-full h-full mx-auto max-w-5xl p-10">
+    <div className="h-full mx-auto container  max-w-5xl p-10 animate-fade-down animate-duration-500">
       <form
         className="w-full h-full bg-white rounded-lg flex flex-col justify-between"
         onSubmit={handleSubmit(handleCreateQuestion)}
@@ -165,7 +164,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
         <div className="flex items-center justify-end px-4 py-3 gap-x-5 border-t border-dashed border-strike">
           <Button
             type="button"
-            className="px-6 py-2 text-sm !border !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
+            className="px-6 py-2 text-sm !border border-solid !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
             onClick={onClose}
           >
             Hủy bỏ

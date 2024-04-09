@@ -7,18 +7,18 @@ export default function AnswerList({ answers }) {
     <div className="mt-5">
       {answers.map((answer, index) => (
         <div key={index}>
-          <p>
-            Đáp án {index + 1}: {answer.content}
-          </p>
+          <p className="border border-spacing-5 rounded-md p-3 m-3">{answer.content}</p>
         </div>
       ))}
       <label className="flex items-center mb-5">
         <div className="flex">
           {correctAnswers && correctAnswers.length > 0 && (
-            <div>
-              <p className="mt-5 font-bold text-green-700 ">Đáp án đúng:</p>
+            <div className="flex">
+              <p className="mt-5 font-bold text-green-700">Đáp án đúng:</p>
               {correctAnswers.map((correctAnswer, index) => (
-                <p key={index}>{correctAnswer.content}</p>
+                <p className="mt-5 ml-2" key={index}>
+                  {correctAnswer.content}
+                </p>
               ))}
             </div>
           )}

@@ -11,7 +11,12 @@ const compiledConvert = compile({
 });
 
 function QuestionTable() {
-  const { questionList, setIsEditing, setTargetQuestion } = useQuestionStore((state) => state);
+  const { questionList, openModal, setTargetQuestion } = useQuestionStore((state) => state);
+
+  const handleOpenModal = ({ type, question }) => {
+    setTargetQuestion(question);
+    openModal(type);
+  };
 
   return (
     <div className="mt-5 relative sm:rounded bg-white shadow-card w-full max-h-full overflow-hidden">
@@ -47,21 +52,21 @@ function QuestionTable() {
                 <td className="p-3 flex-shrink-0 w-[12%]">
                   <div className="flex items-center justify-center gap-x-2">
                     <Button
-                      onClick={() => setTargetQuestion(question)}
+                      onClick={() => handleOpenModal({ type: 'view', question })}
                       className="text-xs rounded px-2 py-1 text-orange-500 hover:bg-orange-200 hover:bg-opacity-40"
                     >
                       <Icons.Eye />
                     </Button>
                     <Button
-                      onClick={() => {
-                        setTargetQuestion(question);
-                        setIsEditing(true);
-                      }}
+                      onClick={() => handleOpenModal({ type: 'edit', question })}
                       className="text-xs rounded px-2 py-1 text-blue-500 hover:bg-blue-200 hover:bg-opacity-40"
                     >
                       <Icons.Pencil />
                     </Button>
-                    <Button className="text-xs rounded px-2 py-1 text-danger hover:bg-red-200 hover:bg-opacity-40">
+                    <Button
+                      onClick={() => handleOpenModal({ type: 'delete', question })}
+                      className="text-xs rounded px-2 py-1 text-danger hover:bg-red-200 hover:bg-opacity-40"
+                    >
                       <Icons.Trash />
                     </Button>
                   </div>
