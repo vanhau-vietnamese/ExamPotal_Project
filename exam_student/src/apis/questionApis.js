@@ -32,6 +32,15 @@ export const editQuestion = async (id, body) => {
     return (await axiosClient.put(`/question/edit/${id}`, body)).data;
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to create question');
+    throw new Error('Failed to edit question');
+  }
+};
+
+export const deleteQuestion = async (id) => {
+  try {
+    return (await axiosClient.put(`/question/delete/${id}`)).data;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to delete question');
   }
 };

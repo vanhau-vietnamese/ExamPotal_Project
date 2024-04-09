@@ -11,7 +11,9 @@ const compiledConvert = compile({
 });
 
 function QuestionTable() {
-  const { questionList, setIsEditing, setTargetQuestion } = useQuestionStore((state) => state);
+  const { questionList, setIsEditing, setIsDeleting, setTargetQuestion } = useQuestionStore(
+    (state) => state
+  );
 
   return (
     <div className="mt-5 relative sm:rounded bg-white shadow-card w-full max-h-full overflow-hidden">
@@ -61,7 +63,13 @@ function QuestionTable() {
                     >
                       <Icons.Pencil />
                     </Button>
-                    <Button className="text-xs rounded px-2 py-1 text-danger hover:bg-red-200 hover:bg-opacity-40">
+                    <Button
+                      onClick={() => {
+                        setTargetQuestion(question);
+                        setIsDeleting(true);
+                      }}
+                      className="text-xs rounded px-2 py-1 text-danger hover:bg-red-200 hover:bg-opacity-40"
+                    >
                       <Icons.Trash />
                     </Button>
                   </div>

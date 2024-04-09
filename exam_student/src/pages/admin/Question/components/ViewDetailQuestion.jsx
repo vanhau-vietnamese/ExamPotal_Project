@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { getAllCategories } from '~/apis';
 import { Button, EditorViewer, FormSelect } from '~/components';
 import { useQuestionStore } from '~/store';
 import { FormQuestionCreateSchema } from '~/validations';
-import AnswersCreate from './AnswersCreate';
+import AnswerList from '~/layouts/components/AnswerList';
 
 export default function EditQuestion() {
   const { setIsEditing, setTargetQuestion, targetQuestion, questionTypes } = useQuestionStore(
@@ -28,11 +28,6 @@ export default function EditQuestion() {
         isCorrect: Boolean(item.correct),
       })),
     },
-  });
-
-  const { fields } = useFieldArray({
-    control,
-    name: 'answers',
   });
 
   const [categories, setCategories] = useState([]);
@@ -99,18 +94,8 @@ export default function EditQuestion() {
                 <strong className="text-error"> *</strong>
               </label>
             </div>
-            <div className="flex flex-col gap-4">
-              {fields.map((_, index) => (
-                <AnswersCreate
-                  key={_.id}
-                  control={control}
-                  name={`answers.${index}`}
-                  inputName="answers"
-                  readOnly={true}
-                  error={errors?.answers?.[index]}
-                  type={targetQuestion?.questionType.alias}
-                />
-              ))}
+            <div>
+              <AnswerList answers={targetQuestion.answers} />
             </div>
           </div>
         </div>

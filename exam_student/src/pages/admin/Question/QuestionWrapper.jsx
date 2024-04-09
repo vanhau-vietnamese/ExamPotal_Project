@@ -6,14 +6,14 @@ import { useQuestionStore } from '~/store';
 import {
   CreateQuestionModal,
   FormEditQuestion,
+  FormSubmitDelete,
   QuestionTable,
   ViewDetailQuestion,
 } from './components';
 
 function QuestionWrapper() {
-  const { setQuestionList, isEditing, targetQuestion, setQuestionType } = useQuestionStore(
-    (state) => state
-  );
+  const { setQuestionList, isEditing, isDeleting, targetQuestion, setQuestionType } =
+    useQuestionStore((state) => state);
 
   useEffect(() => {
     (async () => {
@@ -52,6 +52,12 @@ function QuestionWrapper() {
         <Backdrop opacity={0.25}>
           {' '}
           {isEditing ? <FormEditQuestion /> : <ViewDetailQuestion />}
+        </Backdrop>
+      )}
+
+      {targetQuestion && isDeleting && (
+        <Backdrop opacity={0.25}>
+          <FormSubmitDelete />
         </Backdrop>
       )}
     </Fragment>

@@ -1,30 +1,25 @@
-import { DatatestQuestion } from '~/DatatestQuestion';
 import PropTypes from 'prop-types';
-import AnswerList from './AnswerList';
+import { useQuestionStore } from '~/store';
 
 export default function Question({ onQuestionSelect }) {
-  //
+  const { questionList } = useQuestionStore((state) => state);
+  console.log('QUES', questionList);
+  console.log('BBBBB', questionList.answers);
   const handleSelect = (questionID) => {
     onQuestionSelect(questionID);
   };
   return (
     <div className="p-1">
-      {DatatestQuestion.map((item) => (
+      <div>Nội dung</div>
+      {questionList.map((item) => (
         <div
           onClick={() => handleSelect(item.id)}
           key={item.id}
           className="border border-gray bg-white m-1 rounded-md shadow-md w-80%"
         >
-          <h2 className="text-sm font-semibold ml-5 mt-5">{item.question}</h2>
+          <h2 className="text-sm font-semibold ml-5 mt-5">Nội dung câu hỏi</h2>
           <ul className="ml-4 space-y-2">
-            <li>
-              <AnswerList answers={item.content} />
-              <label className="flex items-center mb-5">
-                <div className="flex">
-                  <span className="font-bold text-green-700">{item.isCorrect}</span>
-                </div>
-              </label>
-            </li>
+            <li>{/* <AnswerList answers={questionList.answers} /> */}</li>
           </ul>
         </div>
       ))}

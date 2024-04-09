@@ -1,17 +1,22 @@
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import { Button, FormInput } from '~/components';
-import DatePicker from 'react-datepicker';
+import { Button, FormInput, FormSelect } from '~/components';
 import 'react-datepicker/dist/react-datepicker.css';
 import PropTypes from 'prop-types';
 import { Question } from '~/layouts/components';
 import { Link } from 'react-router-dom';
 import { DatatestQuestion } from '~/DatatestQuestion';
 import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 import DetailQuestionChosse from './DetailQuestionChosse';
+import { getAllCategories } from '~/apis';
 
 const FormCreateExam = ({ onClose }) => {
-  const { control, handleSubmit } = useForm();
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
   const [showQuestionList, setShowQuestionList] = useState(false);
 
   // quản lý chọn câu hỏi từ component con
@@ -34,6 +39,27 @@ const FormCreateExam = ({ onClose }) => {
     console.log(selectedQuestions);
   }, [selectedQuestions]);
 
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const listCategories = await getAllCategories();
+
+        if (listCategories && listCategories.length > 0) {
+          setCategories(
+            listCategories.map((category) => ({
+              display: category.title,
+              value: category.id,
+            }))
+          );
+        }
+      } catch (error) {
+        toast.error(error.message, { toastId: 'fetch_question' });
+      }
+    })();
+  }, []);
+
   const handleFormSubmit = (data) => {
     console.log(data);
   };
@@ -46,52 +72,34 @@ const FormCreateExam = ({ onClose }) => {
 
   return (
     <div className="flex items-center justify-center pt-6">
-      <div className="container mx-auto p-4 bg-slate-100 rounded-md w-full">
+      <div className="container mx-auto p-4 bg-slate-100 rounded-md w-[1000px]">
         <h3 className="mb-5">Tạo bài tập</h3>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="w-full">
           <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full md:w-1/3 px-3 mb-4 md:mb-0">
-              <FormInput
-                control={control}
-                name="examName"
-                title="Tên bài tập"
-                placeholder="Nhập tên bài tập"
-                required
-              />
-            </div>
-            <div className="w-full md:w-1/3 px-3 mb-4 md:mb-0">
-              <FormInput
-                control={control}
-                name="languages"
-                title="Ngôn ngữ"
-                placeholder="Chọn ngôn ngữ"
-                required
-              />
-            </div>
-            <div className="w-full md:w-1/3 px-3 mb-4 md:mb-0">
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-gray-500 text-sm font-bold mb-2">
-                  Hạn nộp
-                </label>
-                <Controller
-                  name="deadline"
+            <div className="w-full flex px-3">
+              <div className="m-3 w-[50%]">
+                <FormInput
                   control={control}
-                  render={({ field }) => (
-                    <DatePicker
-                      {...field}
-                      selected={field.value}
-                      onChange={(date) => field.onChange(date)}
-                      showTimeSelect
-                      timeFormat="HH:mm"
-                      timeIntervals={15}
-                      dateFormat="MMMM d, yyyy h:mm aa"
-                      placeholderText="Chọn hạn nộp"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-400 text-sm"
-                    />
-                  )}
+                  name="examName"
+                  title="Tên bài tập"
+                  placeholder="Nhập tên bài tập"
+                  required
+                />
+              </div>
+
+              <div className="m-3 w-[50%]">
+                <FormSelect
+                  control={control}
+                  name="category"
+                  label="Danh mục"
+                  placeholder="Chọn danh mục..."
+                  required
+                  error={errors.category?.message}
+                  options={categories}
                 />
               </div>
             </div>
+
             <div>
               <Button
                 type="button"
