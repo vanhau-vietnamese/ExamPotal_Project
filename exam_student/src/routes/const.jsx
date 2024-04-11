@@ -9,7 +9,6 @@ const router = {
   exam: '/admin/exam',
   signIn: '/auth/sign-in',
   signUp: '/auth/sign-up',
-  detailExam: '/admin/exam/detailExam',
   listQuestionChosse: '/admin/exam/listQuestionChosse',
 };
 

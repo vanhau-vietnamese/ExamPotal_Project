@@ -17,8 +17,8 @@ export default function ExamList() {
     setIsCreatingExam(true);
   };
 
-  const handleOpenModal = ({ type, exam }) => {
-    setTargetExam(exam);
+  const handleOpenModal = ({ type, item }) => {
+    setTargetExam(item);
     openModal(type);
   };
 

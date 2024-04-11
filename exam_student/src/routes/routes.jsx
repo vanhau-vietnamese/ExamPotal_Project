@@ -1,12 +1,12 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import NotFound from '~/pages/NotFound';
-import { DetailExam, ExamList } from '~/pages/admin/Exam';
 import Overview from '~/pages/admin/Overview';
 import { QuestionWrapper } from '~/pages/admin/Question';
 import { SignInPage, SignUpPage } from '~/pages/auth';
 import { StartPractice, StudentExcises } from '~/pages/student';
 import router from './const';
+import ExamWrapper from '~/pages/admin/Exam/ExamWrapper';
 
 const routes = createBrowserRouter([
   {
@@ -34,12 +34,9 @@ const routes = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <ExamList />,
+                element: <ExamWrapper />,
               },
-              {
-                path: 'detailExam',
-                element: <DetailExam />,
-              },
+              
             ],
           },
         ],

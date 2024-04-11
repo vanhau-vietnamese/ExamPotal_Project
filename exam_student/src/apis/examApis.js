@@ -11,9 +11,25 @@ export const createExam = async (data) => {
 
   export const getExams = async () => {
     try {
-      const a = (await axiosClient.get('/quiz/')).data;
-      console.log("NHU", a);
-      // return (await axiosClient.get('/quiz/')).data;
+      return (await axiosClient.get('/quiz/')).data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get exam');
+    }
+  };
+
+  export const getQuesOfQuiz = async (id) => {
+    try {
+      return (await axiosClient.get(`/question/quiz/${id}`)).data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get exam');
+    }
+  };
+
+  export const updateQuiz = async (id, body) => {
+    try {
+      return (await axiosClient.put(`/quiz/update/${id}`, body)).data;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to get exam');
