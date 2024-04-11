@@ -1,73 +1,65 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { Button, FormInput, FormSelect } from '~/components';
-import 'react-datepicker/dist/react-datepicker.css';
 import PropTypes from 'prop-types';
 import { Question } from '~/layouts/components';
-import { Link } from 'react-router-dom';
-import { DatatestQuestion } from '~/DatatestQuestion';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import DetailQuestionChosse from './DetailQuestionChosse';
-import { getAllCategories } from '~/apis';
+import { createExam } from '~/apis';
+import Icons from '~/assets/icons';
+import { useExamStore } from '~/store';
 
-const FormCreateExam = ({ onClose }) => {
+const FormCreateExam = ({ onClose, cate }) => {
+  const { addNewExam } = useExamStore((state) => state);
   const {
     control,
     formState: { errors },
     handleSubmit,
   } = useForm();
   const [showQuestionList, setShowQuestionList] = useState(false);
-
-  // quản lý chọn câu hỏi từ component con
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
   const handleQuestionSelect = (questionID) => {
     if (selectedQuestions && selectedQuestions.includes(questionID)) {
-      // ktra câu hỏi có bị chọn trùng không, nếu chọn lại lần nữa thì loại khỏi danh sách
       setSelectedQuestions(selectedQuestions.filter((id) => id !== questionID));
     } else {
       setSelectedQuestions([...selectedQuestions, questionID]);
     }
   };
 
-  const contentQuestionByID = () => {
-    return DatatestQuestion.filter((question) => selectedQuestions.includes(question.id)); // trả về 1 mảng câu hỏi được chọn
-  };
-
   useEffect(() => {
     console.log(selectedQuestions);
   }, [selectedQuestions]);
 
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const listCategories = await getAllCategories();
-
-        if (listCategories && listCategories.length > 0) {
-          setCategories(
-            listCategories.map((category) => ({
-              display: category.title,
-              value: category.id,
-            }))
-          );
-        }
-      } catch (error) {
-        toast.error(error.message, { toastId: 'fetch_question' });
-      }
-    })();
-  }, []);
-
-  const handleFormSubmit = (data) => {
-    console.log(data);
+  const handleChooseFromBank = () => {
+    setShowQuestionList(true);
   };
 
-  const handleChooseFromBank = () => {
-    console.log('Chọn câu hỏi từ kho');
-    // Cập nhật state để hiển thị danh sách câu hỏi
-    setShowQuestionList(true);
+  const handleFormSubmit = async (data) => {
+    try {
+      const body = {
+        title: data.examName,
+        categoryId: data.category,
+        description: null,
+        maxMarks: 100,
+        durationMinutes: null,
+        listQuestion: selectedQuestions.map((index) => ({
+          questionId: index,
+          marksOfQuestion: 1,
+        })),
+      };
+
+      const response = await createExam(body);
+      console.log('RESPONE', response);
+
+      if (response) {
+        addNewExam(response);
+        toast.success('Tạo mới bài tập thành công', { toastId: 'create_exam' });
+        onClose();
+      }
+    } catch (error) {
+      toast.error(error.message, { toastId: 'create_exam' });
+    }
   };
 
   return (
@@ -95,7 +87,7 @@ const FormCreateExam = ({ onClose }) => {
                   placeholder="Chọn danh mục..."
                   required
                   error={errors.category?.message}
-                  options={categories}
+                  options={cate}
                 />
               </div>
             </div>
@@ -104,9 +96,9 @@ const FormCreateExam = ({ onClose }) => {
               <Button
                 type="button"
                 onClick={handleChooseFromBank}
-                className="border border-gray-400 p-2 ml-3"
+                className="border border-gray-500 p-2 ml-3 flex text-sm"
               >
-                Chọn câu hỏi
+                Chọn câu hỏi <Icons.DownArrow />
               </Button>
             </div>
           </div>
@@ -114,12 +106,15 @@ const FormCreateExam = ({ onClose }) => {
           {showQuestionList && (
             <div className="mb-4">
               <div className="flex text-sm">
-                <Link className="text-lg font-semibold mb-2 mr-5">Danh sách câu hỏi</Link>
+                <span className="text-sm font-semibold mb-2 mr-5">Danh sách câu hỏi</span>
+                <span className="text-sm font-semibold mb-2 mr-5">Số câu đã chọn: </span>
               </div>
               <div className="bg-gray-400 w-full rounded-md">
                 <div className="max-h-[500px] overflow-y-auto">
-                  <Question onQuestionSelect={handleQuestionSelect} />
-                  <DetailQuestionChosse questions={contentQuestionByID()} />
+                  <Question
+                    selectQues={selectedQuestions}
+                    onQuestionSelect={handleQuestionSelect}
+                  />
                 </div>
               </div>
             </div>
@@ -150,4 +145,5 @@ export default FormCreateExam;
 
 FormCreateExam.propTypes = {
   onClose: PropTypes.func,
+  cate: PropTypes.array.isRequired,
 };

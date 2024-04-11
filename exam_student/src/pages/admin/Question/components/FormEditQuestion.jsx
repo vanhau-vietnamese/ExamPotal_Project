@@ -38,9 +38,6 @@ export default function EditQuestion() {
   });
 
   const [categories, setCategories] = useState([]);
-
-  //
-
   useEffect(() => {
     (async () => {
       try {
@@ -55,7 +52,7 @@ export default function EditQuestion() {
           );
         }
       } catch (error) {
-        toast.error(error.message, { toastId: 'fetch_question' });
+        toast.error(error.message, { toastId: 'fetch_caterogy' });
       }
     })();
   }, []);

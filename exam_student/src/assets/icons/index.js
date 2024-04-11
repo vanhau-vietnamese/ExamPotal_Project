@@ -16,8 +16,12 @@ import Trash from './Trash';
 import Pencil from './Pencil';
 import Plus from './Plus';
 import Check from './Check';
+
 import Exclamation from './Exclamation';
 import CheckCircle from './CheckCircle';
+
+import DownArrow from './DownArrow';
+
 
 export default {
   Exclamation,
@@ -40,4 +44,5 @@ export default {
   Question,
   BookOpen,
   LogOut,
+  DownArrow,
 };

@@ -1,40 +1,18 @@
-import { useEffect } from 'react';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+
 import PropTypes from 'prop-types';
-import { axiosClient, getAllCategories } from '~/apis';
+import { axiosClient } from '~/apis';
 import Icons from '~/assets/icons';
 import { Button } from '~/components';
 
-const CreateLanguages = ({ onRemove }) => {
+const CreateLanguages = ({ onRemove, cate }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [newLanguage, setNewLanguage] = useState('');
   const [languages, setLanguages] = useState([]);
-  const [categories, setCategories] = useState([]);
-
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const listCategories = await getAllCategories();
-
-        if (listCategories && listCategories.length > 0) {
-          setCategories(
-            listCategories.map((category) => ({
-              display: category.title,
-              value: category.id,
-            }))
-          );
-        }
-      } catch (error) {
-        toast.error(error.message, { toastId: 'fetch_question' });
-      }
-    })();
-  }, [categories]);
 
   const selectLanguage = (language) => {
     setSelectedLanguage(language);
@@ -80,7 +58,7 @@ const CreateLanguages = ({ onRemove }) => {
       </button>
       {isOpen && (
         <div className="absolute left-0 mt-2 max-w-[200px] origin-top-left border border-gray-400 bg-white divide-y divide-gray-100 rounded-md shadow-lg ">
-          {categories.map((categoris, index) => (
+          {cate.map((categoris, index) => (
             <div key={index} className="flex">
               <button
                 onClick={() => selectLanguage(categoris.display)}
@@ -117,4 +95,5 @@ export default CreateLanguages;
 
 CreateLanguages.propTypes = {
   onRemove: PropTypes.func,
+  cate: PropTypes.array.isRequired,
 };

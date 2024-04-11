@@ -1,18 +1,46 @@
-import { Link } from 'react-router-dom';
-import { router } from '~/routes';
 import { Backdrop, Button } from '~/components';
 import { useState } from 'react';
 import FormCreateExam from './FormCreateExam';
 import Icons from '~/assets/icons';
-import { TestData } from '~/TestData';
+import moment from 'moment';
 import CreateLanguages from './CreateLanguages';
+import { useEffect } from 'react';
+import { getAllCategories } from '~/apis';
+import { toast } from 'react-toastify';
+import { useExamStore } from '~/store';
 
 export default function ExamList() {
+  const { examList, setTargetExam, openModal } = useExamStore((state) => state);
   const [isCreatingExam, setIsCreatingExam] = useState(false);
 
   const handleCreateExam = () => {
     setIsCreatingExam(true);
   };
+
+  const handleOpenModal = ({ type, exam }) => {
+    setTargetExam(exam);
+    openModal(type);
+  };
+
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const listCategories = await getAllCategories();
+
+        if (listCategories && listCategories.length > 0) {
+          setCategories(
+            listCategories.map((category) => ({
+              display: category.title,
+              value: category.id,
+            }))
+          );
+        }
+      } catch (error) {
+        toast.error(error.message, { toastId: 'fetch_question' });
+      }
+    })();
+  }, []);
 
   return (
     <div className="relative overflow-x-auto sm:rounded-lg w-full">
@@ -38,7 +66,7 @@ export default function ExamList() {
       <div className="pb-4 bg-white rounded-md">
         <div className="relative m-2 p-2 flex justify-between">
           <div className=" z-10">
-            <CreateLanguages />
+            <CreateLanguages cate={categories} />
           </div>
         </div>
         <div className="mt-5 relative sm:rounded bg-white shadow-card w-full max-h-full overflow-hidden">
@@ -55,25 +83,38 @@ export default function ExamList() {
               </tr>
             </thead>
             <tbody className="overflow-y-scroll">
-              {TestData.map((item) => (
+              {examList.map((item, index) => (
                 <tr
                   key={item.id}
                   className="flex items-center border-b border-[#d1d2de] transition-all hover:bg-[#d1d2de] hover:bg-opacity-30 max-h-fit font-semibold text-[#3b3e66]"
                 >
-                  <td className="p-3 w-[5%] min-w-[50px]">{item.id}</td>
-                  <td className="p-3 w-[450px] break-words">{item.tittel}</td>
-                  <td className="p-3 flex-shrink-0 w-[100px] break-words">{item.number}</td>
-                  <td className="p-3 flex-shrink-0 w-[200px] break-words">{item.date}</td>
+                  <td className="p-3 w-[5%] min-w-[50px]">{index + 1}</td>
+                  <td className="p-3 w-[450px] break-words">{item.title}</td>
+                  <td className="p-3 flex-shrink-0 w-[100px] break-words">
+                    {item.numberOfQuestions}
+                  </td>
+                  <td className="p-3 overflow-hidden flex-shrink-0 w-[13%]" align="left">
+                    {moment(item.createdAt).format('HH:mm, DD/MM/YYYY')}
+                  </td>
                   <td className="p-3 flex flex-shrink-0 w-[200px]">
-                    <Link
-                      to={router.detailExam}
-                      className="font-medium text-yellow-600 dark:text-yellow-500 hover:underline"
+                    <Button
+                      onClick={() => handleOpenModal({ type: 'view', item })}
+                      className="text-xs rounded px-2 py-1 text-yellow-500 hover:bg-yellow-200 hover:bg-opacity-40"
                     >
                       <Icons.Eye />
-                    </Link>
-                    <Link className="ml-5 font-medium text-red-600 dark:text-red-500 hover:underline">
+                    </Button>
+                    <Button
+                      onClick={() => handleOpenModal({ type: 'edit', item })}
+                      className="text-xs rounded px-2 py-1 text-blue-500 hover:bg-blue-200 hover:bg-opacity-40"
+                    >
+                      <Icons.Pencil />
+                    </Button>
+                    <Button
+                      onClick={() => handleOpenModal({ type: 'delete', item })}
+                      className="text-xs rounded px-2 py-1 text-red-500 hover:bg-red-200 hover:bg-opacity-40"
+                    >
                       <Icons.Trash />
-                    </Link>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -83,7 +124,7 @@ export default function ExamList() {
       </div>
       {isCreatingExam && (
         <Backdrop opacity={0.35} className="overflow-auto">
-          <FormCreateExam onClose={() => setIsCreatingExam(false)} />
+          <FormCreateExam cate={categories} onClose={() => setIsCreatingExam(false)} />
         </Backdrop>
       )}
     </div>

@@ -64,7 +64,6 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
           correct: answer.isCorrect,
         })),
       };
-
       const response = await createQuestion(body);
       if (response) {
         addNewQuestion(response);
