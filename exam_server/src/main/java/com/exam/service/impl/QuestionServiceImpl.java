@@ -2,6 +2,7 @@ package com.exam.service.impl;
 
 import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.QuestionRequest;
+import com.exam.dto.response.AnswerResponse;
 import com.exam.dto.response.CategoryResponse;
 import com.exam.dto.response.QuestionResponse;
 import com.exam.dto.response.QuestionTypeResponse;
@@ -11,6 +12,7 @@ import com.exam.service.QuestionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +66,7 @@ public class QuestionServiceImpl implements QuestionService {
         questionTypeResponse.setAlias(question.getQuestionType().getAlias());
         questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
 
-        QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+        QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse, null);
         return ResponseEntity.ok(questionResponse);
     }
 
@@ -115,7 +117,7 @@ public class QuestionServiceImpl implements QuestionService {
         questionTypeResponse.setAlias(question.getQuestionType().getAlias());
         questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
 
-        QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+        QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse, null);
         return ResponseEntity.ok(questionResponse);
     }
 
@@ -138,7 +140,7 @@ public class QuestionServiceImpl implements QuestionService {
             QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
             questionTypeResponse.setAlias(question.getQuestionType().getAlias());
             questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());  
-            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse, null);
 
             return ResponseEntity.ok(questionResponse);
         }
@@ -150,16 +152,33 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = questionRepository.findAllByStatus(EStatus.Active);
         List<QuestionResponse> questionResponses = new ArrayList<>();
 
-        GetQuestionResponseList(questionResponses, questions);
+        GetQuestionResponseList(questionResponses, questions, null);
 
         return ResponseEntity.ok(questionResponses);
     }
 
-    private QuestionResponse getQuestionResponse(Question question, QuestionTypeResponse questionTypeResponse) {
+    @NotNull
+    private static Set<AnswerResponse> getAnswerResponses(Set<Answer> answerList) {
+        Set<AnswerResponse> answerResponseSet = new LinkedHashSet<>();
+        for(Answer answer : answerList){
+            AnswerResponse answerResponse = new AnswerResponse();
+            answerResponse.setId(answer.getId());
+            answerResponse.setContent(answer.getContent());
+            answerResponse.setMedia(answer.getMedia());
+            answerResponse.setCreatedAt(answer.getCreatedAt());
+
+            answerResponseSet.add(answerResponse);
+        }
+        return answerResponseSet;
+    }
+
+    private QuestionResponse getQuestionResponse(Question question, QuestionTypeResponse questionTypeResponse, Object additionalField) {
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setId(question.getCategory().getId());
         categoryResponse.setTitle(question.getCategory().getTitle());
         categoryResponse.setDescription(question.getCategory().getDescription());
+
+        Set<AnswerResponse> answerResponseSet = getAnswerResponses(question.getAnswers());
 
         QuestionResponse questionResponse = new QuestionResponse();
         questionResponse.setId(question.getId());
@@ -167,8 +186,13 @@ public class QuestionServiceImpl implements QuestionService {
         questionResponse.setMedia(question.getMedia());
         questionResponse.setCreatedAt(question.getCreatedAt());
         questionResponse.setQuestionType(questionTypeResponse);
-        questionResponse.setAnswers(question.getAnswers());
+        questionResponse.setAnswers(answerResponseSet);
         questionResponse.setCategory(categoryResponse);
+
+        // add marksOfquestion
+        Map<String, Object> additionalFields = new HashMap<>();
+        additionalFields.put("marksOfQuestion", additionalField);
+        questionResponse.setAdditionalFields(additionalFields);
         return questionResponse;
     }
 
@@ -186,19 +210,25 @@ public class QuestionServiceImpl implements QuestionService {
         List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = quizQuestionRepository.getQuestionsOfQuiz(quizId);
         if(quiz.isPresent()){
-            GetQuestionResponseList(questionResponses, questions);
+            GetQuestionResponseList(questionResponses, questions, quiz.get());
             return ResponseEntity.ok(questionResponses);
         }
         return ResponseEntity.badRequest().body("Not Found Quiz");
     }
 
-    private void GetQuestionResponseList(List<QuestionResponse> questionResponses, List<Question> questions) {
+    private void GetQuestionResponseList(List<QuestionResponse> questionResponses, List<Question> questions, Quiz quiz) {
         for (Question question : questions){
+            Integer marksOfQuestion = null;
+            QuizQuestion quizQuestion = null;
+            if(quiz != null){
+                quizQuestion = quizQuestionRepository.findByQuizAndQuestion(quiz, question);
+                marksOfQuestion = quizQuestion.getMarksOfQuestion();
+            }
             QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
             questionTypeResponse.setAlias(question.getQuestionType().getAlias());
             questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
 
-            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse);
+            QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse, marksOfQuestion);
 
             questionResponses.add(questionResponse);
         }
@@ -210,7 +240,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = questionRepository.getQuestionsOfCategory(id);
         if(category.isPresent()){
-            GetQuestionResponseList(questionResponses, questions);
+            GetQuestionResponseList(questionResponses, questions, null);
             return ResponseEntity.ok(questionResponses);
         }
         return ResponseEntity.badRequest().body("Not Found Category");

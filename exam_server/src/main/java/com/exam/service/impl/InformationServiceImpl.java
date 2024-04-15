@@ -1,7 +1,7 @@
 package com.exam.service.impl;
 
 import com.exam.dto.request.StatisticRequest;
-import com.exam.dto.response.QuizResponse;
+import com.exam.dto.response.StatisticQuizResponse;
 import com.exam.dto.response.StatisticResponse;
 import com.exam.model.Quiz;
 import com.exam.model.User;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class InformationServiceImpl implements InformationService {
         for(UserQuizResult userQuizResult : userQuizResults){
             Quiz quiz = userQuizResult.getQuiz();
 
-            QuizResponse quizResponse = new QuizResponse();
+            StatisticQuizResponse quizResponse = new StatisticQuizResponse();
             quizResponse.setId(statisticRequest.getQuizId());
             quizResponse.setTitle(quiz.getTitle());
             quizResponse.setDescription(quiz.getDescription());

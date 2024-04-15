@@ -14,6 +14,7 @@ import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.flogger.Flogger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

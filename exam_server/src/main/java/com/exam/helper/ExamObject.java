@@ -1,5 +1,6 @@
-package com.exam.dto.response;
+package com.exam.helper;
 
+import com.exam.dto.response.QuestionResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,8 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class QuizResponse {
-    private Long userQuizResultId;
+public class ExamObject {
     private Long quizId;
     private String title;
     private String description;

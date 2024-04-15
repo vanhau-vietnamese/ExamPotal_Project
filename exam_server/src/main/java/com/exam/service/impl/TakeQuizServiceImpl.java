@@ -7,6 +7,7 @@ import com.exam.helper.AnswerObject;
 import com.exam.dto.request.QuestionChoiceRequest;
 import com.exam.dto.request.StartQuizRequest;
 import com.exam.dto.request.SubmitRequest;
+import com.exam.helper.ExamObject;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.TakeQuizService;
@@ -18,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,14 +49,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         String email = decodedToken.getEmail();
         User user = userRepository.findByEmail(email);
 
-        UserQuizResult userQuizResult = new UserQuizResult();
-        userQuizResult.setStartTime(startTime);
-        userQuizResult.setQuiz(quiz);
-        userQuizResult.setUser(user);
-
-        userQuizResultRepository.save(userQuizResult);
-
-
         // response bài làm lên cho học sinh làm
         List<Question> questionList = quizQuestionRepository.getQuestionsOfQuiz(startQuizRequest.getQuizId());
 
@@ -77,6 +67,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             categoryResponse.setDescription(question.getCategory().getDescription());
 
             Set<Answer> answerList = answerRepository.findAllByQuestion(question);
+            Set<AnswerResponse> answerResponseSet = getAnswerResponses(answerList);
 
             QuestionResponse questionResponse = new QuestionResponse();
             questionResponse.setId(question.getId());
@@ -84,28 +75,66 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             questionResponse.setMedia(question.getMedia());
             questionResponse.setCreatedAt(question.getCreatedAt());
             questionResponse.setCategory(categoryResponse);
-            questionResponse.setAnswers(answerList);
+            questionResponse.setContent(question.getContent());
+            questionResponse.setAnswers(answerResponseSet);
 
             questionResponseList.add(questionResponse);
         }
 
-        StartQuizResponse startQuizResponse = getStartQuizResponse(startQuizRequest, quiz, questionResponseList, userQuizResult);
+        ExamObject examObject = getExamObject(quiz, questionResponseList);
 
-        return ResponseEntity.status(HttpStatus.OK).body(startQuizResponse);
+        UserQuizResult userQuizResult = new UserQuizResult();
+        userQuizResult.setStartTime(startTime);
+        userQuizResult.setQuiz(quiz);
+        userQuizResult.setUser(user);
+        userQuizResult.setExam(examObject);
+        userQuizResultRepository.save(userQuizResult);
+
+        QuizResponse quizResponse = getQuizResponse(quiz, questionResponseList, userQuizResult);
+
+        return ResponseEntity.status(HttpStatus.OK).body(quizResponse);
     }
 
     @NotNull
-    private static StartQuizResponse getStartQuizResponse(StartQuizRequest startQuizRequest, Quiz quiz, List<QuestionResponse> questionResponseList, UserQuizResult userQuizResult) {
-        StartQuizResponse startQuizResponse = new StartQuizResponse();
-        startQuizResponse.setUserQuizResultId(userQuizResult.getId());
-        startQuizResponse.setQuizId(startQuizRequest.getQuizId());
-        startQuizResponse.setTitle(quiz.getTitle());
-        startQuizResponse.setDescription(quiz.getDescription());
-        startQuizResponse.setNumberOfQuestions(quiz.getNumberOfQuestions());
-        startQuizResponse.setMaxMarks(quiz.getMaxMarks());
-        startQuizResponse.setDurationMinutes(quiz.getDurationMinutes());
-        startQuizResponse.setQuestionResponseList(questionResponseList);
-        return startQuizResponse;
+    private static ExamObject getExamObject(Quiz quiz, List<QuestionResponse> questionResponseList) {
+        ExamObject examObject = new ExamObject();
+        examObject.setQuizId(quiz.getId());
+        examObject.setTitle(quiz.getTitle());
+        examObject.setDescription(quiz.getDescription());
+        examObject.setMaxMarks(quiz.getMaxMarks());
+        examObject.setDurationMinutes(quiz.getDurationMinutes());
+        examObject.setQuestionResponseList(questionResponseList);
+        examObject.setNumberOfQuestions(quiz.getNumberOfQuestions());
+        return examObject;
+    }
+
+    @NotNull
+    private static Set<AnswerResponse> getAnswerResponses(Set<Answer> answerList) {
+        Set<AnswerResponse> answerResponseSet = new LinkedHashSet<>();
+        for(Answer answer : answerList){
+            AnswerResponse answerResponse = new AnswerResponse();
+            answerResponse.setId(answer.getId());
+            answerResponse.setContent(answer.getContent());
+            answerResponse.setMedia(answer.getMedia());
+            answerResponse.setCreatedAt(answer.getCreatedAt());
+
+            answerResponseSet.add(answerResponse);
+        }
+        return answerResponseSet;
+    }
+
+    @NotNull
+    private static QuizResponse getQuizResponse(Quiz quiz, List<QuestionResponse> questionResponseList, UserQuizResult userQuizResult) {
+        QuizResponse quizResponse = new QuizResponse();
+        quizResponse.setUserQuizResultId(userQuizResult.getId());
+        quizResponse.setQuizId(quiz.getId());
+        quizResponse.setTitle(quiz.getTitle());
+        quizResponse.setDescription(quiz.getDescription());
+        quizResponse.setNumberOfQuestions(quiz.getNumberOfQuestions());
+        quizResponse.setMaxMarks(quiz.getMaxMarks());
+        quizResponse.setDurationMinutes(quiz.getDurationMinutes());
+        quizResponse.setQuestionResponseList(questionResponseList);
+        return quizResponse;
     }
 
     @Override
@@ -150,7 +179,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
 
             AnswersToChoose answersToChoose = getAnswersToChoose(answerList, selectedOptions);
 
-            userQuestionResult.setQuestionContent(question.getContent());
+            userQuestionResult.setQuestion(question.getContent());
             userQuestionResult.setAnswersToChoose(answersToChoose);
             userQuestionResult.setMarkOfQuestion(quizQuestion.getMarksOfQuestion());
             userQuestionResult.setUserQuizResult(userQuizResult);

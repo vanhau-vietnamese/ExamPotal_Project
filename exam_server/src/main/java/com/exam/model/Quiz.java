@@ -1,9 +1,7 @@
 package com.exam.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +36,7 @@ public class Quiz {
     private boolean status = true;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("quizzes")
+    @JsonIgnoreProperties("quizz es")
     @JoinColumn(name = "createBy", referencedColumnName = "id")
     private User createBy;
 

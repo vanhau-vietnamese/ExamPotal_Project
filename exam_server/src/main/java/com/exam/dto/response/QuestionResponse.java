@@ -9,9 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -22,6 +20,7 @@ public class QuestionResponse {
     private String content;
     private QuestionTypeResponse questionType;
     private Timestamp createdAt;
-    private Set<Answer> answers = new LinkedHashSet<>();
+    private Set<AnswerResponse> answers = new LinkedHashSet<>();
     private CategoryResponse category;
+    private Map<String, Object> additionalFields = new HashMap<>();
 }

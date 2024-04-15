@@ -1,12 +1,12 @@
 package com.exam.model;
 
-import com.exam.convert.AnswersToChooseConverter;
+
+import com.exam.convert.AnswerToChooseConverter;
+import com.exam.convert.JsonConverter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.google.gson.JsonObject;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 @Getter
 @Setter
@@ -20,13 +20,13 @@ public class UserQuestionResult {
     private boolean result;
     private boolean isDone;
 
-    private String questionContent;
+    private String question;
 
     @ManyToOne
     @JsonBackReference
     private UserQuizResult userQuizResult;
 
-    @Column(name = "answersToChoose", columnDefinition = "JSON")
-    @Convert(converter = AnswersToChooseConverter.class)
+    @Column(name = "answers", columnDefinition = "JSON")
+    @Convert(converter = AnswerToChooseConverter.class)
     private AnswersToChoose answersToChoose;
 }

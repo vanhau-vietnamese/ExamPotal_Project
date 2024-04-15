@@ -1,5 +1,7 @@
 package com.exam.model;
 
+import com.exam.convert.ExamObjectConverter;
+import com.exam.helper.ExamObject;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -45,6 +47,10 @@ public class UserQuizResult {
     @JsonBackReference
     @JoinColumn(name = "quizId")
     private Quiz quiz;
+
+    @Column(name = "exam", columnDefinition = "JSON")
+    @Convert(converter = ExamObjectConverter.class)
+    private ExamObject exam;
 
     public String calculateDuration(Timestamp startTime, Timestamp submitTime) {
         if (startTime != null && submitTime != null) {

@@ -4,11 +4,9 @@ import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.QuizQuestionRequest;
 import com.exam.dto.request.QuizRequest;
+import com.exam.dto.response.*;
 import com.exam.model.*;
-import com.exam.repository.CategoryRepository;
-import com.exam.repository.QuizQuestionRepository;
-import com.exam.repository.QuizRepository;
-import com.exam.repository.UserRepository;
+import com.exam.repository.*;
 import com.exam.service.QuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +25,7 @@ public class QuizServiceImpl implements QuizService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final QuizQuestionRepository quizQuestionRepository;
+    private final AnswerRepository answerRepository;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
         return ResponseEntity.ok(quizRepository.findAll());
@@ -75,11 +71,65 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public ResponseEntity<?> getQuiz(Long id) {
-        Optional<Quiz> quiz = quizRepository.findById(id);
-        if(quiz.isPresent()){
-            return ResponseEntity.ok(quiz.get());
+        Quiz quiz = quizRepository.findById(id).get();
+        if(quiz != null){
+            List<Question> questionList = quizQuestionRepository.getQuestionsOfQuiz(id);
+
+            List<QuestionResponse> questionResponseList = new ArrayList<>();
+
+            for(Question question : questionList){
+                // setQuestionTypeReponse
+                QuestionTypeResponse questionTypeResponse = new QuestionTypeResponse();
+                questionTypeResponse.setAlias(question.getQuestionType().getAlias());
+                questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
+
+                // setCategoryReponse
+                CategoryResponse categoryResponse = new CategoryResponse();
+                categoryResponse.setId(question.getCategory().getId());
+                categoryResponse.setTitle(question.getCategory().getTitle());
+                categoryResponse.setDescription(question.getCategory().getDescription());
+
+                Set<Answer> answerList = answerRepository.findAllByQuestion(question);
+                Set<AnswerResponse> answerResponseSet = getAnswerResponses(answerList);
+
+                QuestionResponse questionResponse = new QuestionResponse();
+                questionResponse.setId(question.getId());
+                questionResponse.setQuestionType(questionTypeResponse);
+                questionResponse.setMedia(question.getMedia());
+                questionResponse.setCreatedAt(question.getCreatedAt());
+                questionResponse.setCategory(categoryResponse);
+                questionResponse.setContent(question.getContent());
+                questionResponse.setAnswers(answerResponseSet);
+
+                questionResponseList.add(questionResponse);
+            }
+
+            QuizResponse quizResponse = new QuizResponse();
+            quizResponse.setQuizId(id);
+            quizResponse.setTitle(quiz.getTitle());
+            quizResponse.setDescription(quiz.getDescription());
+            quizResponse.setNumberOfQuestions(quiz.getNumberOfQuestions());
+            quizResponse.setDurationMinutes(quiz.getDurationMinutes());
+            quizResponse.setMaxMarks(quiz.getMaxMarks());
+            quizResponse.setQuestionResponseList(questionResponseList);
+
+            return ResponseEntity.ok(quizResponse);
         }
         return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+    }
+
+    private static Set<AnswerResponse> getAnswerResponses(Set<Answer> answerList) {
+        Set<AnswerResponse> answerResponseSet = new LinkedHashSet<>();
+        for(Answer answer : answerList){
+            AnswerResponse answerResponse = new AnswerResponse();
+            answerResponse.setId(answer.getId());
+            answerResponse.setContent(answer.getContent());
+            answerResponse.setMedia(answer.getMedia());
+            answerResponse.setCreatedAt(answer.getCreatedAt());
+
+            answerResponseSet.add(answerResponse);
+        }
+        return answerResponseSet;
     }
 
     @Override

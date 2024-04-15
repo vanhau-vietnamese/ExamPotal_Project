@@ -17,6 +17,6 @@ public class StatisticResponse {
     private int rank;
     private int numberOfCorrect;
     private int numberOfIncorrect;
-    private QuizResponse quizResponse;
+    private StatisticQuizResponse quizResponse;
 
 }
