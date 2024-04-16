@@ -44,3 +44,12 @@ export const deleteQuestion = async (id) => {
     throw new Error('Failed to delete question');
   }
 };
+
+export const getQuesOfCategory = async (id) => {
+  try {
+    return (await axiosClient.get(`/question/category/${id}`)).data;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to delete exam');
+  }
+};

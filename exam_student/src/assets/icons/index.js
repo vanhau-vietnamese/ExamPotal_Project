@@ -16,6 +16,7 @@ import Trash from './Trash';
 import Pencil from './Pencil';
 import Plus from './Plus';
 import Check from './Check';
+import Menu from './Menu';
 
 import Exclamation from './Exclamation';
 import CheckCircle from './CheckCircle';
@@ -45,4 +46,5 @@ export default {
   BookOpen,
   LogOut,
   DownArrow,
+  Menu,
 };

@@ -23,12 +23,12 @@ function QuestionTable() {
       <table className="block w-full text-sm text-left rtl:text-right border-collapse">
         <thead className="text-[#3b3e66] uppercase text-xs block w-full">
           <tr className="bg-[#d1d2de] rounded-se w-full flex items-center">
-            <th className="p-3 w-[6%] flex-shrink-0">Mã số</th>
+            <th className="p-3 w-[10%] flex-shrink-0">Mã số</th>
             <th className="p-3 flex-auto">Nội dung câu hỏi</th>
-            <th className="p-3 flex-shrink-0 w-[20%]">Loại câu hỏi</th>
-            <th className="p-3 flex-shrink-0 w-[20%]">Danh mục</th>
-            <th className="p-3 flex-shrink-0 w-[13%]">Thời gian tạo</th>
-            <th className="p-3 flex-shrink-0 w-[12%]" align="center">
+            <th className="p-3 flex-shrink-0 w-[15%]">Loại câu hỏi</th>
+            <th className="p-3 flex-shrink-0 w-[15%]">Danh mục</th>
+            <th className="p-3 flex-shrink-0 w-[20%]">Thời gian tạo</th>
+            <th className="p-3 flex-shrink-0 w-[15%]" align="center">
               Hành động
             </th>
           </tr>
@@ -45,11 +45,11 @@ function QuestionTable() {
                   {compiledConvert(question.content)}
                 </td>
                 <td className="p-3 flex-shrink-0 w-[20%]">{question.questionType?.displayName}</td>
-                <td className="p-3 flex-shrink-0 w-[20%]">{question.category?.title || '--'}</td>
-                <td className="p-3 overflow-hidden flex-shrink-0 w-[13%]" align="left">
+                <td className="p-3 flex-shrink-0 w-[13%]">{question.category?.title || '--'}</td>
+                <td className="p-3 overflow-hidden flex-shrink-0 w-[20%]" align="left">
                   {moment(question.createdAt).format('HH:mm, DD/MM/YYYY')}
                 </td>
-                <td className="p-3 flex-shrink-0 w-[12%]">
+                <td className="p-3 flex-shrink-0 w-[15%]">
                   <div className="flex items-center justify-center gap-x-2">
                     <Button
                       onClick={() => handleOpenModal({ type: 'view', question })}

@@ -7,6 +7,7 @@ import { SignInPage, SignUpPage } from '~/pages/auth';
 import { StartPractice, StudentExcises } from '~/pages/student';
 import router from './const';
 import ExamWrapper from '~/pages/admin/Exam/ExamWrapper';
+import { CreateCategory } from '~/pages/admin/Caterogy';
 
 const routes = createBrowserRouter([
   {
@@ -30,13 +31,16 @@ const routes = createBrowserRouter([
             element: <QuestionWrapper />,
           },
           {
+            path: 'category',
+            element: <CreateCategory />,
+          },
+          {
             path: 'exam',
             children: [
               {
                 index: true,
                 element: <ExamWrapper />,
               },
-              
             ],
           },
         ],

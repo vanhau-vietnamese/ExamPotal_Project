@@ -32,6 +32,34 @@ export const createExam = async (data) => {
       return (await axiosClient.put(`/quiz/update/${id}`, body)).data;
     } catch (error) {
       console.error(error);
-      throw new Error('Failed to get exam');
+      throw new Error('Failed to update exam');
     }
   };
+
+  export const deleteQuiz = async (id) => {
+    try {
+      return (await axiosClient.delete(`/quiz/delete/${id}`)).data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to delete exam');
+    }
+  };
+
+  export const getQuizOfCategory = async (id) => {
+    try {
+      return (await axiosClient.get(`/quiz/category/${id}`)).data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get quiz of category');
+    }
+  };
+
+  export const getQuizToStart = async (body) => {
+    try {
+      return (await axiosClient.post('/take_exam/start-quiz', body)).data;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to get quiz to start');
+    }
+  };
+  

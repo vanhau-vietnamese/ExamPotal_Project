@@ -11,14 +11,18 @@ export const useExamStore = create((set) => ({
   setTargetExam: (targetExam) => set({ targetExam }),
   updateExam: (targetExam) =>
     set((state) => {
-      const indexQues = state.examList.findIndex((exam) => {
+      const indexExam = state.examList.findIndex((exam) => {
         return exam.id === targetExam.id;
       });
-      if (indexQues === -1) {
+      if (indexExam === -1) {
         return state;
       }
       const cloneList = [...state.examList];
-      cloneList[indexQues] = targetExam;
+      cloneList[indexExam] = targetExam;
       return { examList: cloneList };
     }),
+    removeExam: (examId) =>
+    set((state) => ({
+      examList: state.examList.filter((exam) => exam.id !== examId),
+    })),
 }));

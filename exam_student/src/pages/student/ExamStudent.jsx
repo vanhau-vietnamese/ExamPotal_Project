@@ -18,7 +18,7 @@ export default function ExamStudent() {
           />
         </div>
         <div className="max-h-[500px] overflow-y-auto flex flex-wrap">
-          <PracticeItem></PracticeItem>
+          {/* <PracticeItem></PracticeItem> */}
         </div>
       </div>
     </div>

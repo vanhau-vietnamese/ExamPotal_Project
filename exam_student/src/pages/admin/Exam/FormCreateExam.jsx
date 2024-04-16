@@ -2,15 +2,16 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { Button, FormInput, FormSelect } from '~/components';
 import PropTypes from 'prop-types';
-import { Question } from '~/layouts/components';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { createExam } from '~/apis';
+import { createExam, getQuestions } from '~/apis';
 import Icons from '~/assets/icons';
-import { useExamStore } from '~/store';
+import { useExamStore, useQuestionStore } from '~/store';
+import Question from './Question';
 
 const FormCreateExam = ({ onClose, cate }) => {
   const { addNewExam } = useExamStore((state) => state);
+  const { questionList, setQuestionList } = useQuestionStore((state) => state);
   const {
     control,
     formState: { errors },
@@ -18,6 +19,8 @@ const FormCreateExam = ({ onClose, cate }) => {
   } = useForm();
   const [showQuestionList, setShowQuestionList] = useState(false);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const [quesPoint, setQuesPoint] = useState([]); // chứa quesID + Point
+  const [containerQues, setContainerQues] = useState([]);
 
   const handleQuestionSelect = (questionID) => {
     if (selectedQuestions && selectedQuestions.includes(questionID)) {
@@ -27,30 +30,40 @@ const FormCreateExam = ({ onClose, cate }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(selectedQuestions);
-  }, [selectedQuestions]);
-
   const handleChooseFromBank = () => {
     setShowQuestionList(true);
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const listQuestion = await getQuestions();
+        setQuestionList(listQuestion);
+        setContainerQues(listQuestion);
+      } catch (error) {
+        toast.error(error.message, { toastId: 'fetch_question' });
+      }
+    })();
+  }, [setQuestionList]);
+
   const handleFormSubmit = async (data) => {
     try {
+      console.log(quesPoint);
       const body = {
         title: data.examName,
         categoryId: data.category,
-        description: null,
-        maxMarks: 100,
-        durationMinutes: null,
-        listQuestion: selectedQuestions.map((index) => ({
-          questionId: index,
-          marksOfQuestion: 1,
+        description: data.description,
+        maxMarks: data.maxMarks,
+        durationMinutes: data.time,
+        listQuestion: quesPoint.map((q) => ({
+          questionId: q.id,
+          marksOfQuestion: parseInt(q.point) || 0,
         })),
       };
 
+      console.log({ body, quesPoint });
+
       const response = await createExam(body);
-      console.log('RESPONE', response);
 
       if (response) {
         addNewExam(response);
@@ -60,6 +73,23 @@ const FormCreateExam = ({ onClose, cate }) => {
     } catch (error) {
       toast.error(error.message, { toastId: 'create_exam' });
     }
+  };
+
+  const handlePointsChange = (id, value) => {
+    setQuesPoint((prev) => {
+      const foundPoint = prev.find((p) => p.id === id);
+      if (!foundPoint) {
+        return [...prev, { id, point: value }];
+      } else {
+        foundPoint.point = value;
+        return [...prev];
+      }
+    });
+  };
+
+  const handleCategoryForFilter = (e) => {
+    const cloneQuesList = [...questionList];
+    setContainerQues(cloneQuesList.filter((q) => q.category.id === parseInt(e)));
   };
 
   return (
@@ -77,6 +107,13 @@ const FormCreateExam = ({ onClose, cate }) => {
                   placeholder="Nhập tên bài tập"
                   required
                 />
+                <FormInput
+                  control={control}
+                  name="description"
+                  title="Mô tả"
+                  placeholder="Nhập mô tả bài tập"
+                  required
+                />
               </div>
 
               <div className="m-3 w-[50%]">
@@ -88,6 +125,25 @@ const FormCreateExam = ({ onClose, cate }) => {
                   required
                   error={errors.category?.message}
                   options={cate}
+                  onChange={handleCategoryForFilter}
+                />
+                <div className="mt-5">
+                  <FormInput
+                    control={control}
+                    name="maxMarks"
+                    title="Nhập điểm cho bài tập"
+                    placeholder="Nhập điểm"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="m-3 w-[50%]">
+                <FormInput
+                  control={control}
+                  name="time"
+                  title="Nhập thời gian làm bài cho bài tập"
+                  placeholder="Nhập thời gian làm bài"
+                  required
                 />
               </div>
             </div>
@@ -112,8 +168,10 @@ const FormCreateExam = ({ onClose, cate }) => {
               <div className="bg-gray-400 w-full rounded-md">
                 <div className="max-h-[500px] overflow-y-auto">
                   <Question
+                    onPointChange={handlePointsChange}
                     selectQues={selectedQuestions}
                     onQuestionSelect={handleQuestionSelect}
+                    listQuestion={containerQues}
                   />
                 </div>
               </div>
@@ -123,16 +181,16 @@ const FormCreateExam = ({ onClose, cate }) => {
           <div className="flex justify-center">
             <Button
               type="submit"
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 w-32 h-12 text-sm rounded m-1"
+              className="px-6 py-2 text-sm text-white bg-primary shadow-success hover:shadow-success_hover"
             >
               Tạo bài tập
             </Button>
             <Button
               type="button"
               onClick={onClose}
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 w-28 h-12 text-sm rounded m-1"
+              className="px-6 ml-5 py-2 text-sm !border border-solid !border-danger text-danger hover:bg-danger hover:bg-opacity-5"
             >
-              Thoát
+              Hủy
             </Button>
           </div>
         </form>

@@ -11,9 +11,14 @@ export default function FormSelect({
   error,
   disabled,
   defaultValue,
+  onChange,
   className = '',
 }) {
   const { field } = useController({ control, name, defaultValue });
+  const handleOnchange = (e) => {
+    field.onChange(e);
+    onChange(e);
+  };
   return (
     <Select
       label={label}
@@ -23,7 +28,7 @@ export default function FormSelect({
       options={options}
       required={required}
       value={field.value}
-      onChange={field.onChange}
+      onChange={handleOnchange}
       className={className}
     />
   );
@@ -39,4 +44,5 @@ FormSelect.propTypes = {
   disabled: PropTypes.bool,
   defaultValue: PropTypes.array,
   className: PropTypes.string,
+  onChange: PropTypes.func,
 };

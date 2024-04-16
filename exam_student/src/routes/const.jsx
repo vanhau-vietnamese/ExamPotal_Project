@@ -7,9 +7,9 @@ const router = {
   admin: '/admin',
   question: '/admin/question',
   exam: '/admin/exam',
+  category: '/admin/category',
   signIn: '/auth/sign-in',
   signUp: '/auth/sign-up',
-  listQuestionChosse: '/admin/exam/listQuestionChosse',
 };
 
 export const AdminNavLinks = [
@@ -28,6 +28,11 @@ export const AdminNavLinks = [
     name: 'Danh sách bài tập',
     icon: <Icons.Academic />,
   },
+  // {
+  //   path: router.category,
+  //   name: 'Danh mục',
+  //   icon: <Icons.Menu />,
+  // },
 ];
 
 export const StudentNavLinks = [

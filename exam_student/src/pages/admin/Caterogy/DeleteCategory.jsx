@@ -1,19 +1,18 @@
 import { toast } from 'react-toastify';
-import { deleteQuiz } from '~/apis';
+import { deleteCategory } from '~/apis';
 import Icons from '~/assets/icons';
 import { DialogComfirm } from '~/components';
-import { useExamStore } from '~/store';
+import PropTypes from 'prop-types';
 
-export default function DeleteExam() {
-  const { openModal, setTargetExam, targetExam, removeExam } = useExamStore((state) => state);
-
+export default function DeleteCategory({ cate }) {
+  console.log('Tới đây ròi', typeof cate);
   const handleDeleteExam = async () => {
     try {
-      const response = await deleteQuiz(targetExam.id);
+      const response = await deleteCategory();
       if (response) {
-        removeExam(targetExam.id);
-        openModal(null);
-        setTargetExam(null);
+        // removeExam(targetExam.id);
+        // openModal(null);
+        // setTargetExam(null);
         toast.success('Xóa bài tập thành công', { toastId: 'delete_exam' });
       }
     } catch (error) {
@@ -22,8 +21,8 @@ export default function DeleteExam() {
   };
 
   const handleCancel = () => {
-    openModal(null);
-    setTargetExam(null);
+    // openModal(null);
+    // setTargetExam(null);
   };
 
   return (
@@ -37,3 +36,7 @@ export default function DeleteExam() {
     />
   );
 }
+
+DeleteCategory.propTypes = {
+  cate: PropTypes.func,
+};

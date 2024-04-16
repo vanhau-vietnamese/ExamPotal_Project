@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export default function SidebarPractice() {
-  const data = [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6];
+  //const data = [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6];
   const [timeLeft] = useState(60); // Thời gian làm bài thực (đơn vị: giây)
 
   // Hàm format thời gian dạng mm:ss
@@ -35,14 +35,14 @@ export default function SidebarPractice() {
           <tr>
             <td>
               <div className="flex flex-wrap">
-                {data.map((item) => (
+                {/* {data.map((item) => (
                   <button
                     key={item}
                     className="w-7 h-7 m-1 bg-gray-200 rounded-full flex items-center justify-center"
                   >
                     {item}
                   </button>
-                ))}
+                ))} */}
               </div>
             </td>
           </tr>
