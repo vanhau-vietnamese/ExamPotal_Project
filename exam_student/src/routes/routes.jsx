@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AuthLayout, DashBoardLayout } from '~/layouts';
 import NotFound from '~/pages/NotFound';
+import { Account, Category, ConfigurationLayout } from '~/pages/admin/Configuration';
 import { DetailExam, ExamList } from '~/pages/admin/Exam';
 import Overview from '~/pages/admin/Overview';
 import { QuestionWrapper } from '~/pages/admin/Question';
@@ -39,6 +40,28 @@ const routes = createBrowserRouter([
               {
                 path: 'detailExam',
                 element: <DetailExam />,
+              },
+            ],
+          },
+          {
+            path: 'students',
+            element: <div>students</div>,
+          },
+          {
+            path: 'configurations',
+            element: <ConfigurationLayout />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to={`${router.admin}/configurations/account`} />,
+              },
+              {
+                path: 'account',
+                element: <Account />,
+              },
+              {
+                path: 'category',
+                element: <Category />,
               },
             ],
           },

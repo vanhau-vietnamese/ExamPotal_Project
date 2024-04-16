@@ -34,7 +34,7 @@ const CreateLanguages = ({ onRemove }) => {
         toast.error(error.message, { toastId: 'fetch_question' });
       }
     })();
-  }, [categories]);
+  }, []);
 
   const selectLanguage = (language) => {
     setSelectedLanguage(language);

@@ -11,6 +11,7 @@ export default function FormSelect({
   error,
   disabled,
   defaultValue,
+  icon,
   className = '',
 }) {
   const { field } = useController({ control, name, defaultValue });
@@ -23,6 +24,7 @@ export default function FormSelect({
       options={options}
       required={required}
       value={field.value}
+      icon={icon}
       onChange={field.onChange}
       className={className}
     />
@@ -37,6 +39,7 @@ FormSelect.propTypes = {
   required: PropTypes.bool,
   error: PropTypes.string,
   disabled: PropTypes.bool,
+  icon: PropTypes.node,
   defaultValue: PropTypes.array,
   className: PropTypes.string,
 };

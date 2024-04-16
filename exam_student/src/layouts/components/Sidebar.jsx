@@ -39,7 +39,7 @@ function Sidebar() {
                     className={({ isActive }) =>
                       `flex items-center px-4 rounded gap-x-2 h-[44px] text-[15px] transition-all text-icon ${
                         isActive ? 'bg-primary text-primary bg-opacity-20' : 'bg-transparent'
-                      } hover:bg-primary text-sm hover:bg-opacity-20`
+                      } hover:bg-primary text-sm hover:bg-opacity-20 hover:text-emerald-500`
                     }
                   >
                     <span className="w-[28px] h-[28px] flex items-center justify-center text-[1.495rem]">

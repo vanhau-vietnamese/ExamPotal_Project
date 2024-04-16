@@ -18,8 +18,18 @@ import Plus from './Plus';
 import Check from './Check';
 import Exclamation from './Exclamation';
 import CheckCircle from './CheckCircle';
+import Empty from './Empty';
+import Tag from './Tag';
+import Configuration from './Configuration';
+import Paper from './Paper';
+import Dashboard from './Dashboard';
 
 export default {
+  Dashboard,
+  Paper,
+  Configuration,
+  Tag,
+  Empty,
   Exclamation,
   CheckCircle,
   Check,
