@@ -6,6 +6,7 @@ import { getExcelColName } from '~/utils';
 
 export default function ViewDetailQuestion() {
   const { targetQuestion, setTargetQuestion, openModal } = useQuestionStore((state) => state);
+  console.log('TAGET', targetQuestion);
 
   return (
     <div className="w-full h-full mx-auto max-w-5xl p-10 animate-fade-down animate-duration-500">

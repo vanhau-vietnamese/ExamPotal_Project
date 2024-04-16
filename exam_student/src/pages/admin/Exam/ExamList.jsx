@@ -7,14 +7,14 @@ import { getAllCategories, getQuizToStart } from '~/apis';
 import { toast } from 'react-toastify';
 import { useExamStore } from '~/store';
 import { CreateCategory } from '../Caterogy';
-import { Link } from 'react-router-dom';
-import { router } from '~/routes';
 import Bookmark from '~/assets/icons/Bookmark';
 import moment from 'moment';
+import { StartPractice } from '~/pages/student';
 
 export default function ExamList() {
   const { examList, setExamList, setTargetExam, openModal } = useExamStore((state) => state);
   const [isCreatingExam, setIsCreatingExam] = useState(false);
+  const [isStartQuiz, setIsStartQuiz] = useState(false);
 
   const handleCreateExam = () => {
     setIsCreatingExam(true);
@@ -49,24 +49,24 @@ export default function ExamList() {
     setExamList(newQuizOfCate);
   };
 
-  const [quizToStart, setQuizToStart] = useState([]);
+  const [quizToStart, setQuizToStart] = useState();
   const handleStartQuiz = async (examId) => {
     try {
       const body = {
         quizId: examId,
       };
-
       const response = await getQuizToStart(body);
       if (response) {
-        //console.log('Tới đây chưa', response);
+        console.log('Tới đây chưa', response);
         setQuizToStart(response);
+        setIsStartQuiz(true);
         toast.success('Lấy bài tập thành công', { toastId: 'get_exam' });
       }
     } catch (error) {
       toast.error(error.message, { toastId: 'get_exam' });
     }
   };
-  console.log('Thành công', quizToStart);
+  console.log('Tới đây chưa', quizToStart);
 
   // const handleDeleteCategory = () => {
   //   const updatedCate = categories.filter((item) => item.id !== categoryId);
@@ -103,36 +103,36 @@ export default function ExamList() {
         <div className="h-[350px] overflow-y-auto w-full flex flex-wrap">
           {examList.map((exam) => (
             <div key={exam.id}>
-              <Link to={router.practice}>
-                <div className="border border-2 h-[130px] w-[300px] items-center justify-between p-2 m-3 rounded-lg shadow-md bg-slate-100 hover:shadow-lg hover:scale-105 transition-transform duration-300">
-                  <div className="flex items-center space-x-4">
-                    <div className="text-sm rounded text-yellow-500">
-                      <Bookmark />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold overflow-ellipsis whitespace-nowrap">
-                        {exam.title}
-                      </h3>
-                      <p className="text-[12px]">{exam.category.title}</p>
+              {/* <Link to={router.practice}> */}
+              <div className="border border-2 h-[130px] w-[300px] items-center justify-between p-2 m-3 rounded-lg shadow-md bg-slate-100 hover:shadow-lg hover:scale-105 transition-transform duration-300">
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm rounded text-yellow-500">
+                    <Bookmark />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold overflow-ellipsis whitespace-nowrap">
+                      {exam.title}
+                    </h3>
+                    <p className="text-[12px]">{exam.category.title}</p>
 
-                      <p className="mt-2 text-[14px]">
-                        Ngày tạo: {moment(exam.createdAt).format('DD/MM/YYYY, HH:mm')}
-                      </p>
-                      <p className="text-[14px] flex">
-                        Thời gian:
-                        {exam.maxMarks} phút
-                      </p>
-                      <p className="text-[14px] flex">Điểm: {exam.durationMinutes}</p>
-                      <Button
-                        onClick={() => handleStartQuiz(exam.id)}
-                        className="px-4 py-1 text-sm text-white bg-primary shadow-success hover:shadow-success_hover"
-                      >
-                        Làm bài
-                      </Button>
-                    </div>
+                    <p className="mt-2 text-[14px]">
+                      Ngày tạo: {moment(exam.createdAt).format('DD/MM/YYYY, HH:mm')}
+                    </p>
+                    <p className="text-[14px] flex">
+                      Thời gian:
+                      {exam.maxMarks} phút
+                    </p>
+                    <p className="text-[14px] flex">Điểm: {exam.durationMinutes}</p>
+                    <Button
+                      onClick={() => handleStartQuiz(exam.id)}
+                      className="px-4 py-1 text-sm text-white bg-primary shadow-success hover:shadow-success_hover"
+                    >
+                      Làm bài
+                    </Button>
                   </div>
                 </div>
-              </Link>
+              </div>
+              {/* </Link> */}
               <div className="mb-5">
                 <Button
                   onClick={() => handleOpenModal({ type: 'view', exam })}
@@ -162,6 +162,7 @@ export default function ExamList() {
           <FormCreateExam cate={categories} onClose={() => setIsCreatingExam(false)} />
         </Backdrop>
       )}
+      {isStartQuiz && <StartPractice onClose={() => setIsStartQuiz(false)} />}
     </div>
   );
 }
