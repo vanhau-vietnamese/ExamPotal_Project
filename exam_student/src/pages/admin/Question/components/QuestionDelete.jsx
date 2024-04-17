@@ -31,6 +31,7 @@ export default function QuestionDelete() {
   return (
     <DialogComfirm
       icon={<Icons.Exclamation />}
+      color="danger"
       title="Xác nhận xóa câu hỏi"
       body="Bạn có chắc chắn muốn xóa câu hỏi này không?"
       onCancel={handleCancel}

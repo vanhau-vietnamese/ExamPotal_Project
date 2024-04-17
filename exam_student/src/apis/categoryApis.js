@@ -5,7 +5,16 @@ export const getAllCategories = async () => {
     return (await axiosClient.get('/category/')).data;
   } catch (error) {
     console.error(error);
-    throw new Error('Failed to fetch categories');
+    throw error;
+  }
+};
+export const deleteCategoryById = async (id) => {
+  try {
+    // await axiosClient.delete(`/category/delete/${id}`);
+    return Promise.resolve({ id });
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };
 

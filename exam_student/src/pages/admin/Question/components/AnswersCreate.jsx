@@ -42,10 +42,10 @@ export default function AnswersCreate({
       <label htmlFor={id} className="relative flex items-center p-3 cursor-pointer">
         <input
           id={id}
-          type={InputType[type]}
+          type={InputType[type] || 'checkbox'}
           checked={Boolean(fieldIsCorrect.value)}
           className={`before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none border-2 border-strike checked:border-primary transition-all hover:border-primary ${
-            InputTypeStyle[InputType[type]]
+            InputTypeStyle[InputType[type] || 'checkbox']
           }`}
           {...fieldIsCorrect}
           onChange={(e) =>

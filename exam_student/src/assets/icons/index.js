@@ -20,11 +20,21 @@ import Menu from './Menu';
 
 import Exclamation from './Exclamation';
 import CheckCircle from './CheckCircle';
+import Empty from './Empty';
+import Tag from './Tag';
+import Configuration from './Configuration';
+import Paper from './Paper';
+import Dashboard from './Dashboard';
 
 import DownArrow from './DownArrow';
 
 
 export default {
+  Dashboard,
+  Paper,
+  Configuration,
+  Tag,
+  Empty,
   Exclamation,
   CheckCircle,
   Check,

@@ -11,7 +11,7 @@ import { useQuestionStore } from '~/store';
 import { FormQuestionCreateSchema } from '~/validations';
 import AnswersCreate from './AnswersCreate';
 
-export default function FormQuestionCreate({ onClose, defaultValues }) {
+export default function FormQuestionCreate({ onClose }) {
   const { addNewQuestion, questionTypes } = useQuestionStore((state) => state);
   const {
     control,
@@ -22,7 +22,10 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
   } = useForm({
     mode: 'onSubmit',
     resolver: zodResolver(FormQuestionCreateSchema),
-    defaultValues,
+    defaultValues: {
+      questionType: questionTypes[0].value,
+      answers: Array(4).fill({ content: '', isCorrect: false }),
+    },
   });
 
   const { fields, append, remove, replace } = useFieldArray({
@@ -106,6 +109,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
               placeholder="Chọn loại câu hỏi..."
               error={errors.questionType?.message}
               required
+              icon={<Icons.Tag />}
               options={questionTypes}
             />
             <FormSelect
@@ -114,6 +118,7 @@ export default function FormQuestionCreate({ onClose, defaultValues }) {
               label="Danh mục"
               placeholder="Chọn danh mục..."
               required
+              icon={<Icons.BookOpen />}
               error={errors.category?.message}
               options={categories}
             />

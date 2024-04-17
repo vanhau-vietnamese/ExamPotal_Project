@@ -34,7 +34,7 @@ function QuestionTable() {
           </tr>
         </thead>
         <tbody className="overflow-y-auto block h-[calc(100vh-13rem)] w-full">
-          {questionList &&
+          {questionList && questionList.length > 0 ? (
             questionList.map((question) => (
               <tr
                 key={question.id}
@@ -72,7 +72,15 @@ function QuestionTable() {
                   </div>
                 </td>
               </tr>
-            ))}
+            ))
+          ) : (
+            <tr className="block w-full h-full">
+              <td className="flex flex-col items-center justify-center gap-y-5 w-full h-full p-5 text-slate-400 font-semibold text-xl">
+                <Icons.Empty />
+                <span>Không có dữ liệu</span>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

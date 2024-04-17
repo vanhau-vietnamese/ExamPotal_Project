@@ -15,7 +15,7 @@
 
   * {
     &::-webkit-scrollbar {
-			@apply w-[6px];
+			@apply w-[6px] h-[6px];
 			-webkit-appearance: none;
 		}
 		&::-webkit-scrollbar-track {

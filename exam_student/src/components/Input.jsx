@@ -1,35 +1,25 @@
 import PropTypes from 'prop-types';
-import { useController } from 'react-hook-form';
 
-export default function FormInput({
-  control,
+export default function Input({
   name,
-  title,
   type = 'text',
-  required,
-  defaultValue,
-  error,
-  icon,
-  className = '',
+  value,
   disabled,
-  ...rest
+  onChange,
+  required,
+  icon,
+  label,
+  className,
+  placeholder,
 }) {
-  const { field } = useController({
-    control,
-    name,
-    defaultValue: defaultValue || '',
-  });
   return (
-    <div className="flex flex-col w-full mb-5 gap-y-1">
+    <div className={`flex flex-col w-full gap-y-1 ${className}`}>
       <div className="flex items-center justify-between">
-        {title && (
+        {label && (
           <label htmlFor={name} className="text-sm font-bold text-icon">
-            {title}
+            {label}
             {required && <strong className="text-error"> *</strong>}
           </label>
-        )}
-        {(error || !field.value) && (
-          <p className="text-xs font-semibold pointer-events-none text-error">{error}</p>
         )}
       </div>
       <div className="flex items-center">
@@ -41,34 +31,31 @@ export default function FormInput({
         <input
           type={type}
           id={name}
+          value={value}
           autoComplete="off"
           className={`text-sm flex-1 w-full px-4 py-2 border outline-none transition-all placeholder:font-medium disabled:bg-[#dee0ec] font-semibold ${
             icon ? 'rounded-e-md' : 'rounded-md'
-          } ${
-            error
-              ? 'border-error focus:shadow-invalid'
-              : 'border-strike hover:border-green-400 focus:border-secondary'
-          }
+          } border-strike hover:border-primary focus:border-primary focus:shadow-valid
           disabled:hover:border-strike disabled:text-gray-500
-          ${className}`}
+        `}
+          placeholder={placeholder}
           disabled={disabled}
-          {...rest}
-          {...field}
+          onChange={onChange}
         />
       </div>
     </div>
   );
 }
 
-FormInput.propTypes = {
-  control: PropTypes.object.isRequired,
-  name: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  type: PropTypes.oneOf(['text', 'password', 'email', 'number']),
+Input.propTypes = {
+  name: PropTypes.string,
+  label: PropTypes.string,
+  type: PropTypes.oneOf(['text', 'password', 'number', 'email']),
+  onChange: PropTypes.func,
+  value: PropTypes.any,
   required: PropTypes.bool,
-  defaultValue: PropTypes.string,
-  error: PropTypes.string,
-  icon: PropTypes.node,
   disabled: PropTypes.bool,
   className: PropTypes.string,
+  placeholder: PropTypes.string,
+  icon: PropTypes.node,
 };
