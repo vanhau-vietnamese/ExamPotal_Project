@@ -42,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setRole(ERole.student);
             userRepository.save(user);
 
-            return ResponseEntity.ok(firebaseId);
+            return ResponseEntity.ok(user);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user");
