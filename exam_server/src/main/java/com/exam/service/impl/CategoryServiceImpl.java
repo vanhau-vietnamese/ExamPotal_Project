@@ -3,9 +3,12 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.CategoryRequest;
+import com.exam.enums.EStatus;
 import com.exam.model.Category;
 import com.exam.model.User;
 import com.exam.repository.CategoryRepository;
+import com.exam.repository.QuestionRepository;
+import com.exam.repository.QuizRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.CategoryService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,6 +31,8 @@ public class CategoryServiceImpl implements CategoryService {
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
     @Override
     public Category getCategory(Long id) {
         return categoryRepository.findById(id)
@@ -59,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> getAllCategories() {
-        return ResponseEntity.ok(categoryRepository.findAll());
+        return ResponseEntity.ok(categoryRepository.findAllByStatus(EStatus.Active));
     }
 
     @Override
@@ -80,4 +85,21 @@ public class CategoryServiceImpl implements CategoryService {
         }
         throw new RuntimeException("Category Not Found");
     }
+
+    @Override
+    public ResponseEntity<?> deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id).get();
+        if (validateCategory(category)){
+            return ResponseEntity.badRequest().body("Delete failed. Because this category already exists in the quiz or the question");
+        }
+        category.setStatus(EStatus.Deleted);
+        categoryRepository.save(category);
+
+        return ResponseEntity.ok("Deleted Successfully");
+    }
+
+    private boolean validateCategory(Category category){
+        return quizRepository.existsQuizByCategory(category) || questionRepository.existsQuestionByCategory(category);
+    }
+
 }

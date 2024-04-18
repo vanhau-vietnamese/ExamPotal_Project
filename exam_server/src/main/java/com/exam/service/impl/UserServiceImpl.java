@@ -5,7 +5,7 @@ import com.exam.config.JwtUtils;
 //import com.exam.config.UserDetailsServiceImpl;
 import com.exam.dto.request.UserRequest;
 import com.exam.dto.response.UserResponse;
-import com.exam.model.ERole;
+import com.exam.enums.ERole;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
@@ -14,14 +14,10 @@ import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.flogger.Flogger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor

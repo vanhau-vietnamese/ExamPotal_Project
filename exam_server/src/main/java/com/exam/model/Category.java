@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,6 +37,10 @@ public class Category {
     @JsonIgnoreProperties("categories")
     @JoinColumn(name = "createBy", referencedColumnName = "id")
     private User createBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EStatus status;
 
     @Column(name = "createdAt", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());

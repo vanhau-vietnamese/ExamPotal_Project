@@ -1,4 +1,4 @@
-package com.exam.model;
+package com.exam.enums;
 
 public enum EStatus {
     Active, Deleted

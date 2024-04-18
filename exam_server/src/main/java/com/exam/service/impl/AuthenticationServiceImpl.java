@@ -1,7 +1,7 @@
 package com.exam.service.impl;
 
 import com.exam.dto.request.RegisterRequest;
-import com.exam.model.ERole;
+import com.exam.enums.ERole;
 import com.exam.model.User;
 import com.exam.repository.UserRepository;
 import com.exam.service.AuthenticationService;import com.google.firebase.auth.FirebaseAuth;

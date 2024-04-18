@@ -1,6 +1,6 @@
 package com.exam.dto.response;
 
-import com.exam.model.ERole;
+import com.exam.enums.ERole;
 import com.exam.model.Quiz;
 import com.exam.model.UserQuizResult;
 import jakarta.persistence.EnumType;

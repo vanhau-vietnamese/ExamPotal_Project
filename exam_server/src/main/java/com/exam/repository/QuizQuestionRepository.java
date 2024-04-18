@@ -25,4 +25,6 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     @Modifying
     @Query("DELETE FROM QuizQuestion qq WHERE qq.quiz.id = :quizId")
     void deleteByQuizId(@Param("quizId") Long quizId);
+
+    boolean existsQuizQuestionByQuestion(Question question);
 }

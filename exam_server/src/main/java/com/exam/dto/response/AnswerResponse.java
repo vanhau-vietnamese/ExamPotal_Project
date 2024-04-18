@@ -14,5 +14,6 @@ public class AnswerResponse {
     private Long id;
     private String media;
     private String content;
-    private Timestamp createdAt ;
+    private Timestamp createdAt;
+    private boolean isCorrect;
 }

@@ -173,7 +173,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             boolean isQuestionAnswered = !selectedOptions.isEmpty();
             boolean isCorrect = isQuestionAnswered && validateScore(selectedOptions, correctAnswerIds);
 
-
             if (isCorrect) {
                 totalScore += quizQuestion.getMarksOfQuestion();
                 numberOfCorrect++;
@@ -185,9 +184,10 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             userQuestionResult.setDone(isQuestionAnswered);
             userQuestionResult.setResult(isCorrect);
             userQuestionResult.setQuestion(mapToQuestionObject(question));
-            userQuestionResult.setAnswersToChoose(answersToChoose);
+            userQuestionResult.setAnswers(answersToChoose);
             userQuestionResult.setMarkOfQuestion(quizQuestion.getMarksOfQuestion());
             userQuestionResult.setUserQuizResult(userQuizResult);
+//            userQuestionResult.setGenerateQuestion(mapToQuestionResponse(question));
             userQuestionResultRepository.save(userQuestionResult);
         }
 
@@ -232,15 +232,14 @@ public class TakeQuizServiceImpl implements TakeQuizService {
 
         // lặp qua mảng các answer của question để set các value cho answerObject
         // đồng thời cũng add nó vào trong answerObjectList
-        for(Answer answer1 : answerList){
+        for(Answer answer : answerList){
             AnswerObject answerObject = new AnswerObject();
-            Long answerId = answer1.getId();
-            answerObject.setId(answer1.getId());
-            answerObject.setMedia(answer1.getMedia());
-            answerObject.setContent(answer1.getContent());
+            Long answerId = answer.getId();
+            answerObject.setId(answer.getId());
+            answerObject.setMedia(answer.getMedia());
+            answerObject.setContent(answer.getContent());
             // setSlect theo: nếu answerId tồn tại trong selectedOptions
             answerObject.setSelect(selectedOptions.contains(answerId));
-            answerObject.setCorrectAnswer(answer1.isCorrect());
             // add vao answerObjectList
             answerObjectList.add(answerObject);
         }

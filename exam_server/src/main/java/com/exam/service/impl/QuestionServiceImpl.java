@@ -6,6 +6,7 @@ import com.exam.dto.response.AnswerResponse;
 import com.exam.dto.response.CategoryResponse;
 import com.exam.dto.response.QuestionResponse;
 import com.exam.dto.response.QuestionTypeResponse;
+import com.exam.enums.EStatus;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.QuestionService;
@@ -166,6 +167,7 @@ public class QuestionServiceImpl implements QuestionService {
             answerResponse.setContent(answer.getContent());
             answerResponse.setMedia(answer.getMedia());
             answerResponse.setCreatedAt(answer.getCreatedAt());
+            answerResponse.setCorrect(answer.isCorrect());
 
             answerResponseSet.add(answerResponse);
         }
@@ -199,9 +201,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public ResponseEntity<String> deleteQuestion(Long id) {
         Question question = questionRepository.findById(id).get();
+        if(validateDeleteQuestion(question)){
+            return ResponseEntity.badRequest().body("Delete failed. This question already exists in the test");
+        }
         question.setStatus(EStatus.Deleted);
         questionRepository.save(question);
         return ResponseEntity.ok("Deleted Successfully");
+    }
+
+    private boolean validateDeleteQuestion(Question question){
+        return quizQuestionRepository.existsQuizQuestionByQuestion(question);
     }
 
     @Override
@@ -238,7 +247,7 @@ public class QuestionServiceImpl implements QuestionService {
     public ResponseEntity<?> getQuestionsOfCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         List<QuestionResponse> questionResponses = new ArrayList<>();
-        List<Question> questions = questionRepository.getQuestionsOfCategory(id);
+        List<Question> questions = questionRepository.getQuestionsOfCategory(id, EStatus.Active);
         if(category.isPresent()){
             GetQuestionResponseList(questionResponses, questions, null);
             return ResponseEntity.ok(questionResponses);

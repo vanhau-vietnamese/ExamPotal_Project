@@ -5,7 +5,6 @@ import com.exam.dto.response.ApiResponse;
 import com.exam.dto.response.UserResponse;
 import com.exam.model.User;
 import com.exam.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

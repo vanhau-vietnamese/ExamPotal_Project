@@ -1,17 +1,20 @@
 package com.exam.model;
 
+import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@DynamicUpdate
 @NoArgsConstructor
 @Getter
 @Setter
@@ -32,8 +35,10 @@ public class Quiz {
     private int numberOfQuestions;
     @Column(name = "durationMinutes")
     private int durationMinutes;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private boolean status = true;
+    private EStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("quizz es")

@@ -2,8 +2,10 @@ package com.exam.model;
 
 
 import com.exam.convert.AnswerToChooseConverter;
+import com.exam.convert.GenerateQuestionConverter;
 import com.exam.convert.JsonConverter;
 import com.exam.convert.QuestionConverter;
+import com.exam.dto.response.QuestionResponse;
 import com.exam.helper.QuestionObject;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -28,9 +30,13 @@ public class UserQuestionResult {
 
     @Column(name = "answers", columnDefinition = "JSON")
     @Convert(converter = AnswerToChooseConverter.class)
-    private AnswersToChoose answersToChoose;
+    private AnswersToChoose answers;
 
     @Column(name = "question", columnDefinition = "JSON")
     @Convert(converter = QuestionConverter.class)
     private QuestionObject question;
+
+    @Column(name = "generateQuestion", columnDefinition = "JSON")
+    @Convert(converter = GenerateQuestionConverter.class)
+    private QuestionResponse generateQuestion;
 }

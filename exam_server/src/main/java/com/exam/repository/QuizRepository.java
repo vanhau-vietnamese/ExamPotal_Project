@@ -1,8 +1,7 @@
 package com.exam.repository;
 
-import com.exam.model.Quiz;
-import com.exam.model.User;
-import com.exam.model.UserQuizResult;
+import com.exam.enums.EStatus;
+import com.exam.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +16,8 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     // get quizzes from category
     @Query("SELECT quiz FROM Quiz quiz WHERE quiz.category.id= :category_id")
     public Set<Quiz> getQuizzesOfCategory(@Param("category_id") Long category_id);
+
+    List<Quiz> findAllByStatus(EStatus status);
+
+    boolean existsQuizByCategory(Category category);
 }

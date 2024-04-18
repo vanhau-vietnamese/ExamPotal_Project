@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.exam.enums.ERole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;

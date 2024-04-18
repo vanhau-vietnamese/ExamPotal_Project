@@ -9,4 +9,5 @@ public interface CategoryService {
     public ResponseEntity<?> addCategory(CategoryRequest categoryRequest);
     public ResponseEntity<?> getAllCategories();
     public ResponseEntity<?> updateCategory(Long id, CategoryRequest categoryRequest);
+    ResponseEntity<?> deleteCategory(Long id);
 }

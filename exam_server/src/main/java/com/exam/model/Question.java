@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

@@ -3,7 +3,7 @@ package com.exam.controller;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.RegisterRequest;
-import com.exam.model.ERole;
+import com.exam.enums.ERole;
 import com.exam.model.User;
 import com.exam.service.AuthenticationService;
 import jakarta.validation.Valid;

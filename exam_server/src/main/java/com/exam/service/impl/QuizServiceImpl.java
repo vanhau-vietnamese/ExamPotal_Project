@@ -5,6 +5,7 @@ import com.exam.config.JwtUtils;
 import com.exam.dto.request.QuizQuestionRequest;
 import com.exam.dto.request.QuizRequest;
 import com.exam.dto.response.*;
+import com.exam.enums.EStatus;
 import com.exam.model.*;
 import com.exam.repository.*;
 import com.exam.service.QuizService;
@@ -28,7 +29,7 @@ public class QuizServiceImpl implements QuizService {
     private final AnswerRepository answerRepository;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
-        return ResponseEntity.ok(quizRepository.findAll());
+        return ResponseEntity.ok(quizRepository.findAllByStatus(EStatus.Active));
     }
 
     @Override
@@ -45,7 +46,7 @@ public class QuizServiceImpl implements QuizService {
         quiz.setMaxMarks(quizRequest.getMaxMarks());
         quiz.setCreateBy(user);
         quiz.setDurationMinutes(quizRequest.getDurationMinutes());
-        quiz.setStatus(quiz.isStatus());
+        quiz.setStatus(EStatus.Active);
         quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
 
         Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
@@ -134,9 +135,11 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public ResponseEntity<?> deleteQuiz(Long id) {
-        Optional<Quiz> quiz = quizRepository.findById(id);
-        if(quiz.isPresent()){
-            quizRepository.delete(quiz.get());
+        Optional<Quiz> quizOptional = quizRepository.findById(id);
+        if(quizOptional.isPresent()){
+            Quiz quiz = quizOptional.get();
+            quiz.setStatus(EStatus.Deleted);
+            quizRepository.save(quiz);
             return ResponseEntity.ok("Deleted Quiz Successfully");
         }
         return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
@@ -156,7 +159,7 @@ public class QuizServiceImpl implements QuizService {
             quiz.setTitle(quizRequest.getTitle());
             quiz.setDescription(quizRequest.getDescription());
             quiz.setMaxMarks(quizRequest.getMaxMarks());
-            quiz.setStatus(quizRequest.isStatus());
+            quiz.setStatus(EStatus.Active);
             quiz.setCategory(category);
             quiz.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
