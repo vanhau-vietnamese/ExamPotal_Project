@@ -1,4 +1,4 @@
-package com.exam.model;
+package com.exam.enums;
 
 import lombok.Getter;
 

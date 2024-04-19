@@ -5,6 +5,9 @@ import com.exam.model.Quiz;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.Map;
+
 public interface QuizService {
     public ResponseEntity<?> getAllQuizzes();
     public ResponseEntity<?> addQuiz(QuizRequest quiz);
@@ -12,4 +15,7 @@ public interface QuizService {
     public ResponseEntity<?> deleteQuiz(Long id);
     public ResponseEntity<?> updateQuiz(Long id, QuizRequest quizRequest);
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId);
+    public ResponseEntity<?> getQuizzesOfCreateAt(Map<String, Timestamp> request);
+
+    ResponseEntity<?> searchQuizzes(Map<String, String> searchRequest);
 }

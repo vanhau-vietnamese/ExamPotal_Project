@@ -1,7 +1,7 @@
 package com.exam.service.impl;
 
 import com.exam.dto.response.QuestionTypeResponse;
-import com.exam.model.EQuestionType;
+import com.exam.enums.EQuestionType;
 import com.exam.service.QuestionTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

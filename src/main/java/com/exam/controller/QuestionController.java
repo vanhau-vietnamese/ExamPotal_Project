@@ -1,6 +1,8 @@
 package com.exam.controller;
 
+import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuestionRequest;
+import com.exam.dto.request.QuestionTypeRequest;
 import com.exam.model.Question;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 
 @RestController
@@ -49,5 +52,20 @@ public class QuestionController {
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<?> getQuestionsOfCategory(@PathVariable("categoryId")Long id){
         return questionService.getQuestionsOfCategory(id);
+    }
+
+    @GetMapping("/filter/questionType")
+    public ResponseEntity<?> getQuestionOfQuestionType(@RequestBody QuestionTypeRequest request){
+        return questionService.getQuestionsOfQuestionType(request);
+    }
+
+    @GetMapping("/filter/createAt")
+    public ResponseEntity<?> getQuestionsOfCreateAt(@RequestBody FilterCreateAtRequest request){
+        return questionService.getQuestionsOfCreateAt(request);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuestions(@RequestBody Map<String, String> searchRequest){
+        return questionService.searchQuestions(searchRequest);
     }
 }

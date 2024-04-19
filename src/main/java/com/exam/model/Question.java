@@ -1,5 +1,6 @@
 package com.exam.model;
 
+import com.exam.enums.EQuestionType;
 import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

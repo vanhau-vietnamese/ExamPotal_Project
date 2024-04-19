@@ -1,11 +1,14 @@
 package com.exam.service.impl;
 
 import com.exam.dto.request.AnswerRequest;
+import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuestionRequest;
+import com.exam.dto.request.QuestionTypeRequest;
 import com.exam.dto.response.AnswerResponse;
 import com.exam.dto.response.CategoryResponse;
 import com.exam.dto.response.QuestionResponse;
 import com.exam.dto.response.QuestionTypeResponse;
+import com.exam.enums.EQuestionType;
 import com.exam.enums.EStatus;
 import com.exam.model.*;
 import com.exam.repository.*;
@@ -253,6 +256,34 @@ public class QuestionServiceImpl implements QuestionService {
             return ResponseEntity.ok(questionResponses);
         }
         return ResponseEntity.badRequest().body("Not Found Category");
+    }
+
+    @Override
+    public ResponseEntity<?> getQuestionsOfQuestionType(QuestionTypeRequest request) {
+        EQuestionType questionType = EQuestionType.getByAlias(request.getAlias());
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+        List<Question> questions = questionRepository.findQuestionsByQuestionType(questionType);
+        GetQuestionResponseList(questionResponses, questions, null);
+        return ResponseEntity.ok(questionResponses);
+    }
+
+    @Override
+    public ResponseEntity<?> getQuestionsOfCreateAt(FilterCreateAtRequest request) {
+        if(request.getFromTime() == null || request.getToTime() == null){
+            return ResponseEntity.badRequest().body("Thời gian không được để trống");
+        }
+        List<Question> questions = questionRepository.getQuestionsByCreateAt(request.getFromTime(), request.getToTime());
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+        GetQuestionResponseList(questionResponses, questions, null);
+        return ResponseEntity.ok(questionResponses);
+    }
+
+    @Override
+    public ResponseEntity<?> searchQuestions(Map<String, String> searchRequest) {
+        List<Question> questions = questionRepository.searchQuestions(searchRequest.get("searchContent"));
+        List<QuestionResponse> questionResponses = new ArrayList<>();
+        GetQuestionResponseList(questionResponses, questions, null);
+        return ResponseEntity.ok(questionResponses);
     }
 
     public boolean isValidQuestionTypeByAlias(String alias) {

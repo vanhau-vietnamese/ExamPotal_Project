@@ -1,11 +1,15 @@
 package com.exam.controller;
 
+import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuizRequest;
 import com.exam.model.Quiz;
 import com.exam.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -37,6 +41,15 @@ public class QuizController {
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<?> getQuizzesOfCategory(@PathVariable("categoryId")Long categoryId){
         return quizService.getQuizzesOfCategory(categoryId);
+    }
+
+    @GetMapping("/filter/createAt")
+    public ResponseEntity<?> getQuizzesOfCreateAt(@RequestBody Map<String, Timestamp> request){
+        return quizService.getQuizzesOfCreateAt(request);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuizzes(@RequestBody Map<String, String> searchRequest){
+        return quizService.searchQuizzes(searchRequest);
     }
 
 }

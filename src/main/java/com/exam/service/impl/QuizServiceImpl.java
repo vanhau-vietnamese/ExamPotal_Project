@@ -113,6 +113,7 @@ public class QuizServiceImpl implements QuizService {
             quizResponse.setDurationMinutes(quiz.getDurationMinutes());
             quizResponse.setMaxMarks(quiz.getMaxMarks());
             quizResponse.setQuestionResponseList(questionResponseList);
+            quizResponse.setCreateAt(quiz.getCreatedAt());
 
             return ResponseEntity.ok(quizResponse);
         }
@@ -231,5 +232,20 @@ public class QuizServiceImpl implements QuizService {
             return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
         }
         return ResponseEntity.badRequest().body("Not Found Category");
+    }
+
+    @Override
+    public ResponseEntity<?> getQuizzesOfCreateAt(Map<String, Timestamp> request) {
+        if(request.get("fromTime") == null || request.get("toTime") == null){
+            return ResponseEntity.badRequest().body("Thời gian không được để trống");
+        }
+        List<Quiz> quizzes = quizRepository.getQuizzesByCreateAt(request.get("fromTime"), request.get("toTime"));
+        return ResponseEntity.ok(quizzes);
+    }
+
+    @Override
+    public ResponseEntity<?> searchQuizzes(Map<String, String> searchRequest) {
+        List<Quiz> quizzes = quizRepository.searchQuizzes(searchRequest.get("searchContent"));
+        return ResponseEntity.ok(quizzes);
     }
 }

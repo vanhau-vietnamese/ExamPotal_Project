@@ -40,10 +40,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         // Lấy thời gian nhấn bắt đầu là tời gian hiện tai
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-//        Quiz quiz = quizRepository.findById(startQuizRequest.getQuizId()).get();
-//        if(quiz == null){
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz Not Exists");
-//        }
         Quiz quiz = quizRepository.findById(startQuizRequest.getQuizId())
                 .orElseThrow(() -> new IllegalArgumentException("Quiz Not Exists"));
 
@@ -139,6 +135,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         quizResponse.setMaxMarks(quiz.getMaxMarks());
         quizResponse.setDurationMinutes(quiz.getDurationMinutes());
         quizResponse.setQuestionResponseList(questionResponseList);
+        quizResponse.setCreateAt(quiz.getCreatedAt());
         return quizResponse;
     }
 
