@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -37,5 +38,8 @@ public class CategoryController {
         return categoryService.deleteCategory(id);
     }
 
-
+    @GetMapping("/search")
+    public ResponseEntity<?> searchCategories(@RequestBody Map<String, String> request){
+        return categoryService.searchCategories(request);
+    }
 }

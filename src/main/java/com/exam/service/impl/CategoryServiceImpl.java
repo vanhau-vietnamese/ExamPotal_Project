@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -96,6 +97,11 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.save(category);
 
         return ResponseEntity.ok("Deleted Successfully");
+    }
+
+    @Override
+    public ResponseEntity<?> searchCategories(Map<String, String> request) {
+        return ResponseEntity.ok(categoryRepository.searchCategories(request.get("searchContent")));
     }
 
     private boolean validateCategory(Category category){

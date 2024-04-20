@@ -2,9 +2,12 @@ package com.exam.service.impl;
 
 import com.exam.dto.request.RegisterRequest;
 import com.exam.enums.ERole;
+import com.exam.enums.EStatus;
 import com.exam.model.User;
 import com.exam.repository.UserRepository;
-import com.exam.service.AuthenticationService;import com.google.firebase.auth.FirebaseAuth;
+import com.exam.service.AuthenticationService;
+import com.exam.utils.CommonUtils;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +25,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public ResponseEntity<?> registerUser(RegisterRequest registerRequest) {
         try{
             // Kiểm tra xem nó có tồn tại trong firebase auth k?
-            if (isUserExists(registerRequest.getEmail())) {
+            if (CommonUtils.isUserExists(registerRequest.getEmail())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists!");
             }
 
@@ -40,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             user.setFullName(registerRequest.getFullName());
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             user.setRole(ERole.student);
+            user.setStatus(EStatus.Active);
             userRepository.save(user);
 
             return ResponseEntity.ok(user);
@@ -48,13 +52,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register user");
         }
     }
-    // Kiểm tra xem người dùng đã tồn tại trong Firebase Authentication hay không
-    private boolean isUserExists(String email) {
-        try {
-            FirebaseAuth.getInstance().getUserByEmail(email);
-            return true; // Người dùng đã tồn tại
-        } catch (FirebaseAuthException e) {
-            return false;
-        }
-    }
+    // Kiểm tra xem người dùng đã tồn tại trong Firebase Authentication hay khôn
 }

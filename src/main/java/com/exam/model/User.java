@@ -1,6 +1,7 @@
 package com.exam.model;
 
 import com.exam.enums.ERole;
+import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -37,6 +38,13 @@ public class User implements UserDetails{
     private String firebaseId;
     @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
+    @Column(name = "createBy")
+    private String createBy;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EStatus status;
 
     @OneToMany(mappedBy = "createBy", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnore

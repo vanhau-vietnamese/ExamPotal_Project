@@ -1,5 +1,6 @@
 package com.exam.repository;
 
+import com.exam.enums.ERole;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -16,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     public User findByEmail(String email);
     public boolean existsByEmail(String email);
     public User findByEmailAndFirebaseId(String email, String firebaseId);
+    @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id")
+    List<User> getAllAdminAccount(@Param("user_id")String userId);
 }

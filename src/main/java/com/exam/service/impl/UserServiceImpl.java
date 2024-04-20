@@ -3,9 +3,11 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 //import com.exam.config.UserDetailsServiceImpl;
+import com.exam.dto.request.ChangePasswordRequest;
 import com.exam.dto.request.UserRequest;
 import com.exam.dto.response.UserResponse;
 import com.exam.enums.ERole;
+import com.exam.enums.EStatus;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
@@ -69,6 +71,24 @@ public class  UserServiceImpl implements UserService {
         user.setFirebaseId(userRequest.getFirebaseId());
         user.setFullName(userRequest.getFullName());
         user.setRole(ERole.student);
+        user.setStatus(EStatus.Active);
         return userRepository.save(user);
+    }
+
+    @Override
+    public ResponseEntity<?> changePassword(ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy người dùng với email: " + request.getEmail());
+        }
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            return ResponseEntity.badRequest().body("Mật khẩu hiện tại không đúng");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Đổi mật khẩu thành công");
     }
 }

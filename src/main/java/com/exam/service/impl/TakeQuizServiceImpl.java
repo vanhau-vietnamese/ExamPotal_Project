@@ -184,15 +184,15 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             userQuestionResult.setAnswers(answersToChoose);
             userQuestionResult.setMarkOfQuestion(quizQuestion.getMarksOfQuestion());
             userQuestionResult.setUserQuizResult(userQuizResult);
-//            userQuestionResult.setGenerateQuestion(mapToQuestionResponse(question));
+            userQuestionResult.setGenerateQuestion(mapToQuestionResponse(question));
             userQuestionResultRepository.save(userQuestionResult);
         }
 
         numberOfIncorrect = totalAnswer - numberOfCorrect;
         saveUserQuizResult(totalScore, userQuizResult, numberOfCorrect, numberOfIncorrect);
 
-        ratio = (float)numberOfCorrect/totalAnswer;
-        String formattedCapture = String.format("%.2f%%", ratio * 100);
+//        ratio = (float)numberOfCorrect/totalAnswer;
+//        String formattedCapture = String.format("%.2f%%", ratio * 100);
 
         SubmitResponse submitResponse = new SubmitResponse();
         submitResponse.setMarks(totalScore);
@@ -200,7 +200,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         submitResponse.setNumberOfCorrect(numberOfCorrect);
         submitResponse.setUserId(user.getId());
         submitResponse.setNumberOfIncorrect(numberOfIncorrect);
-        submitResponse.setRatio(formattedCapture);
+//        submitResponse.setRatio(formattedCapture);
         return ResponseEntity.ok(submitResponse);
     }
 
