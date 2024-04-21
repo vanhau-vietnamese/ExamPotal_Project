@@ -34,4 +34,13 @@ public class UserInfoResponse {
         this.createdAt = createdAt;
         this.createBy = createBy;
     }
+
+    public UserInfoResponse(String id, String fullName, String email, ERole role, String firebaseId, Timestamp createdAt) {
+        this.id = id;
+        this.fullName = fullName;
+        this.email = email;
+        this.role = role;
+        this.firebaseId = firebaseId;
+        this.createdAt = createdAt;
+    }
 }

@@ -5,6 +5,7 @@ import com.exam.config.JwtUtils;
 //import com.exam.config.UserDetailsServiceImpl;
 import com.exam.dto.request.ChangePasswordRequest;
 import com.exam.dto.request.UserRequest;
+import com.exam.dto.response.UserInfoResponse;
 import com.exam.dto.response.UserResponse;
 import com.exam.enums.ERole;
 import com.exam.enums.EStatus;
@@ -34,7 +35,7 @@ public class  UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public ResponseEntity<UserResponse> getProfile() {
+    public ResponseEntity<UserInfoResponse> getProfile() {
         String jwt = jwtAuthenticationFilter.getJwt();
         FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
         String email = decodedToken.getEmail();
@@ -42,26 +43,12 @@ public class  UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
 
-        UserResponse userResponse = new UserResponse();
         // nếu tồn tại user chứa firebaseId and email
         if(user != null){
-            userResponse.setId(user.getId());
-            userResponse.setFullName(user.getFullName());
-            userResponse.setEmail(user.getEmail());
-            userResponse.setRole(user.getRole());
+            String createdBy = user.getCreatedBy() != null ? user.getCreatedBy().getFullName() : null;
+            UserInfoResponse userInfoResponse = new UserInfoResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
 
-            Set<UserQuizResult> listResultOfUser = userRepository.getQuizResultOfUser(user.getId());
-            userResponse.setNumberOfCompleted(listResultOfUser.size());
-            userResponse.setUserQuizResults(listResultOfUser);
-
-            if(user.getRole().equals(ERole.student)){
-                return ResponseEntity.ok(userResponse);
-            }
-            Set<Quiz> quizzes = quizRepository.findAllByCreateBy(user);
-            userResponse.setNumberOfPost(quizzes.size());
-            userResponse.setPostsOfTeacher(quizzes);
-
-            return ResponseEntity.ok(userResponse);
+            return ResponseEntity.ok(userInfoResponse);
         }
         return ResponseEntity.badRequest().body(null);
     }

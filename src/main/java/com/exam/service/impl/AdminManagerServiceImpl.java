@@ -3,6 +3,7 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.RegisterRequest;
+import com.exam.dto.response.UserInfoResponse;
 import com.exam.enums.ERole;
 import com.exam.enums.EStatus;
 import com.exam.model.User;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -79,7 +82,15 @@ public class AdminManagerServiceImpl implements AdminManagerService {
         User userGet = userRepository.findByEmail(email);
 
         if(userGet.getRole().equals(ERole.admin)){
-            return ResponseEntity.ok(userRepository.getAllAdminAccount(userGet.getId()));
+            List<User> adminUsers = userRepository.getAllAdminUsers(userGet.getId());
+            List<UserInfoResponse> userInfoResponses = new ArrayList<>();
+
+            for (User user : adminUsers) {
+                String createdBy = user.getCreatedBy() != null ? user.getCreatedBy().getFullName() : null;
+                UserInfoResponse userInfoResponse = new UserInfoResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
+                userInfoResponses.add(userInfoResponse);
+            }
+            return ResponseEntity.ok(userInfoResponses);
         }
         return ResponseEntity.badRequest().body("Bạn không phải là admin, nên bạn không có quyền xem thông tin của tất cả tài khoản admin");
     }

@@ -3,6 +3,7 @@ package com.exam.controller;
 import com.exam.dto.request.ChangePasswordRequest;
 import com.exam.dto.request.UserRequest;
 import com.exam.dto.response.ApiResponse;
+import com.exam.dto.response.UserInfoResponse;
 import com.exam.dto.response.UserResponse;
 import com.exam.model.User;
 import com.exam.service.UserService;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getProfile(){
+    public ResponseEntity<UserInfoResponse> getProfile(){
         return userService.getProfile();
     }
     @PostMapping("/add")

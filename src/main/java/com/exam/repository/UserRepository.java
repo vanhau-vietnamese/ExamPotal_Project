@@ -23,6 +23,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.id = :user_id AND u.status = 'Active'")
     UserInfoResponse getUserById(@Param("user_id")String userId);
 
-    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
-    List<UserInfoResponse> getAllAdminAccount(@Param("user_id")String userId);
+//    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt) FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
+
+    @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
+    List<User> getAllAdminUsers(@Param("user_id") String userId);
+
 }
