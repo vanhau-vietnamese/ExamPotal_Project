@@ -28,19 +28,25 @@ public class User implements UserDetails{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private String id;
+
     @Column(name = "fullName", nullable = false, columnDefinition = "TEXT")
     private String fullName;
+
     @Column(name = "password", nullable = false, unique = true)
     private String password;
+
     @Column(name = "email", nullable = false, unique = true, columnDefinition = "TEXT")
     private String email;
+
     @Column(name = "firebaseId", unique = true, columnDefinition = "TEXT")
     private String firebaseId;
+
     @Column(name = "createdAt", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
-    @Column(name = "createBy")
-    private String createBy;
+    @ManyToOne
+    @JoinColumn(name = "createBy")
+    private User createdBy;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

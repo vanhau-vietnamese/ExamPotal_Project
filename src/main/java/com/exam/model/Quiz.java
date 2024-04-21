@@ -41,7 +41,7 @@ public class Quiz {
     private EStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("quizz es")
+    @JsonIgnoreProperties("quizzes")
     @JoinColumn(name = "createBy", referencedColumnName = "id")
     private User createBy;
 

@@ -1,5 +1,6 @@
 package com.exam.repository;
 
+import com.exam.dto.response.UserInfoResponse;
 import com.exam.enums.ERole;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
@@ -18,6 +19,10 @@ public interface UserRepository extends JpaRepository<User, String> {
     public User findByEmail(String email);
     public boolean existsByEmail(String email);
     public User findByEmailAndFirebaseId(String email, String firebaseId);
-    @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id")
-    List<User> getAllAdminAccount(@Param("user_id")String userId);
+
+    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.id = :user_id AND u.status = 'Active'")
+    UserInfoResponse getUserById(@Param("user_id")String userId);
+
+    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
+    List<UserInfoResponse> getAllAdminAccount(@Param("user_id")String userId);
 }

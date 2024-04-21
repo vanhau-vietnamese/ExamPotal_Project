@@ -14,7 +14,10 @@ import com.exam.model.UserQuizResult;
 import com.exam.repository.QuizRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,10 +80,16 @@ public class  UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> changePassword(ChangePasswordRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
+        String jwt = jwtAuthenticationFilter.getJwt();
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
+        String firebaseId = decodedToken.getUid();
+
+        User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
         if (user == null) {
-            return ResponseEntity.badRequest().body("Không tìm thấy người dùng với email: " + request.getEmail());
+            return ResponseEntity.badRequest().body("Không tìm thấy người dùng với email: " + email);
         }
+        System.out.println("email: "+ email);
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu hiện tại không đúng");
@@ -89,6 +98,19 @@ public class  UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
+        updatePassword(firebaseId, request.getNewPassword());
+
+
         return ResponseEntity.ok("Đổi mật khẩu thành công");
+    }
+
+    public void updatePassword(String uid, String newPassword) {
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid)
+                .setPassword(newPassword);
+        try {
+            FirebaseAuth.getInstance().updateUser(request);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -59,11 +59,13 @@ public class AdminManagerServiceImpl implements AdminManagerService {
             user.setFullName(request.getFullName());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setRole(ERole.admin);
-            user.setCreateBy(createBy.getId());
+            user.setCreatedBy(createBy);
             user.setStatus(EStatus.Active);
             userRepository.save(user);
 
-            return ResponseEntity.ok(user);
+            System.out.println("userId:" + user.getId());
+
+            return ResponseEntity.ok(userRepository.getUserById(user.getId()));
         }
         return ResponseEntity.badRequest().body("Bạn không phải là admin, nên bạn không có quyền tạo tài khoản admin");
     }
