@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -41,7 +42,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
         Quiz quiz = quizRepository.findById(startQuizRequest.getQuizId())
-                .orElseThrow(() -> new IllegalArgumentException("Quiz Not Exists"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz Not Exists"));
 
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -63,6 +64,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setQuiz(quiz);
         userQuizResult.setUser(user);
         userQuizResult.setExam(examObject);
+        userQuizResult.setSubmitted(false);
         userQuizResultRepository.save(userQuizResult);
 
         QuizResponse quizResponse = getQuizResponse(quiz, questionResponseList, userQuizResult);
@@ -147,10 +149,14 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         User user = userRepository.findByEmail(email);
 
         Quiz quiz = quizRepository.findById(submitRequest.getQuizId())
-                .orElseThrow(() -> new IllegalArgumentException("Quiz Not Exists"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz Not Exists"));
 
         UserQuizResult userQuizResult = userQuizResultRepository.findById(submitRequest.getUserQuizResultId())
-                .orElseThrow(() -> new IllegalArgumentException("UserQuizResult Not Exists"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "UserQuizResult Not Exists"));
+
+        if (userQuizResult.getSubmitted()) {
+            return ResponseEntity.badRequest().body("Quiz has already been submitted.");
+        }
 
         List<QuestionChoiceRequest> answers = submitRequest.getAnswers();
         int totalAnswer = answers.size();
@@ -251,6 +257,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             userQuizResult.setSubmitTime(new Timestamp(System.currentTimeMillis()));
             userQuizResult.setNumberOfCorrect(numberOfCorrect);
             userQuizResult.setNumberOfIncorrect(numberOfIncorrect);
+            userQuizResult.setSubmitted(true);
 
             String durationTime = userQuizResult.calculateDuration(userQuizResult.getStartTime(), userQuizResult.getSubmitTime());
             userQuizResult.setDurationTime(durationTime);

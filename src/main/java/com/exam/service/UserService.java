@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 public interface UserService {
-    public ResponseEntity<UserInfoResponse> getProfile();
+    public ResponseEntity<?> getProfile();
     public User addNewUser(UserRequest userRequest);
 
     ResponseEntity<?> changePassword(ChangePasswordRequest request);

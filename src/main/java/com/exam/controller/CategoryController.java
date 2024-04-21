@@ -20,7 +20,7 @@ public class CategoryController {
         return categoryService.addCategory(categoryRequest);
     }
     @GetMapping("/{id}")
-    public Category getCategory(@PathVariable("id") Long id){
+    public ResponseEntity<Category> getCategory(@PathVariable("id") Long id){
         return categoryService.getCategory(id);
     }
     @GetMapping("/")

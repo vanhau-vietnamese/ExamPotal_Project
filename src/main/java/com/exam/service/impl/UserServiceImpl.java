@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class  UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     @Override
-    public ResponseEntity<UserInfoResponse> getProfile() {
+    public ResponseEntity<?> getProfile() {
         String jwt = jwtAuthenticationFilter.getJwt();
         FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
         String email = decodedToken.getEmail();
@@ -50,7 +51,7 @@ public class  UserServiceImpl implements UserService {
 
             return ResponseEntity.ok(userInfoResponse);
         }
-        return ResponseEntity.badRequest().body(null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found User");
     }
 
     @Override
@@ -74,7 +75,7 @@ public class  UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmailAndFirebaseId(email, firebaseId);
         if (user == null) {
-            return ResponseEntity.badRequest().body("Không tìm thấy người dùng với email: " + email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng với email: " + email);
         }
         System.out.println("email: "+ email);
 

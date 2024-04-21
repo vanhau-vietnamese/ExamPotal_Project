@@ -19,7 +19,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     @GetMapping("/me")
-    public ResponseEntity<UserInfoResponse> getProfile(){
+    public ResponseEntity<?> getProfile(){
         return userService.getProfile();
     }
     @PostMapping("/add")

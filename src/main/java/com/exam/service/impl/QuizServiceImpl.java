@@ -11,6 +11,7 @@ import com.exam.repository.*;
 import com.exam.service.QuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +50,12 @@ public class QuizServiceImpl implements QuizService {
         quiz.setStatus(EStatus.Active);
         quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
 
-        Category category = categoryRepository.findById(quizRequest.getCategoryId()).get();
-        quiz.setCategory(category);
+        Optional<Category> category = categoryRepository.findById(quizRequest.getCategoryId());
+        if (!category.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Category.");
+        }
+        quiz.setCategory(category.get());
+
         quizRepository.save(quiz);
 
         List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
@@ -117,7 +122,7 @@ public class QuizServiceImpl implements QuizService {
 
             return ResponseEntity.ok(quizResponse);
         }
-        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND QUIZ");
     }
 
     private static Set<AnswerResponse> getAnswerResponses(Set<Answer> answerList) {
@@ -143,7 +148,7 @@ public class QuizServiceImpl implements QuizService {
             quizRepository.save(quiz);
             return ResponseEntity.ok("Deleted Quiz Successfully");
         }
-        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND QUIZ");
     }
 
     @Override
@@ -193,7 +198,7 @@ public class QuizServiceImpl implements QuizService {
             }
             return ResponseEntity.ok(quiz);
         }
-        return ResponseEntity.badRequest().body("NOT FOUND QUIZ");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND QUIZ");
 
     }
 
@@ -231,7 +236,7 @@ public class QuizServiceImpl implements QuizService {
         if (categoryRepository.existsById(categoryId)){
             return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
         }
-        return ResponseEntity.badRequest().body("Not Found Category");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND Category");
     }
 
     @Override
@@ -240,6 +245,11 @@ public class QuizServiceImpl implements QuizService {
             return ResponseEntity.badRequest().body("Thời gian không được để trống");
         }
         List<Quiz> quizzes = quizRepository.getQuizzesByCreateAt(request.get("fromTime"), request.get("toTime"));
+
+        if (quizzes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found Quiz");
+        }
+
         return ResponseEntity.ok(quizzes);
     }
 

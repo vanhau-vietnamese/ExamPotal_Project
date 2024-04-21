@@ -16,11 +16,14 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,14 +38,16 @@ public class CategoryServiceImpl implements CategoryService {
     private final QuizRepository quizRepository;
     private final QuestionRepository questionRepository;
     @Override
-    public Category getCategory(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+    public ResponseEntity<Category> getCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        return ResponseEntity.ok(category);
     }
     @Override
     public ResponseEntity<?> addCategory(CategoryRequest categoryRequest) {
         if(categoryRepository.existsByTitle(categoryRequest.getTitle())){
-            throw new RuntimeException("Category Existed.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category already exists.");
         }
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -60,12 +65,16 @@ public class CategoryServiceImpl implements CategoryService {
         category.setTitle(categoryRequest.getTitle());
         category.setDescription(categoryRequest.getDescription());
 
-        return ResponseEntity.ok(categoryRepository.save(category));
+        return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
     @Override
     public ResponseEntity<?> getAllCategories() {
-        return ResponseEntity.ok(categoryRepository.findAllByStatus(EStatus.Active));
+        List<Category> categories = categoryRepository.findAllByStatus(EStatus.Active);
+        if (categories.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục nào.");
+        }
+        return ResponseEntity.ok(categories);
     }
 
     @Override
@@ -84,19 +93,22 @@ public class CategoryServiceImpl implements CategoryService {
 
             return ResponseEntity.ok(categoryRepository.save(category.get()));
         }
-        throw new RuntimeException("Category Not Found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục.");
     }
 
     @Override
     public ResponseEntity<?> deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).get();
-        if (validateCategory(category)){
-            return ResponseEntity.badRequest().body("Delete failed. Because this category already exists in the quiz or the question");
+        Optional<Category> optionalCategory = categoryRepository.findById(id);
+        if (optionalCategory.isPresent()) {
+            Category category = optionalCategory.get();
+            if (validateCategory(category)) {
+                return ResponseEntity.badRequest().body("Delete failed. Because this category already exists in the quiz or the question");
+            }
+            category.setStatus(EStatus.Deleted);
+            categoryRepository.save(category);
+            return ResponseEntity.ok("Deleted Successfully");
         }
-        category.setStatus(EStatus.Deleted);
-        categoryRepository.save(category);
-
-        return ResponseEntity.ok("Deleted Successfully");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
     }
 
     @Override

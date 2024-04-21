@@ -70,7 +70,7 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 
             return ResponseEntity.ok(userRepository.getUserById(user.getId()));
         }
-        return ResponseEntity.badRequest().body("Bạn không phải là admin, nên bạn không có quyền tạo tài khoản admin");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin, nên bạn không có quyền tạo tài khoản admin");
     }
 
     @Override
@@ -92,7 +92,7 @@ public class AdminManagerServiceImpl implements AdminManagerService {
             }
             return ResponseEntity.ok(userInfoResponses);
         }
-        return ResponseEntity.badRequest().body("Bạn không phải là admin, nên bạn không có quyền xem thông tin của tất cả tài khoản admin");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin, nên bạn không có quyền xem thông tin của tất cả tài khoản admin");
     }
 
     @Override
@@ -115,7 +115,7 @@ public class AdminManagerServiceImpl implements AdminManagerService {
             userRepository.save(userDeleted);
             return ResponseEntity.ok("Bạn đã xóa thành công");
         }
-        return ResponseEntity.badRequest().body("Bạn không phải là admin, nên bạn không có quyền xóa tài khoản admin");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin, nên bạn không có quyền xóa tài khoản admin");
     }
 
 }

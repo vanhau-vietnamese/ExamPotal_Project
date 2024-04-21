@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -148,7 +149,7 @@ public class QuestionServiceImpl implements QuestionService {
 
             return ResponseEntity.ok(questionResponse);
         }
-        return ResponseEntity.badRequest().body("Not found Question");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Question.");
     }
 
     @Override
@@ -225,7 +226,7 @@ public class QuestionServiceImpl implements QuestionService {
             GetQuestionResponseList(questionResponses, questions, quiz.get());
             return ResponseEntity.ok(questionResponses);
         }
-        return ResponseEntity.badRequest().body("Not Found Quiz");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Quiz.");
     }
 
     private void GetQuestionResponseList(List<QuestionResponse> questionResponses, List<Question> questions, Quiz quiz) {
@@ -255,7 +256,7 @@ public class QuestionServiceImpl implements QuestionService {
             GetQuestionResponseList(questionResponses, questions, null);
             return ResponseEntity.ok(questionResponses);
         }
-        return ResponseEntity.badRequest().body("Not Found Category");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Category.");
     }
 
     @Override

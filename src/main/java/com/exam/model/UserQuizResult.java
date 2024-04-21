@@ -31,12 +31,19 @@ public class UserQuizResult {
 
     @Column(name = "startTime")
     private Timestamp startTime;
+
     @Column(name = "submitTime")
     private Timestamp submitTime;
+
     @Column(name = "duration")
     private String durationTime;
+
     @Column(name = "numberOfCorrect")
     private Integer numberOfCorrect;
+
+    @Column(name = "submitted")
+    private Boolean submitted;
+
     @Column(name = "numberOfIncorrect")
     private Integer numberOfIncorrect;
     @ManyToOne
