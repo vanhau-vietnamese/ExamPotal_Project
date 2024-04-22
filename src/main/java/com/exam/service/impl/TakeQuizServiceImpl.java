@@ -120,6 +120,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             answerResponse.setContent(answer.getContent());
             answerResponse.setMedia(answer.getMedia());
             answerResponse.setCreatedAt(answer.getCreatedAt());
+            answerResponse.setCorrect(answer.isCorrect());
 
             answerResponseSet.add(answerResponse);
         }
