@@ -64,6 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
         category.setCreateBy(user);
         category.setTitle(categoryRequest.getTitle());
         category.setDescription(categoryRequest.getDescription());
+        category.setStatus(EStatus.Active);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
