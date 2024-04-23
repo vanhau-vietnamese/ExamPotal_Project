@@ -2,6 +2,7 @@ package com.exam.repository;
 
 import com.exam.dto.response.UserInfoResponse;
 import com.exam.enums.ERole;
+import com.exam.enums.EStatus;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
     List<User> getAllAdminUsers(@Param("user_id") String userId);
 
+    int countUsersByStatusAndRole(EStatus status, ERole role);
 }

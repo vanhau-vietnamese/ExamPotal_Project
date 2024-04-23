@@ -29,4 +29,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     // search question from searchContent
     @Query("SELECT q FROM Quiz q WHERE q.title LIKE %:searchTerm% AND q.status = 'Active'")
     List<Quiz> searchQuizzes(@Param("searchTerm") String searchTerm);
+
+    int countQuizzesByStatus(EStatus status);
 }

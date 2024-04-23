@@ -30,4 +30,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("SELECT q FROM Question q WHERE q.content LIKE %:searchTerm% AND q.status = 'Active'")
     List<Question> searchQuestions(@Param("searchTerm") String searchTerm);
 
+    int countQuestionsByStatus(EStatus status);
 }

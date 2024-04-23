@@ -6,4 +6,5 @@ import org.springframework.http.ResponseEntity;
 public interface InformationService {
     public ResponseEntity<?> statistics(StatisticRequest statisticRequest);
 
+    ResponseEntity<?> quantityStatistics();
 }

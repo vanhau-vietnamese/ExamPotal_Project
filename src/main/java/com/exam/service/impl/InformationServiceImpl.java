@@ -1,12 +1,18 @@
 package com.exam.service.impl;
 
 import com.exam.dto.request.StatisticRequest;
+import com.exam.dto.response.QuantityStatisticsResponse;
 import com.exam.dto.response.StatisticQuizResponse;
 import com.exam.dto.response.StatisticResponse;
+import com.exam.enums.ERole;
+import com.exam.enums.EStatus;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
+import com.exam.repository.QuestionRepository;
+import com.exam.repository.QuizRepository;
 import com.exam.repository.UserQuizResultRepository;
+import com.exam.repository.UserRepository;
 import com.exam.service.InformationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +26,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InformationServiceImpl implements InformationService {
     private final UserQuizResultRepository userQuizResultRepository;
+    private final QuestionRepository questionRepository;
+    private final QuizRepository quizRepository;
+    private final UserRepository userRepository;
     @Override
     public ResponseEntity<?> statistics(StatisticRequest statisticRequest) {
         List<UserQuizResult> userQuizResults = userQuizResultRepository.getUserQuizResultsByQuizId(statisticRequest.getQuizId());
@@ -66,5 +75,15 @@ public class InformationServiceImpl implements InformationService {
 
 
         return ResponseEntity.ok(statisticResponses);
+    }
+
+    @Override
+    public ResponseEntity<?> quantityStatistics() {
+        int totalNumberOfQuestions = questionRepository.countQuestionsByStatus(EStatus.Active);
+        int totalNumberOfQuizzes = quizRepository.countQuizzesByStatus(EStatus.Active);
+        int totalNumberOfStudents = userRepository.countUsersByStatusAndRole(EStatus.Active, ERole.student);
+
+        QuantityStatisticsResponse response = new QuantityStatisticsResponse(totalNumberOfQuestions, totalNumberOfQuizzes, totalNumberOfStudents);
+        return ResponseEntity.ok(response);
     }
 }

@@ -18,4 +18,9 @@ public class InformationController {
     public ResponseEntity<?> statistics(@RequestBody StatisticRequest statisticRequest){
         return informationService.statistics(statisticRequest);
     }
+
+    @GetMapping("/statistics/quantity")
+    public ResponseEntity<?> quantityStatistics(){
+        return informationService.quantityStatistics();
+    }
 }
