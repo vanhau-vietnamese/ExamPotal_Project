@@ -54,17 +54,17 @@ public class QuestionController {
         return questionService.getQuestionsOfCategory(id);
     }
 
-    @GetMapping("/filter/questionType")
+    @PostMapping("/filter/questionType")
     public ResponseEntity<?> getQuestionOfQuestionType(@RequestBody QuestionTypeRequest request){
         return questionService.getQuestionsOfQuestionType(request);
     }
 
-    @GetMapping("/filter/createAt")
+    @PostMapping("/filter/createAt")
     public ResponseEntity<?> getQuestionsOfCreateAt(@RequestBody FilterCreateAtRequest request){
         return questionService.getQuestionsOfCreateAt(request);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<?> searchQuestions(@RequestBody Map<String, String> searchRequest){
         return questionService.searchQuestions(searchRequest);
     }

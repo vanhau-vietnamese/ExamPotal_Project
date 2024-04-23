@@ -43,11 +43,11 @@ public class QuizController {
         return quizService.getQuizzesOfCategory(categoryId);
     }
 
-    @GetMapping("/filter/createAt")
+    @PostMapping("/filter/createAt")
     public ResponseEntity<?> getQuizzesOfCreateAt(@RequestBody Map<String, Timestamp> request){
         return quizService.getQuizzesOfCreateAt(request);
     }
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<?> searchQuizzes(@RequestBody Map<String, String> searchRequest){
         return quizService.searchQuizzes(searchRequest);
     }

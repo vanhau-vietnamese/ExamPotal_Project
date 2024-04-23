@@ -25,7 +25,6 @@ public class UserQuestionResult {
     private boolean isDone;
 
     @ManyToOne
-    @JsonBackReference
     private UserQuizResult userQuizResult;
 
     @Column(name = "answers", columnDefinition = "JSON")

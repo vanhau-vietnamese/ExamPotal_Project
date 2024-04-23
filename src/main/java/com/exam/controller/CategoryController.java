@@ -38,7 +38,7 @@ public class CategoryController {
         return categoryService.deleteCategory(id);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<?> searchCategories(@RequestBody Map<String, String> request){
         return categoryService.searchCategories(request);
     }
