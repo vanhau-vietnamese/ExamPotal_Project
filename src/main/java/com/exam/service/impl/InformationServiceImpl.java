@@ -9,10 +9,7 @@ import com.exam.enums.EStatus;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
-import com.exam.repository.QuestionRepository;
-import com.exam.repository.QuizRepository;
-import com.exam.repository.UserQuizResultRepository;
-import com.exam.repository.UserRepository;
+import com.exam.repository.*;
 import com.exam.service.InformationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InformationServiceImpl implements InformationService {
     private final UserQuizResultRepository userQuizResultRepository;
+    private final UserQuestionResultRepository userQuestionResultRepository;
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
@@ -85,5 +83,10 @@ public class InformationServiceImpl implements InformationService {
 
         QuantityStatisticsResponse response = new QuantityStatisticsResponse(totalNumberOfQuestions, totalNumberOfQuizzes, totalNumberOfStudents);
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<?> rateOfQuestions() {
+        return ResponseEntity.ok(userQuestionResultRepository.getRateOfQuestions());
     }
 }

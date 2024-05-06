@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    boolean existsByTitle(String title);
+    boolean existsByTitleAndStatus(String title, EStatus status);
     void deleteById(Long id);
     List<Category> findAllByStatus(EStatus status);
     @Query("SELECT c FROM Category c WHERE c.title LIKE %:searchTerm% AND c.status = 'Active'")

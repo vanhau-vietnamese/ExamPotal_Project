@@ -15,4 +15,7 @@ public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, 
     public UserQuizResult findByUserAndQuiz(User User, Quiz quiz);
     @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.quiz.id = :quizId")
     public List<UserQuizResult> getUserQuizResultsByQuizId(@Param("quizId") Long quizId);
+
+    @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.submitted = true AND uqr.user.id = :userId")
+    List<UserQuizResult> getHistoryOfUser(@Param("userId") String userId);
 }

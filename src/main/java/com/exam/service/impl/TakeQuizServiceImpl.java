@@ -67,6 +67,8 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setSubmitted(false);
         userQuizResultRepository.save(userQuizResult);
 
+        Collections.shuffle(questionResponseList);
+
         QuizResponse quizResponse = getQuizResponse(quiz, questionResponseList, userQuizResult);
 
         return ResponseEntity.status(HttpStatus.OK).body(quizResponse);

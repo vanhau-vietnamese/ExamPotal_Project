@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
     @Override
     public ResponseEntity<?> addCategory(CategoryRequest categoryRequest) {
-        if(categoryRepository.existsByTitle(categoryRequest.getTitle())){
+        if(categoryRepository.existsByTitleAndStatus(categoryRequest.getTitle(), EStatus.Active)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Category already exists.");
         }
         // get jwt from request

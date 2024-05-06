@@ -4,10 +4,7 @@ import com.exam.dto.request.StatisticRequest;
 import com.exam.service.InformationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +19,10 @@ public class InformationController {
     @GetMapping("/statistics/quantity")
     public ResponseEntity<?> quantityStatistics(){
         return informationService.quantityStatistics();
+    }
+
+    @GetMapping("/statistics/questions/rate")
+    public ResponseEntity<?> rateOfQuestions(){
+        return informationService.rateOfQuestions();
     }
 }
