@@ -15,6 +15,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class UserQuizResultResponse {
+    private Long id;
     private int marks;
     private Timestamp startTime;
     private Timestamp submitTime;

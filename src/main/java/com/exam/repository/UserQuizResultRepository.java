@@ -18,4 +18,8 @@ public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, 
 
     @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.submitted = true AND uqr.user.id = :userId")
     List<UserQuizResult> getHistoryOfUser(@Param("userId") String userId);
+
+    @Query("SELECT uqr FROM UserQuizResult uqr WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(uqr.exam, '$.title')) AS STRING) LIKE %:searchTerm% AND uqr.submitted = true AND uqr.user.id = :userId")
+    List<UserQuizResult> searchUserQuizResult(@Param("searchTerm") String searchTerm, @Param("userId")String userId);
+
 }

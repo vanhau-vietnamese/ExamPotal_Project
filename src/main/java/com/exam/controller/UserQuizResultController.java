@@ -4,9 +4,9 @@ import com.exam.model.UserQuizResult;
 import com.exam.service.UserQuizResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/history")
@@ -18,4 +18,8 @@ public class UserQuizResultController {
         return userQuizResultService.getHistoryOfUser();
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<?> searchUserQuizResult(@RequestBody Map<String, String> searchRequest){
+        return userQuizResultService.searchUserQuizResult(searchRequest);
+    }
 }
