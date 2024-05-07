@@ -31,12 +31,9 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
         String jwt = jwtAuthenticationFilter.getJwt();
         FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
         String email = decodedToken.getEmail();
-        System.out.println("asjdajda");
         User user = userRepository.findByEmail(email);
 
-        System.out.println("123313");
         List<UserQuizResult> userQuizResultList = userQuizResultRepository.getHistoryOfUser(user.getId());
-        System.out.println("abcd");
         List<UserQuizResultResponse> userQuizResultResponseList = new ArrayList<>();
 
         for(UserQuizResult userQuizResult : userQuizResultList){
@@ -44,9 +41,9 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
             userQuizResultResponse.setMarks(userQuizResult.getMarks());
             userQuizResultResponse.setStartTime(userQuizResult.getStartTime());
             userQuizResultResponse.setSubmitTime(userQuizResult.getSubmitTime());
-            userQuizResultResponse.setDurationTime(userQuizResultResponse.getDurationTime());
-            userQuizResultResponse.setNumberOfCorrect(userQuizResultResponse.getNumberOfCorrect());
-            userQuizResultResponse.setNumberOfIncorrect(userQuizResultResponse.getNumberOfIncorrect());
+            userQuizResultResponse.setDurationTime(userQuizResult.getDurationTime());
+            userQuizResultResponse.setNumberOfCorrect(userQuizResult.getNumberOfCorrect());
+            userQuizResultResponse.setNumberOfIncorrect(userQuizResult.getNumberOfIncorrect());
 
             Map<String, Object> quiz = new HashMap<>();
             quiz.put("tittle", userQuizResult.getExam().getTitle());
