@@ -50,6 +50,8 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
             quiz.put("maxMarks", userQuizResult.getExam().getMaxMarks());
             quiz.put("numberOfQuestion", userQuizResult.getExam().getNumberOfQuestions());
             quiz.put("durationMinutes", userQuizResult.getExam().getDurationMinutes());
+            quiz.put("id", userQuizResult.getExam().getQuizId());
+
             userQuizResultResponse.setQuiz(quiz);
 
             userQuizResultResponseList.add(userQuizResultResponse);
