@@ -70,8 +70,6 @@ public class InformationServiceImpl implements InformationService {
 
             statisticResponses.add(statisticResponse);
         }
-
-
         return ResponseEntity.ok(statisticResponses);
     }
 

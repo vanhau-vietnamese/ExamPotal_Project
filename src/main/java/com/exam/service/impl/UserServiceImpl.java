@@ -2,7 +2,6 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
-//import com.exam.config.UserDetailsServiceImpl;
 import com.exam.dto.request.ChangePasswordRequest;
 import com.exam.dto.request.UserRequest;
 import com.exam.dto.response.UserInfoResponse;
@@ -77,7 +76,6 @@ public class  UserServiceImpl implements UserService {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng với email: " + email);
         }
-        System.out.println("email: "+ email);
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu hiện tại không đúng");
@@ -87,7 +85,6 @@ public class  UserServiceImpl implements UserService {
         userRepository.save(user);
 
         updatePassword(firebaseId, request.getNewPassword());
-
 
         return ResponseEntity.ok("Đổi mật khẩu thành công");
     }

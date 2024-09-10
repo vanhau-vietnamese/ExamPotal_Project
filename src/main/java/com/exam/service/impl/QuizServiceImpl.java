@@ -221,9 +221,7 @@ public class QuizServiceImpl implements QuizService {
                 if(marks == null || !marks.equals(item.getMarksOfQuestion())){
                     return false;
                 }
-                return true;
             }
-
         }
         return true;
     }

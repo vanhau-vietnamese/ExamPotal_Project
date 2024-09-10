@@ -37,7 +37,6 @@ public class QuizController {
     public ResponseEntity<?> updateQuiz(@PathVariable("id")Long id, @RequestBody QuizRequest quizRequest){
         return quizService.updateQuiz(id, quizRequest);
     }
-
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<?> getQuizzesOfCategory(@PathVariable("categoryId")Long categoryId){
         return quizService.getQuizzesOfCategory(categoryId);

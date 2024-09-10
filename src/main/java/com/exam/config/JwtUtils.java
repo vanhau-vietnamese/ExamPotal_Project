@@ -33,8 +33,6 @@ public class JwtUtils {
         return JwtUtils.class.getResourceAsStream(path);
     }
 
-
-
     public static PrivateKey getPrivateKeyFromJsonFile(String jsonFilePath) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, java.io.IOException {
         InputStream inputStream = getResourceAsStream(jsonFilePath);
         GoogleCredentials credentials = ServiceAccountCredentials.fromStream(inputStream);
@@ -43,7 +41,6 @@ public class JwtUtils {
     public Claims extractAllClaims(String token){
         return Jwts.parser().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
     }
-
     public FirebaseToken verifyToken(String token) {
         try {
             return FirebaseAuth.getInstance().verifyIdToken(token);
@@ -51,7 +48,6 @@ public class JwtUtils {
             throw new RuntimeException(e);
         }
     }
-
     public String generateToken(String email, String firebaseId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("uid", firebaseId);

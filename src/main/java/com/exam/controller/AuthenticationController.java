@@ -24,7 +24,6 @@ public class AuthenticationController {
         return authenticationService.registerUser(registerRequest);
     }
 
-
     private final JwtUtils jwtUtils;
     @PostMapping("/generate-token")
     public ResponseEntity<String> generateToken(@RequestBody Map<String, String> request) {

@@ -40,10 +40,8 @@ public class TakeQuizServiceImpl implements TakeQuizService {
     public ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest){
         // Lấy thời gian nhấn bắt đầu là tời gian hiện tai
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
-
         Quiz quiz = quizRepository.findById(startQuizRequest.getQuizId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz Not Exists"));
-
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
         FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
@@ -52,13 +50,10 @@ public class TakeQuizServiceImpl implements TakeQuizService {
 
         // response bài làm lên cho học sinh làm
         List<Question> questionList = quizQuestionRepository.getQuestionsOfQuiz(startQuizRequest.getQuizId());
-
         List<QuestionResponse> questionResponseList = questionList.stream()
                 .map(this::mapToQuestionResponse)
                 .collect(Collectors.toList());
-
         ExamObject examObject = getExamObject(quiz, questionResponseList);
-
         UserQuizResult userQuizResult = new UserQuizResult();
         userQuizResult.setStartTime(startTime);
         userQuizResult.setQuiz(quiz);
@@ -66,11 +61,8 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setExam(examObject);
         userQuizResult.setSubmitted(false);
         userQuizResultRepository.save(userQuizResult);
-
         Collections.shuffle(questionResponseList);
-
         QuizResponse quizResponse = getQuizResponse(quiz, questionResponseList, userQuizResult);
-
         return ResponseEntity.status(HttpStatus.OK).body(quizResponse);
     }
 
