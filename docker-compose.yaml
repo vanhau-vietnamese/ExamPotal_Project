@@ -10,7 +10,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mysql:/var/lib/mysql  
+      - mysql:/var/lib/mysql
   spring-app:
     container_name: spring-app
     build:
