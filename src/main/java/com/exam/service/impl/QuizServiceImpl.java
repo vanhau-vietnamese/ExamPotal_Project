@@ -229,7 +229,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId) {
         if(categoryId == 0){
-            return ResponseEntity.ok(quizRepository.findAll());
+            return ResponseEntity.ok(quizRepository.findAllByStatus(EStatus.Active));
         }
         if (categoryRepository.existsById(categoryId)){
             return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));

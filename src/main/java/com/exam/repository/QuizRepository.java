@@ -15,7 +15,7 @@ import java.util.Set;
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
     public Set<Quiz> findAllByCreateBy(User user);
     // get quizzes from category
-    @Query("SELECT quiz FROM Quiz quiz WHERE quiz.category.id= :category_id")
+    @Query("SELECT quiz FROM Quiz quiz WHERE quiz.category.id= :category_id and quiz.status = 'Active'")
     public Set<Quiz> getQuizzesOfCategory(@Param("category_id") Long category_id);
 
     List<Quiz> findAllByStatus(EStatus status);
