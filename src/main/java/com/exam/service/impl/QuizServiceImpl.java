@@ -11,6 +11,9 @@ import com.exam.repository.*;
 import com.exam.service.QuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class QuizServiceImpl implements QuizService {
     private final AnswerRepository answerRepository;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
-        return ResponseEntity.ok(quizRepository.findAllByStatus(EStatus.Active));
+        return ResponseEntity.ok(quizRepository.findAll());
     }
 
     @Override
@@ -229,7 +232,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId) {
         if(categoryId == 0){
-            return ResponseEntity.ok(quizRepository.findAllByStatus(EStatus.Active));
+            return ResponseEntity.ok(quizRepository.findAll());
         }
         if (categoryRepository.existsById(categoryId)){
             return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
@@ -255,5 +258,16 @@ public class QuizServiceImpl implements QuizService {
     public ResponseEntity<?> searchQuizzes(Map<String, String> searchRequest) {
         List<Quiz> quizzes = quizRepository.searchQuizzes(searchRequest.get("searchContent"));
         return ResponseEntity.ok(quizzes);
+    }
+
+    @Override
+    public ResponseEntity<?> paginationQuestion(int page, int size) {
+        Sort sort = Sort.by("createdAt").ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        var pageData = quizRepository.findAllByStatus(EStatus.Active, pageable);
+
+//        PageResponse<> pageResponse = PageResponse<>
+//        return ResponseEntity.ok(pageResponse);
+        return null;
     }
 }

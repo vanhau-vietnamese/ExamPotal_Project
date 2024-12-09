@@ -1,10 +1,6 @@
 package com.exam.dto.response;
 
-import com.exam.model.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 

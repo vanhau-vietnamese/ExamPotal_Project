@@ -21,22 +21,27 @@ public class QuizController {
     public ResponseEntity<?> addQuiz(@RequestBody QuizRequest quizRequest){
         return quizService.addQuiz(quizRequest);
     }
+
     @GetMapping("/")
     public ResponseEntity<?> getAllQuizzes(){
         return quizService.getAllQuizzes();
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getQuiz(@PathVariable("id")Long id){
         return quizService.getQuiz(id);
     }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteQuiz(@PathVariable("id")Long id){
         return quizService.deleteQuiz(id);
     }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateQuiz(@PathVariable("id")Long id, @RequestBody QuizRequest quizRequest){
         return quizService.updateQuiz(id, quizRequest);
     }
+
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<?> getQuizzesOfCategory(@PathVariable("categoryId")Long categoryId){
         return quizService.getQuizzesOfCategory(categoryId);
@@ -49,6 +54,12 @@ public class QuizController {
     @PostMapping("/search")
     public ResponseEntity<?> searchQuizzes(@RequestBody Map<String, String> searchRequest){
         return quizService.searchQuizzes(searchRequest);
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<?> paginationQuiz(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                            @RequestParam(value = "size", required = false, defaultValue = "8") int size){
+        return quizService.paginationQuestion(page, size);
     }
 
 }

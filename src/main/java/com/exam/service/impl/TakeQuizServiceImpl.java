@@ -53,6 +53,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         List<QuestionResponse> questionResponseList = questionList.stream()
                 .map(this::mapToQuestionResponse)
                 .collect(Collectors.toList());
+
         ExamObject examObject = getExamObject(quiz, questionResponseList);
         UserQuizResult userQuizResult = new UserQuizResult();
         userQuizResult.setStartTime(startTime);
@@ -90,7 +91,6 @@ public class TakeQuizServiceImpl implements TakeQuizService {
 
         return questionResponse;
     }
-
 
     @NotNull
     private static ExamObject getExamObject(Quiz quiz, List<QuestionResponse> questionResponseList) {

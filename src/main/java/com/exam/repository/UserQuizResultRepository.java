@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, Long> {
-    public UserQuizResult findByUserAndQuiz(User User, Quiz quiz);
+    UserQuizResult findByUserAndQuiz(User User, Quiz quiz);
     @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.quiz.id = :quizId")
-    public List<UserQuizResult> getUserQuizResultsByQuizId(@Param("quizId") Long quizId);
+    List<UserQuizResult> getUserQuizResultsByQuizId(@Param("quizId") Long quizId);
 
     @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.submitted = true AND uqr.user.id = :userId")
     List<UserQuizResult> getHistoryOfUser(@Param("userId") String userId);
@@ -22,4 +22,5 @@ public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, 
     @Query("SELECT uqr FROM UserQuizResult uqr WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(uqr.exam, '$.title')) AS STRING) LIKE %:searchTerm% AND uqr.submitted = true AND uqr.user.id = :userId")
     List<UserQuizResult> searchUserQuizResult(@Param("searchTerm") String searchTerm, @Param("userId")String userId);
 
+    Integer countUserQuizResultByUserId(String userId);
 }

@@ -1,6 +1,6 @@
 package com.exam.repository;
 
-import com.exam.dto.response.UserInfoResponse;
+import com.exam.dto.response.UserResponse;
 import com.exam.enums.ERole;
 import com.exam.enums.EStatus;
 import com.exam.model.User;
@@ -16,18 +16,21 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT result FROM UserQuizResult result WHERE result.user.id= :user_id")
-    public Set<UserQuizResult> getQuizResultOfUser(@Param("user_id") String user_id);
-    public User findByEmail(String email);
-    public boolean existsByEmail(String email);
-    public User findByEmailAndFirebaseId(String email, String firebaseId);
+    Set<UserQuizResult> getQuizResultOfUser(@Param("user_id") String user_id);
 
-    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.id = :user_id AND u.status = 'Active'")
-    UserInfoResponse getUserById(@Param("user_id")String userId);
+    @Query("SELECT u FROM User u WHERE u.email= :email AND u.status = 'Active'")
+    User findByEmail(@Param("email") String email);
+    boolean existsByEmail(String email);
+    User findByEmailAndFirebaseId(String email, String firebaseId);
 
-//    @Query("SELECT new com.exam.dto.response.UserInfoResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt) FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
+    @Query("SELECT new com.exam.dto.response.UserResponse(u.id, u.fullName, u.email, u.role, u.firebaseId, u.createdAt, u.createdBy.fullName) FROM User u WHERE u.id = :user_id AND u.status = 'Active'")
+    UserResponse getUserById(@Param("user_id")String userId);
 
     @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
     List<User> getAllAdminUsers(@Param("user_id") String userId);
 
     int countUsersByStatusAndRole(EStatus status, ERole role);
+
+    @Query("UPDATE User u set u.password = ?2 WHERE u.email = ?1")
+    void updatePassword(String email, String password);
 }

@@ -2,6 +2,8 @@ package com.exam.repository;
 
 import com.exam.enums.EStatus;
 import com.exam.model.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,12 +15,15 @@ import java.util.Set;
 
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
-    public Set<Quiz> findAllByCreateBy(User user);
+    Set<Quiz> findAllByCreateBy(User user);
     // get quizzes from category
     @Query("SELECT quiz FROM Quiz quiz WHERE quiz.category.id= :category_id and quiz.status = 'Active'")
-    public Set<Quiz> getQuizzesOfCategory(@Param("category_id") Long category_id);
+    Set<Quiz> getQuizzesOfCategory(@Param("category_id") Long category_id);
 
-    List<Quiz> findAllByStatus(EStatus status);
+    Page<Quiz> findAllByStatus(EStatus status, Pageable pageable);
+
+    @Query("SELECT q FROM Quiz q WHERE q.status = 'Active'")
+    List<Quiz> findAll();
 
     boolean existsQuizByCategory(Category category);
 
@@ -31,4 +36,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     List<Quiz> searchQuizzes(@Param("searchTerm") String searchTerm);
 
     int countQuizzesByStatus(EStatus status);
+
+    Integer countQuizzesByStatusAndCreateBy(EStatus status, User user);
 }

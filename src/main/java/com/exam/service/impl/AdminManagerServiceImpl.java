@@ -3,7 +3,7 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.RegisterRequest;
-import com.exam.dto.response.UserInfoResponse;
+import com.exam.dto.response.UserResponse;
 import com.exam.enums.ERole;
 import com.exam.enums.EStatus;
 import com.exam.model.User;
@@ -83,11 +83,11 @@ public class AdminManagerServiceImpl implements AdminManagerService {
 
         if(userGet.getRole().equals(ERole.admin)){
             List<User> adminUsers = userRepository.getAllAdminUsers(userGet.getId());
-            List<UserInfoResponse> userInfoResponses = new ArrayList<>();
+            List<UserResponse> userInfoResponses = new ArrayList<>();
 
             for (User user : adminUsers) {
                 String createdBy = user.getCreatedBy() != null ? user.getCreatedBy().getFullName() : null;
-                UserInfoResponse userInfoResponse = new UserInfoResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
+                UserResponse userInfoResponse = new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
                 userInfoResponses.add(userInfoResponse);
             }
             return ResponseEntity.ok(userInfoResponses);

@@ -8,10 +8,9 @@ import com.exam.dto.response.UserInfoResponse;
 import com.exam.dto.response.UserResponse;
 import com.exam.enums.ERole;
 import com.exam.enums.EStatus;
-import com.exam.model.Quiz;
 import com.exam.model.User;
-import com.exam.model.UserQuizResult;
 import com.exam.repository.QuizRepository;
+import com.exam.repository.UserQuizResultRepository;
 import com.exam.repository.UserRepository;
 import com.exam.service.UserService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,16 +23,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @RequiredArgsConstructor
 @Service
 public class  UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final QuizRepository quizRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final UserQuizResultRepository userQuizResultRepository;
+    private final QuizRepository quizRepository;
+
     @Override
     public ResponseEntity<?> getProfile() {
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -46,7 +45,18 @@ public class  UserServiceImpl implements UserService {
         // nếu tồn tại user chứa firebaseId and email
         if(user != null){
             String createdBy = user.getCreatedBy() != null ? user.getCreatedBy().getFullName() : null;
-            UserInfoResponse userInfoResponse = new UserInfoResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
+
+            int numberOfCompleted = userQuizResultRepository.countUserQuizResultByUserId(user.getId());
+            int numberOfPost = quizRepository.countQuizzesByStatusAndCreateBy(EStatus.Active, user);
+
+            UserInfoResponse userInfoResponse = UserInfoResponse.builder()
+                    .id(user.getId())
+                    .fullName(user.getFullName())
+                    .email(user.getEmail())
+                    .role(user.getRole())
+                    .numberOfCompleted(numberOfCompleted)
+                    .numberOfPost(numberOfPost)
+                    .build();
 
             return ResponseEntity.ok(userInfoResponse);
         }

@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 public interface QuestionService {
-    public ResponseEntity<?> addQuestion(QuestionRequest question);
-    public ResponseEntity<?> getQuestion(Long id);
-    public ResponseEntity<?> getAllQuestions();
-    public ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest);
-    public ResponseEntity<String> deleteQuestion(Long id);
-    public ResponseEntity<?> getQuestionsOfQuiz(Long id);
-    public ResponseEntity<?> getQuestionsOfCategory(Long id);
-    public ResponseEntity<?> getQuestionsOfQuestionType(QuestionTypeRequest questionTypeRequest);
-    public ResponseEntity<?> getQuestionsOfCreateAt(FilterCreateAtRequest request);
-    public ResponseEntity<?> searchQuestions(Map<String, String> searchRequest);
+    ResponseEntity<?> addQuestion(QuestionRequest question);
+    ResponseEntity<?> getQuestion(Long id);
+    ResponseEntity<?> getAllQuestions();
+    ResponseEntity<?> editQuestion(Long id, QuestionRequest questionRequest);
+    ResponseEntity<String> deleteQuestion(Long id);
+    ResponseEntity<?> getQuestionsOfQuiz(Long id);
+    ResponseEntity<?> getQuestionsOfCategory(Long id);
+    ResponseEntity<?> getQuestionsOfQuestionType(QuestionTypeRequest questionTypeRequest);
+    ResponseEntity<?> getQuestionsOfCreateAt(FilterCreateAtRequest request);
+    ResponseEntity<?> searchQuestions(Map<String, String> searchRequest);
+
+    ResponseEntity<?> paginationQuestions(int page, int size);
 }

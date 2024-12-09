@@ -4,10 +4,7 @@ import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuestionRequest;
 import com.exam.dto.request.QuestionTypeRequest;
-import com.exam.dto.response.AnswerResponse;
-import com.exam.dto.response.CategoryResponse;
-import com.exam.dto.response.QuestionResponse;
-import com.exam.dto.response.QuestionTypeResponse;
+import com.exam.dto.response.*;
 import com.exam.enums.EQuestionType;
 import com.exam.enums.EStatus;
 import com.exam.model.*;
@@ -17,6 +14,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -154,10 +155,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<?> getAllQuestions() {
-        List<Question> questions = questionRepository.findAllByStatus(EStatus.Active);
-        List<QuestionResponse> questionResponses = new ArrayList<>();
-
-        GetQuestionResponseList(questionResponses, questions, null);
+        List<Question> questions = questionRepository.findAll();
+        List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
 
         return ResponseEntity.ok(questionResponses);
     }
@@ -220,16 +219,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public ResponseEntity<?> getQuestionsOfQuiz(Long quizId) {
         Optional<Quiz> quiz = quizRepository.findById(quizId);
-        List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = quizQuestionRepository.getQuestionsOfQuiz(quizId);
         if(quiz.isPresent()){
-            GetQuestionResponseList(questionResponses, questions, quiz.get());
+            List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, quiz.get());
             return ResponseEntity.ok(questionResponses);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Quiz.");
     }
 
-    private void GetQuestionResponseList(List<QuestionResponse> questionResponses, List<Question> questions, Quiz quiz) {
+    private List<QuestionResponse> GetQuestionResponseList(List<Question> questions, Quiz quiz) {
+        List<QuestionResponse> questionResponses = new ArrayList<>();
         for (Question question : questions){
             Integer marksOfQuestion = null;
             QuizQuestion quizQuestion = null;
@@ -245,15 +244,15 @@ public class QuestionServiceImpl implements QuestionService {
 
             questionResponses.add(questionResponse);
         }
+        return questionResponses;
     }
 
     @Override
     public ResponseEntity<?> getQuestionsOfCategory(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = questionRepository.getQuestionsOfCategory(id, EStatus.Active);
         if(category.isPresent()){
-            GetQuestionResponseList(questionResponses, questions, null);
+            List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
             return ResponseEntity.ok(questionResponses);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Category.");
@@ -262,9 +261,8 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public ResponseEntity<?> getQuestionsOfQuestionType(QuestionTypeRequest request) {
         EQuestionType questionType = EQuestionType.getByAlias(request.getAlias());
-        List<QuestionResponse> questionResponses = new ArrayList<>();
         List<Question> questions = questionRepository.findQuestionsByQuestionType(questionType);
-        GetQuestionResponseList(questionResponses, questions, null);
+        List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
         return ResponseEntity.ok(questionResponses);
     }
 
@@ -274,17 +272,32 @@ public class QuestionServiceImpl implements QuestionService {
             return ResponseEntity.badRequest().body("Thời gian không được để trống");
         }
         List<Question> questions = questionRepository.getQuestionsByCreateAt(request.getFromTime(), request.getToTime());
-        List<QuestionResponse> questionResponses = new ArrayList<>();
-        GetQuestionResponseList(questionResponses, questions, null);
+        List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
         return ResponseEntity.ok(questionResponses);
     }
 
     @Override
     public ResponseEntity<?> searchQuestions(Map<String, String> searchRequest) {
         List<Question> questions = questionRepository.searchQuestions(searchRequest.get("searchContent"));
-        List<QuestionResponse> questionResponses = new ArrayList<>();
-        GetQuestionResponseList(questionResponses, questions, null);
+        List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
         return ResponseEntity.ok(questionResponses);
+    }
+
+    @Override
+    public ResponseEntity<?> paginationQuestions(int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        var pageData = questionRepository.findAllByStatus(EStatus.Active, pageable);
+        List<Question> questions = pageData.getContent();
+        List<QuestionResponse> questionResponses = GetQuestionResponseList(questions, null);
+        PageResponse<QuestionResponse> pageResponse = PageResponse.<QuestionResponse>builder()
+                .currentPage(page)
+                .pageSize(size)
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(questionResponses)
+                .build();
+        return ResponseEntity.ok(pageResponse);
     }
 
     public boolean isValidQuestionTypeByAlias(String alias) {

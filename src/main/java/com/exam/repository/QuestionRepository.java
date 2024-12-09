@@ -4,6 +4,8 @@ import com.exam.enums.EQuestionType;
 import com.exam.enums.EStatus;
 import com.exam.model.Category;
 import com.exam.model.Question;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Query("SELECT q FROM Question q WHERE q.category.id = :categoryId and q.status = :status")
     List<Question> getQuestionsOfCategory(@Param("categoryId")Long categoryId, @Param("status")EStatus status);
 
-    List<Question> findAllByStatus(EStatus status);
 
     boolean existsQuestionByCategory(Category category);
     List<Question> findQuestionsByQuestionType(EQuestionType questionType);
@@ -31,4 +32,9 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> searchQuestions(@Param("searchTerm") String searchTerm);
 
     int countQuestionsByStatus(EStatus status);
+
+    Page<Question> findAllByStatus(EStatus status, Pageable pageable);
+
+    @Query("SELECT q FROM Question q WHERE q.status = 'Active'")
+    List<Question> findAll();
 }

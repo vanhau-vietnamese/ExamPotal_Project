@@ -15,9 +15,9 @@ import java.util.Set;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Query("SELECT ans.id FROM Answer ans WHERE ans.question.id = :questionId AND ans.isCorrect = true")
-    public List<Long> getCorrectAnswerFromQuestion(@Param("questionId") Long questionId);
+    List<Long> getCorrectAnswerFromQuestion(@Param("questionId") Long questionId);
 
-    public Set<Answer> findAllByQuestion(Question question);
+    Set<Answer> findAllByQuestion(Question question);
 
     @Transactional
     @Modifying

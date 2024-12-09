@@ -68,4 +68,10 @@ public class QuestionController {
     public ResponseEntity<?> searchQuestions(@RequestBody Map<String, String> searchRequest){
         return questionService.searchQuestions(searchRequest);
     }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<?> paginationQuestions(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                                 @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+        return questionService.paginationQuestions(page, size);
+    }
 }

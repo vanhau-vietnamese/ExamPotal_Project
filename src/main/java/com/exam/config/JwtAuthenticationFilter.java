@@ -48,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
+
     private boolean isValidateRequest(HttpServletRequest request, String url) {
         String requestURI = request.getRequestURI();
         return requestURI.equals(url);
