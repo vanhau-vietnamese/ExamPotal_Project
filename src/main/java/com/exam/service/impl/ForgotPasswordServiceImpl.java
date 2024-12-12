@@ -8,6 +8,7 @@ import com.exam.repository.UserRepository;
 import com.exam.repository.client.EmailClient;
 import com.exam.service.ForgotPasswordService;
 import feign.FeignException;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,6 +35,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Value("${brevo.api.key}")
     private String apiKey;
+
+    // TH:
+    // khi người dùng
+
+    @RateLimiter(name = "verifyEmailRatelimiter", fallbackMethod = "handleRateLimitExceeded")
     @Override
     public ResponseEntity<String> verifyEmail(String email) {
         User user = userRepository.findByEmail(email);
@@ -41,11 +47,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Please provide a valid email");
         }
 
+        // xóa otp đã hết hạn của user
+        forgotPasswordRepository.deleteByExpirationTimeBeforeAndUser(Timestamp.from(Instant.now()), user);
+
         int otp = generateOtp();
 
         ForgotPassword forgotPassword = ForgotPassword.builder()
                 .otp(otp)
-                .expirationTime(Timestamp.from(Instant.now().plus(10, ChronoUnit.MINUTES)))
+                .expirationTime(Timestamp.from(Instant.now().plus(1, ChronoUnit.MINUTES)))
                 .user(user)
                 .build();
 
@@ -58,11 +67,18 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
                 .build();
         boolean isSendMail = sendMail(to, subject, htmlContent);
 
-        // save
-        forgotPasswordRepository.save(forgotPassword);
+        // ba không thể send lại email khi
 
-        if (isSendMail) return ResponseEntity.ok("Email sent for verification");
+        if (isSendMail){
+            forgotPasswordRepository.save(forgotPassword);
+            return ResponseEntity.ok("Email sent for verification");
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot Send Mail");
+    }
+    // Fallback nếu vượt quá giới hạn RateLimiter
+    public ResponseEntity<String> handleRateLimitExceeded(Exception e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .body("You can only request email verification once every minute.");
     }
 
     // verify OTP
@@ -75,7 +91,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         ForgotPassword fp = forgotPasswordRepository.findByOtpAndUser(otpRequest.getOtp(), user)
                 .orElseThrow(() -> new RuntimeException("Invalid OTP for email: " + otpRequest.getEmail()));
 
-        // if het han
+        // if het han hoặc delete khi chúng ta verify email otp thành cng
         forgotPasswordRepository.delete(fp);
 
         if(fp.getExpirationTime().before(Timestamp.from(Instant.now()))) {

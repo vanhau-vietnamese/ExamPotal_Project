@@ -65,9 +65,11 @@ public class  UserServiceImpl implements UserService {
 
     @Override
     public User addNewUser(UserRequest userRequest) {
+        System.out.println("add password: " + userRequest.getPassword());
+
         User user = new User();
         user.setEmail(userRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setPassword(userRequest.getPassword());
         user.setFirebaseId(userRequest.getFirebaseId());
         user.setFullName(userRequest.getFullName());
         user.setRole(ERole.student);
@@ -86,6 +88,7 @@ public class  UserServiceImpl implements UserService {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng với email: " + email);
         }
+
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().body("Mật khẩu hiện tại không đúng");
