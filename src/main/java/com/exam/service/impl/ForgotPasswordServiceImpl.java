@@ -54,7 +54,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
         ForgotPassword forgotPassword = ForgotPassword.builder()
                 .otp(otp)
-                .expirationTime(Timestamp.from(Instant.now().plus(1, ChronoUnit.MINUTES)))
+                .expirationTime(Timestamp.from(Instant.now().plus(30, ChronoUnit.SECONDS)))
                 .user(user)
                 .build();
 
