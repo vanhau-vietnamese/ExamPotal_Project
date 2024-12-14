@@ -103,6 +103,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
     @Override
     public ResponseEntity<String> changePassword(String email, ChangePasswordRequest request) {
+        System.out.println("password: " + request.getPassword());
+        System.out.println("repeat password: " + request.getRepeatPassword());
+
         if(!request.getPassword().equals(request.getRepeatPassword())){
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Passwords do not match! Please enter the password again!");
         }
