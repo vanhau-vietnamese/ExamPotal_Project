@@ -7,9 +7,12 @@ import com.exam.repository.ForgotPasswordRepository;
 import com.exam.repository.UserRepository;
 import com.exam.repository.client.EmailClient;
 import com.exam.service.ForgotPasswordService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 import feign.FeignException;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -101,15 +103,30 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         return ResponseEntity.ok("OTP verified!");
     }
 
+    @SneakyThrows
     @Override
     public ResponseEntity<String> changePassword(String email, ChangePasswordRequest request) {
         System.out.println("password: " + request.getPassword());
         System.out.println("repeat password: " + request.getRepeatPassword());
 
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Please provide a valid email");
+        }
+
         if(!request.getPassword().equals(request.getRepeatPassword())){
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Passwords do not match! Please enter the password again!");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        // Tạo yêu cầu cập nhật
+        UserRecord.UpdateRequest requestUpdate = new UserRecord.UpdateRequest(user.getFirebaseId())
+                .setEmail(email) // Cập nhật email
+                .setPassword(request.getPassword()); // Cập nhật password (nếu cần)
+
+        // Thực hiện cập nhật
+        UserRecord updatedUser = FirebaseAuth.getInstance().updateUser(requestUpdate);
+
         userRepository.updatePassword(email, encodedPassword);
 
         return ResponseEntity.status(HttpStatus.OK).body("Password has been changed!");
