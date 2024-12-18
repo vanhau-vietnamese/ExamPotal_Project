@@ -37,4 +37,7 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q WHERE q.status = 'Active'")
     List<Question> findAll();
+
+    @Query("SELECT COUNT(q) FROM Question q WHERE YEAR(q.createdAt) = :year AND MONTH (q.createdAt) = :month AND q.status = 'Active'")
+    int countQuestionsByMonthAndYear(@Param("month") int month, @Param("year") int year);
 }

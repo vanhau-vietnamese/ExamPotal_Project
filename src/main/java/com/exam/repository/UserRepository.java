@@ -37,4 +37,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Modifying
     @Query("UPDATE User u set u.password = ?2 WHERE u.email = ?1")
     void updatePassword(String email, String password);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE YEAR(u.createdAt) = :year AND MONTH (u.createdAt) = :month AND u.role = 'student' AND u.status = 'Active'")
+    int countUsersByMonthAndYear(@Param("month") int month, @Param("year") int year);
 }

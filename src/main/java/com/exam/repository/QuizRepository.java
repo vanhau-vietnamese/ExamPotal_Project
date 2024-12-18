@@ -38,4 +38,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     int countQuizzesByStatus(EStatus status);
 
     Integer countQuizzesByStatusAndCreateBy(EStatus status, User user);
+
+    @Query("SELECT COUNT(q) FROM Quiz q WHERE YEAR(q.createdAt) = :year AND MONTH (q.createdAt) = :month AND q.status = 'Active'")
+    int countQuizzesByMonthAndYear(@Param("month") int month, @Param("year") int year);
 }

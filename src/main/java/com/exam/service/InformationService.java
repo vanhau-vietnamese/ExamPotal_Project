@@ -9,4 +9,6 @@ public interface InformationService {
     ResponseEntity<?> quantityStatistics();
 
     ResponseEntity<?> rateOfQuestions();
+
+    ResponseEntity<?> monthlyStatistics();
 }

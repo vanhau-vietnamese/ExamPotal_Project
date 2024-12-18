@@ -25,4 +25,9 @@ public class InformationController {
     public ResponseEntity<?> rateOfQuestions(){
         return informationService.rateOfQuestions();
     }
+
+    @GetMapping("/statistics/monthly")
+    public ResponseEntity<?> monthlyStatistics() {
+        return informationService.monthlyStatistics();
+    }
 }

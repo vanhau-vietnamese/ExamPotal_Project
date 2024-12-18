@@ -147,7 +147,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
                         .build())
                 .to(List.of(to))
                 .subject(subject)
-                .htmlContent(htmlContent)
+                .htmlContent(htmlContent) 
                 .build();
         try{
             emailClient.sendEmail(apiKey, emailRequest);

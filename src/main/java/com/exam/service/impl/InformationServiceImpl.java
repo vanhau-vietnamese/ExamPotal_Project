@@ -1,6 +1,7 @@
 package com.exam.service.impl;
 
 import com.exam.dto.request.StatisticRequest;
+import com.exam.dto.response.MonthlyStatisticsDTO;
 import com.exam.dto.response.QuantityStatisticsResponse;
 import com.exam.dto.response.StatisticQuizResponse;
 import com.exam.dto.response.StatisticResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -86,5 +88,20 @@ public class InformationServiceImpl implements InformationService {
     @Override
     public ResponseEntity<?> rateOfQuestions() {
         return ResponseEntity.ok(userQuestionResultRepository.getRateOfQuestions());
+    }
+
+    @Override
+    public ResponseEntity<?> monthlyStatistics() {
+        List<MonthlyStatisticsDTO> monthlyStatisticsDTOS = new ArrayList<>();
+
+        int currenYear = LocalDate.now().getYear();
+        for(int i=1; i<=12; i++){
+            int totalStudents = userRepository.countUsersByMonthAndYear(i, currenYear);
+            int totalQuestions = questionRepository.countQuestionsByMonthAndYear(i, currenYear);
+            int totalQuizzes = quizRepository.countQuizzesByMonthAndYear(i, currenYear);
+
+            monthlyStatisticsDTOS.add(new MonthlyStatisticsDTO(i, totalStudents, totalQuestions, totalQuizzes));
+        }
+        return ResponseEntity.ok(monthlyStatisticsDTOS);
     }
 }
