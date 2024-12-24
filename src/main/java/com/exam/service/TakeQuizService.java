@@ -5,6 +5,6 @@ import com.exam.dto.request.SubmitRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface TakeQuizService {
-    public ResponseEntity<?> submitQuiz(SubmitRequest submitRequest);
-    public ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest);
+    ResponseEntity<?> submitQuiz(SubmitRequest submitRequest);
+    ResponseEntity<?> startQuiz(StartQuizRequest startQuizRequest);
 }

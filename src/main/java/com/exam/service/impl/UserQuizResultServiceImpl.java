@@ -3,6 +3,7 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.response.UserQuizResultResponse;
+import com.exam.enums.EStatus;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
@@ -48,6 +49,19 @@ public class UserQuizResultServiceImpl implements UserQuizResultService {
         User user = userRepository.findByEmail(email);
         List<UserQuizResult> userQuizResultList = userQuizResultRepository.searchUserQuizResult(searchRequest.get("searchContent"), user.getId());
         return getUserQuizResultResponseList(userQuizResultList);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteUserQuizResult(Long id) {
+        String jwt = jwtAuthenticationFilter.getJwt();
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
+        User user = userRepository.findByEmail(email);
+
+        UserQuizResult userQuizResult = userQuizResultRepository.getUserQuizResultByUserAndId(user, id);
+        userQuizResult.setStatus(EStatus.Deleted);
+        userQuizResultRepository.save(userQuizResult);
+        return ResponseEntity.ok("Deleted successful");
     }
 
     @NotNull

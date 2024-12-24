@@ -1,6 +1,5 @@
 package com.exam.controller;
 
-import com.exam.model.UserQuizResult;
 import com.exam.service.UserQuizResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,5 +20,10 @@ public class UserQuizResultController {
     @PostMapping("/search")
     public ResponseEntity<?> searchUserQuizResult(@RequestBody Map<String, String> searchRequest){
         return userQuizResultService.searchUserQuizResult(searchRequest);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteUserQuizResult(@PathVariable("id") Long id){
+        return userQuizResultService.deleteUserQuizResult(id);
     }
 }

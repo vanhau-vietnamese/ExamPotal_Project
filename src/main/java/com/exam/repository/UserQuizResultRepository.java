@@ -13,14 +13,16 @@ import java.util.List;
 @Repository
 public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, Long> {
     UserQuizResult findByUserAndQuiz(User User, Quiz quiz);
-    @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.quiz.id = :quizId")
+    @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.quiz.id = :quizId AND uqr.status = 'Active'")
     List<UserQuizResult> getUserQuizResultsByQuizId(@Param("quizId") Long quizId);
 
-    @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.submitted = true AND uqr.user.id = :userId")
+    @Query("SELECT uqr FROM UserQuizResult uqr WHERE uqr.submitted = true AND uqr.user.id = :userId AND uqr.status = 'Active'")
     List<UserQuizResult> getHistoryOfUser(@Param("userId") String userId);
 
-    @Query("SELECT uqr FROM UserQuizResult uqr WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(uqr.exam, '$.title')) AS STRING) LIKE %:searchTerm% AND uqr.submitted = true AND uqr.user.id = :userId")
+    @Query("SELECT uqr FROM UserQuizResult uqr WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(uqr.exam, '$.title')) AS STRING) LIKE %:searchTerm% AND uqr.submitted = true AND uqr.user.id = :userId AND uqr.status = 'Active'")
     List<UserQuizResult> searchUserQuizResult(@Param("searchTerm") String searchTerm, @Param("userId")String userId);
 
     Integer countUserQuizResultByUserId(String userId);
+
+    UserQuizResult getUserQuizResultByUserAndId(User user, Long id);
 }

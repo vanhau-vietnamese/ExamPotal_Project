@@ -1,6 +1,7 @@
 package com.exam.model;
 
 import com.exam.convert.ExamObjectConverter;
+import com.exam.enums.EStatus;
 import com.exam.helper.ExamObject;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -43,6 +44,10 @@ public class UserQuizResult {
 
     @Column(name = "submitted")
     private Boolean submitted;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private EStatus status;
 
     @Column(name = "numberOfIncorrect")
     private Integer numberOfIncorrect;
