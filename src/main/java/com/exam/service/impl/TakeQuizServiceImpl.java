@@ -3,6 +3,7 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.response.*;
+import com.exam.enums.EStatus;
 import com.exam.helper.AnswerObject;
 import com.exam.dto.request.QuestionChoiceRequest;
 import com.exam.dto.request.StartQuizRequest;
@@ -61,6 +62,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
         userQuizResult.setUser(user);
         userQuizResult.setExam(examObject);
         userQuizResult.setSubmitted(false);
+        userQuizResult.setStatus(EStatus.Active);
         userQuizResultRepository.save(userQuizResult);
         Collections.shuffle(questionResponseList);
         QuizResponse quizResponse = getQuizResponse(quiz, questionResponseList, userQuizResult);

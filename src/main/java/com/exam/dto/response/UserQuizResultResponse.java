@@ -1,10 +1,5 @@
 package com.exam.dto.response;
 
-import com.exam.model.UserQuestionResult;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
