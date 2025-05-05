@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -36,6 +37,7 @@ public class QuizServiceImpl implements QuizService {
         return ResponseEntity.ok(quizRepository.findAll());
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> addQuiz(QuizRequest quizRequest) {
         // get jwt from request
@@ -78,6 +80,7 @@ public class QuizServiceImpl implements QuizService {
         return ResponseEntity.ok(quiz);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> getQuiz(Long id) {
         Quiz quiz = quizRepository.findById(id).get();
@@ -142,6 +145,7 @@ public class QuizServiceImpl implements QuizService {
         return answerResponseSet;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> deleteQuiz(Long id) {
         Optional<Quiz> quizOptional = quizRepository.findById(id);
@@ -154,6 +158,7 @@ public class QuizServiceImpl implements QuizService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND QUIZ");
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> updateQuiz(Long id, QuizRequest quizRequest) {
         Quiz quiz = quizRepository.findById(id).get();
@@ -229,6 +234,7 @@ public class QuizServiceImpl implements QuizService {
         return true;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId) {
         if(categoryId == 0){
@@ -240,6 +246,7 @@ public class QuizServiceImpl implements QuizService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND Category");
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> getQuizzesOfCreateAt(Map<String, Timestamp> request) {
         if(request.get("fromTime") == null || request.get("toTime") == null){
@@ -254,6 +261,7 @@ public class QuizServiceImpl implements QuizService {
         return ResponseEntity.ok(quizzes);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> searchQuizzes(Map<String, String> searchRequest) {
         List<Quiz> quizzes = quizRepository.searchQuizzes(searchRequest.get("searchContent"));

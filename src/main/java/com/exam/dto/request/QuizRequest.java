@@ -1,11 +1,9 @@
 package com.exam.dto.request;
 
-import com.exam.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-
 
 @Getter
 @Setter
