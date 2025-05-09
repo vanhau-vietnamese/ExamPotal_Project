@@ -32,25 +32,26 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public List<VerifyQuestionResultDto> verifyQuestions(List<QuestionRequest> extractQuestions) throws IOException {
-        BeanOutputConverter<List<VerifyQuestionResultDto>> outputConverter = new BeanOutputConverter<>(
-                new ParameterizedTypeReference<List<VerifyQuestionResultDto>>() {}
-        );
-        String format = outputConverter.getFormat();
-
-        PromptTemplate promptTemplate = new PromptTemplate(ragPromptTemplate, Map.of(
-                "question", String.valueOf(countQuestion),
-                "documents", String.join("\n", contentList),
-                "format", format
-        ));
-        Prompt prompt = promptTemplate.create();
-
-        ChatResponse chatResponse = chatClient.prompt().call().chatResponse();
-
-        return outputConverter.convert(
-                Objects.requireNonNull(chatResponse)
-                        .getResult()
-                        .getOutput()
-                        .getText()
-        );
+//        BeanOutputConverter<List<VerifyQuestionResultDto>> outputConverter = new BeanOutputConverter<>(
+//                new ParameterizedTypeReference<List<VerifyQuestionResultDto>>() {}
+//        );
+//        String format = outputConverter.getFormat();
+//
+//        PromptTemplate promptTemplate = new PromptTemplate(ragPromptTemplate, Map.of(
+//                "question", String.valueOf(countQuestion),
+//                "documents", String.join("\n", contentList),
+//                "format", format
+//        ));
+//        Prompt prompt = promptTemplate.create();
+//
+//        ChatResponse chatResponse = chatClient.prompt().call().chatResponse();
+//
+//        return outputConverter.convert(
+//                Objects.requireNonNull(chatResponse)
+//                        .getResult()
+//                        .getOutput()
+//                        .getText()
+//        );
+        return null;
     }
 }

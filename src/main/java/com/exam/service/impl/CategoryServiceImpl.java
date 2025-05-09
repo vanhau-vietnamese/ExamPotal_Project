@@ -3,6 +3,7 @@ package com.exam.service.impl;
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
 import com.exam.dto.request.CategoryRequest;
+import com.exam.dto.response.CategoryResponse;
 import com.exam.enums.EStatus;
 import com.exam.model.Category;
 import com.exam.model.User;
@@ -74,7 +75,8 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục nào.");
         }
-        return ResponseEntity.ok(categories);
+        List<CategoryResponse> responses = categories.stream().map(CategoryResponse::new).toList();
+        return ResponseEntity.ok(responses);
     }
 
     @Override

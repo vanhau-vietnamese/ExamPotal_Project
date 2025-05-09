@@ -37,10 +37,12 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
 
     @Override
     public List<VerifyQuestionResultDto>verifyQuestions(MultipartFile file) throws IOException {
-        // lấy câu hỏi từ file
-        List<QuestionRequest> extractQuestions = this.extractQuestions(file);
+//        // lấy câu hỏi từ file
+//        List<QuestionRequest> extractQuestions = this.extractQuestions(file);
+//
+//        return agentService.verifyQuestions(extractQuestions);
 
-        return agentService.verifyQuestions(extractQuestions);
+        return null;
     }
 
 
