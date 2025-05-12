@@ -27,4 +27,9 @@ public class AdminManagerController {
     public ResponseEntity<?> deleteAdminAccount(@RequestBody Map<String, String> request){
         return adminManagerService.deleteAdminAccount(request);
     }
+
+    @GetMapping("/userAccount")
+    public ResponseEntity<?> getUserAccount(){
+        return adminManagerService.getAllUserAccount();
+    }
 }

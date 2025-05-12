@@ -31,6 +31,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.role = 'admin' AND u.id != :user_id AND u.status = 'Active'")
     List<User> getAllAdminUsers(@Param("user_id") String userId);
 
+    @Query("SELECT u FROM User u WHERE u.role = 'user' AND u.status = 'Active'")
+    List<User> getAllStudent();
+
     int countUsersByStatusAndRole(EStatus status, ERole role);
 
     @Transactional

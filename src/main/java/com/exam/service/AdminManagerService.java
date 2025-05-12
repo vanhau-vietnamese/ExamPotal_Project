@@ -11,4 +11,6 @@ public interface AdminManagerService {
     ResponseEntity<?> getAllAdminAccount();
 
     ResponseEntity<?> deleteAdminAccount(Map<String, String> request);
+
+    ResponseEntity<?> getAllUserAccount();
 }

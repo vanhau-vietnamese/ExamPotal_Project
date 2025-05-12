@@ -53,11 +53,11 @@ public class Quiz {
     @JoinColumn(name = "categoryId", referencedColumnName = "id")
     private Category category;
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<UserQuizResult> userQuizResults = new HashSet<>();
 
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     Set<QuizQuestion> quizQuestions = new LinkedHashSet<>();
 }

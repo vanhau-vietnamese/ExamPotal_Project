@@ -118,4 +118,26 @@ public class AdminManagerServiceImpl implements AdminManagerService {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin, nên bạn không có quyền xóa tài khoản admin");
     }
 
+    @Override
+    public ResponseEntity<?> getAllUserAccount() {
+        // get jwt from request
+        String jwt = jwtAuthenticationFilter.getJwt();
+        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+        String email = decodedToken.getEmail();
+        User userGet = userRepository.findByEmail(email);
+
+        if(userGet.getRole().equals(ERole.admin)){
+            List<User> studentUsers = userRepository.getAllStudent();
+            List<UserResponse> userInfoResponses = new ArrayList<>();
+
+            for (User user : studentUsers) {
+                String createdBy = user.getCreatedBy() != null ? user.getCreatedBy().getFullName() : null;
+                UserResponse userInfoResponse = new UserResponse(user.getId(), user.getFullName(), user.getEmail(), user.getRole(), user.getFirebaseId(), user.getCreatedAt(), createdBy);
+                userInfoResponses.add(userInfoResponse);
+            }
+            return ResponseEntity.ok(userInfoResponses);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin, nên bạn không có quyền xem thông tin của tất cả tài khoản người dùng");
+    }
+
 }

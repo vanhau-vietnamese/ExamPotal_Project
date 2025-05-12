@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 public interface CategoryService {
-    public ResponseEntity<Category> getCategory(Long id);
-    public ResponseEntity<?> addCategory(CategoryRequest categoryRequest);
-    public ResponseEntity<?> getAllCategories();
-    public ResponseEntity<?> updateCategory(Long id, CategoryRequest categoryRequest);
+    ResponseEntity<Category> getCategory(Long id);
+    ResponseEntity<?> addCategory(CategoryRequest categoryRequest);
+    ResponseEntity<?> getAllCategories();
+    ResponseEntity<?> updateCategory(Long id, CategoryRequest categoryRequest);
     ResponseEntity<?> deleteCategory(Long id);
 
     ResponseEntity<?> searchCategories(Map<String, String> request);

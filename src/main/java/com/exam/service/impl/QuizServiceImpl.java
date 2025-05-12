@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +35,12 @@ public class QuizServiceImpl implements QuizService {
     private final AnswerRepository answerRepository;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
-        return ResponseEntity.ok(quizRepository.findAll());
+        List<Quiz> quizzes = quizRepository.findAll();
+        if (quizzes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài thi nào.");
+        }
+        List<QuizResponseDto> responses = quizzes.stream().map(QuizResponseDto::new).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @Transactional
@@ -104,27 +110,29 @@ public class QuizServiceImpl implements QuizService {
                 Set<Answer> answerList = answerRepository.findAllByQuestion(question);
                 Set<AnswerResponse> answerResponseSet = getAnswerResponses(answerList);
 
-                QuestionResponse questionResponse = new QuestionResponse();
-                questionResponse.setId(question.getId());
-                questionResponse.setQuestionType(questionTypeResponse);
-                questionResponse.setMedia(question.getMedia());
-                questionResponse.setCreatedAt(question.getCreatedAt());
-                questionResponse.setCategory(categoryResponse);
-                questionResponse.setContent(question.getContent());
-                questionResponse.setAnswers(answerResponseSet);
+                QuestionResponse questionResponse = QuestionResponse.builder()
+                        .id(question.getId())
+                        .questionType(questionTypeResponse)
+                        .media(question.getMedia())
+                        .createdAt(question.getCreatedAt())
+                        .category(categoryResponse)
+                        .content(question.getContent())
+                        .answers(answerResponseSet)
+                        .build();
 
                 questionResponseList.add(questionResponse);
             }
 
-            QuizResponse quizResponse = new QuizResponse();
-            quizResponse.setQuizId(id);
-            quizResponse.setTitle(quiz.getTitle());
-            quizResponse.setDescription(quiz.getDescription());
-            quizResponse.setNumberOfQuestions(quiz.getNumberOfQuestions());
-            quizResponse.setDurationMinutes(quiz.getDurationMinutes());
-            quizResponse.setMaxMarks(quiz.getMaxMarks());
-            quizResponse.setQuestionResponseList(questionResponseList);
-            quizResponse.setCreateAt(quiz.getCreatedAt());
+            QuizResponse quizResponse = QuizResponse.builder()
+                    .quizId(id)
+                    .title(quiz.getTitle())
+                    .description(quiz.getDescription())
+                    .numberOfQuestions(quiz.getNumberOfQuestions())
+                    .durationMinutes(quiz.getDurationMinutes())
+                    .maxMarks(quiz.getMaxMarks())
+                    .questionResponseList(questionResponseList)
+                    .createAt(quiz.getCreatedAt())
+                    .build();
 
             return ResponseEntity.ok(quizResponse);
         }
@@ -238,10 +246,20 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public ResponseEntity<?> getQuizzesOfCategory(Long categoryId) {
         if(categoryId == 0){
-            return ResponseEntity.ok(quizRepository.findAll());
+            List<Quiz> quizzes = quizRepository.findAll();
+            if (quizzes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài thi nào.");
+            }
+            List<QuizResponseDto> responses = quizzes.stream().map(QuizResponseDto::new).collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
         }
         if (categoryRepository.existsById(categoryId)){
-            return ResponseEntity.ok(quizRepository.getQuizzesOfCategory(categoryId));
+            Set<Quiz> quizzes = quizRepository.getQuizzesOfCategory(categoryId);
+            if (quizzes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài thi nào.");
+            }
+            List<QuizResponseDto> responses = quizzes.stream().map(QuizResponseDto::new).collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT FOUND Category");
     }
@@ -265,7 +283,11 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public ResponseEntity<?> searchQuizzes(Map<String, String> searchRequest) {
         List<Quiz> quizzes = quizRepository.searchQuizzes(searchRequest.get("searchContent"));
-        return ResponseEntity.ok(quizzes);
+        if (quizzes.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy bài thi nào.");
+        }
+        List<QuizResponseDto> responses = quizzes.stream().map(QuizResponseDto::new).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +76,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục nào.");
         }
-        List<CategoryResponse> responses = categories.stream().map(CategoryResponse::new).toList();
+        List<CategoryResponse> responses = categories.stream().map(CategoryResponse::new).collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
 
@@ -115,7 +116,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<?> searchCategories(Map<String, String> request) {
-        return ResponseEntity.ok(categoryRepository.searchCategories(request.get("searchContent")));
+        List<Category> categories = categoryRepository.searchCategories(request.get("searchContent"));
+        if (categories.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy danh mục nào.");
+        }
+        List<CategoryResponse> responses = categories.stream().map(CategoryResponse::new).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     private boolean validateCategory(Category category){
