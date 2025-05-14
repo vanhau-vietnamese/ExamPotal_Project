@@ -6,6 +6,8 @@ import com.exam.chatbot.service.QuestionExtractorService;
 import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.QuestionRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -29,23 +31,33 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     @Override
     public List<QuestionRequest> extractQuestions(MultipartFile file) throws IOException {
         String text = extractTextFromFile(file);
-        System.out.println("TEXT: " + text);
         String cleanedText = normalizeText(text);
-        System.out.println("CLEANED TEXT: " + cleanedText);
         return parseQuestions(cleanedText);
     }
 
     @Override
     public List<VerifyQuestionResultDto>verifyQuestions(MultipartFile file) throws IOException {
-//        // lấy câu hỏi từ file
-//        List<QuestionRequest> extractQuestions = this.extractQuestions(file);
+        // lấy câu hỏi từ file
+        List<QuestionRequest> extractQuestions = this.extractQuestions(file);
+
+        List<VerifyQuestionResultDto> results = new ArrayList<>();
+
+        for(QuestionRequest question : extractQuestions) {
 //
-//        return agentService.verifyQuestions(extractQuestions);
+//
+//            var verifyQuestion = VerifyQuestionResultDto.builder()
+//                    .status()
+//                    .reason()
+//                    .suggestion()
+//                    .question()
+//                    .build();
+//            results.add()
+        }
 
         return null;
+//        return agentService.verifyQuestions(extractQuestions);
+
     }
-
-
 
     private String extractTextFromFile(MultipartFile file) throws IOException {
         String filename = file.getOriginalFilename();
@@ -61,7 +73,8 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     }
 
     private String extractFromPdf(MultipartFile file) throws IOException {
-        try (PDDocument document = PDDocument.load(file.getInputStream())) {
+        try (RandomAccessReadBuffer rar = new RandomAccessReadBuffer(file.getInputStream());
+             PDDocument document = Loader.loadPDF(rar)) {
             PDFTextStripper stripper = new PDFTextStripper();
             return stripper.getText(document);
         }
