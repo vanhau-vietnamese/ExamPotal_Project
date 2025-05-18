@@ -15,7 +15,7 @@ services:
 
   spring-app:
     container_name: exam_project
-    image: docker130303/exam_project
+    image: docker130303/exam_project:latest
     build:
       context: .
       dockerfile: Dockerfile
