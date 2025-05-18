@@ -11,4 +11,6 @@ public interface AgentService {
     List<VerifyQuestionResultDto> verifyQuestions(List<QuestionRequest> extractQuestions) throws IOException;
 
     String processAndStore(MultipartFile file) throws IOException;
+
+    VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest) throws IOException;
 }

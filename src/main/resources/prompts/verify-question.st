@@ -1,43 +1,28 @@
-Bạn là trợ lý AI đánh giá chất lượng câu hỏi trắc nghiệm và độ chính xác của câu hỏi.
+Bạn là trợ lý AI đánh giá chất lượng câu hỏi trắc nghiệm và độ chính xác của đáp án.
 
-TÀI LIỆU: {documents}
+Nhiệm vụ của bạn là kiểm định một câu hỏi trắc nghiệm đã được trích xuất từ tài liệu, và đánh giá xem câu hỏi này có hợp lệ hay không, dựa trên nội dung tài liệu gốc và các lựa chọn đáp án.
 
 CÂU HỎI CẦN KIỂM TRA:
 {question}
 
-Hãy đánh giá câu hỏi dựa trên các tiêu chí sau:
+## QUY TRÌNH ĐÁNH GIÁ:
 
-1. **Kiểm tra nguồn gốc**:
-   - Câu hỏi này có tồn tại hoặc có nội dung tương đương trong tài liệu phía trên hay không?
-   - Nếu không chắc chắn rằng nó nằm trong tài liệu, hãy ghi rõ: `"not_sure_source": true`.
+### **Bước 1: Đối chiếu với tài liệu**
+- Kiểm tra xem nội dung câu hỏi và các đáp án có phù hợp hay không:
+  - Nếu **phù hợp**: tiếp tục sang bước 2.
+  - Nếu **không phù hợp hoặc không đầy đủ thông tin**: đánh dấu là `status = "invalid"`, nêu rõ lý do (`reason`), và đề xuất phiên bản câu hỏi/đáp án chỉnh sửa (`suggest`), sau đó sang bước 2.
 
-2. **Rõ nghĩa**:
-   - Câu hỏi có rõ ràng, dễ hiểu và không mơ hồ không?
-   - Nếu không rõ nghĩa, hãy phản hồi `"valid": false` và gợi ý chỉnh sửa ở mục `suggestion`.
+### **Bước 2: Đánh giá đáp án**
+- Nếu **không có đáp án nào đúng** → `status = "invalid"`, nêu `reason`, và đưa ra `suggestedAnswer` nếu có thể.
+- Nếu **có đáp án đúng**:
+  - Kiểm tra tính chính xác dựa trên `{related_context}`.
+  - Nếu không chắc chắn → `status = "invalid"`, nêu `reason` và `suggestedAnswer` nếu có.
+  - Nếu có **nhiều đáp án đúng** → `"questionTypeId": "multiple_choice"`.
+  - Nếu chỉ có **1 đáp án đúng** hoặc không có đáp án được chọn → `"questionTypeId": "single_choice"`.
 
-3. **Đáp án đúng**:
-   - Đáp án đúng có thực sự chính xác và phù hợp với tài liệu không?
-   - Nếu không chắc chắn về đáp án, hãy ghi rõ: `"not_sure_answer": true`.
-
-4. **Loại câu hỏi** (`questionTypeId`):
-   - Nếu có **nhiều đáp án đúng** → phải là `"multiple_choice"`.
-   - Nếu chỉ có **một đáp án đúng** → phải là `"single_choice"`.
-   - Nếu chưa có đáp án đúng nào nhưng câu hỏi vẫn hợp lệ, vẫn có thể `"valid": true`.
-
-5. **Gợi ý chỉnh sửa (nếu cần)**:
-   - Nếu phát hiện điểm yếu, hãy gợi ý chỉnh sửa rõ ràng tại trường `"suggestion"`.
+### **Bước 3: Kết luận**
+- Nếu câu hỏi và đáp án **đều hợp lệ** → `status = "valid"`, nêu `reason`, và có thể thêm `suggest` nếu có cách cải thiện tốt hơn.
 
 ### YÊU CẦU PHẢN HỒI:
 Trả về dưới dạng JSON như sau:
-
-```json
-{
-  "valid": true | false,
-  "reason": "Giải thích ngắn gọn tại sao valid hoặc không.",
-  "questionTypeId": "single_choice" | "multiple_choice",
-  "not_sure_source": true | false,
-  "not_sure_answer": true | false,
-  "suggestion": "Nếu cần chỉnh sửa, ghi rõ tại đây, nếu không để trống."
-}
-
-
+{format}

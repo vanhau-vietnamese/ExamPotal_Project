@@ -3,7 +3,6 @@ package com.exam.controller;
 import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuestionRequest;
 import com.exam.dto.request.QuestionTypeRequest;
-import com.exam.model.Question;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

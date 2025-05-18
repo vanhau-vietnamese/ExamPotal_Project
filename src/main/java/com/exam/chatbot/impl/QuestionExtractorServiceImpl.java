@@ -12,14 +12,15 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,24 +40,12 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     public List<VerifyQuestionResultDto>verifyQuestions(MultipartFile file) throws IOException {
         // lấy câu hỏi từ file
         List<QuestionRequest> extractQuestions = this.extractQuestions(file);
-
         List<VerifyQuestionResultDto> results = new ArrayList<>();
-
         for(QuestionRequest question : extractQuestions) {
-//
-//
-//            var verifyQuestion = VerifyQuestionResultDto.builder()
-//                    .status()
-//                    .reason()
-//                    .suggestion()
-//                    .question()
-//                    .build();
-//            results.add()
+            VerifyQuestionResultDto verifyQuestionResultDto =  agentService.verifyQuestion(question);
+            results.add(verifyQuestionResultDto);
         }
-
-        return null;
-//        return agentService.verifyQuestions(extractQuestions);
-
+        return results;
     }
 
     private String extractTextFromFile(MultipartFile file) throws IOException {
