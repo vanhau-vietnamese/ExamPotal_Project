@@ -2,12 +2,14 @@ package com.exam.service.impl;
 
 import com.exam.config.JwtAuthenticationFilter;
 import com.exam.config.JwtUtils;
+import com.exam.dto.request.QuestionRequest;
 import com.exam.dto.request.QuizQuestionRequest;
 import com.exam.dto.request.QuizRequest;
 import com.exam.dto.response.*;
 import com.exam.enums.EStatus;
 import com.exam.model.*;
 import com.exam.repository.*;
+import com.exam.service.QuestionService;
 import com.exam.service.QuizService;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class QuizServiceImpl implements QuizService {
     private final CategoryRepository categoryRepository;
     private final QuizQuestionRepository quizQuestionRepository;
     private final AnswerRepository answerRepository;
+    private final QuestionService questionService;
     @Override
     public ResponseEntity<?> getAllQuizzes() {
         List<Quiz> quizzes = quizRepository.findAll();
@@ -45,6 +48,49 @@ public class QuizServiceImpl implements QuizService {
 
     @Transactional
     @Override
+//    public ResponseEntity<?> addQuiz(QuizRequest quizRequest) {
+//        // get jwt from request
+//        String jwt = jwtAuthenticationFilter.getJwt();
+//        FirebaseToken decodedToken = jwtUtils.verifyToken(jwt);
+//        String email = decodedToken.getEmail();
+//        User user = userRepository.findByEmail(email);
+//
+//        Quiz quiz = new Quiz();
+//        quiz.setTitle(quizRequest.getTitle());
+//        quiz.setDescription(quizRequest.getDescription());
+//        quiz.setMaxMarks(quizRequest.getMaxMarks());
+//        quiz.setCreateBy(user);
+//        quiz.setDurationMinutes(quizRequest.getDurationMinutes());
+//        quiz.setStatus(EStatus.Active);
+//        quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
+//
+//        Optional<Category> category = categoryRepository.findById(quizRequest.getCategoryId());
+//        if (!category.isPresent()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Category.");
+//        }
+//        quiz.setCategory(category.get());
+//
+//        quizRepository.save(quiz);
+//
+//        List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
+////        QuizQuestion quizQuestion
+//        for(QuizQuestionRequest questionRequest : listQuestionRequest){
+//            //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
+//            Question question = new Question();
+//            question.setId(questionRequest.getQuestionId());
+//
+//            QuizQuestion quizQuestion = new QuizQuestion();
+//            quizQuestion.setQuiz(quiz);
+//            quizQuestion.setQuestion(question);
+//            quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
+//
+//            quizQuestionRepository.save(quizQuestion);
+//        }
+//
+//
+//        return ResponseEntity.ok(quiz);
+//    }
+
     public ResponseEntity<?> addQuiz(QuizRequest quizRequest) {
         // get jwt from request
         String jwt = jwtAuthenticationFilter.getJwt();
@@ -59,32 +105,33 @@ public class QuizServiceImpl implements QuizService {
         quiz.setCreateBy(user);
         quiz.setDurationMinutes(quizRequest.getDurationMinutes());
         quiz.setStatus(EStatus.Active);
-        quiz.setNumberOfQuestions(quizRequest.getListQuestion().size());
+        quiz.setNumberOfQuestions(quizRequest.getQuestions().size());
 
         Optional<Category> category = categoryRepository.findById(quizRequest.getCategoryId());
         if (!category.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found Category.");
         }
+        quiz.setCategoryId(category.get().getId());
         quiz.setCategory(category.get());
 
         quizRepository.save(quiz);
 
-        List<QuizQuestionRequest> listQuestionRequest = quizRequest.getListQuestion();
 //        QuizQuestion quizQuestion
-        for(QuizQuestionRequest questionRequest : listQuestionRequest){
-            //ở nayf nên thêm 1 điệu kiện kiểm tra xem questionId có tồn tại hay k
-            Question question = new Question();
-            question.setId(questionRequest.getQuestionId());
+        for(QuestionRequest questionRequest : quizRequest.getQuestions()){
+            // add quétion
+            QuestionResponse questionResponse = questionService.addQuestion(questionRequest);
 
             QuizQuestion quizQuestion = new QuizQuestion();
-            quizQuestion.setQuiz(quiz);
-            quizQuestion.setQuestion(question);
+            quizQuestion.setQuizId(quiz.getId());
+            quizQuestion.setQuestionId(questionResponse.getId());
             quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
 
             quizQuestionRepository.save(quizQuestion);
         }
+
         return ResponseEntity.ok(quiz);
     }
+
 
     @Transactional
     @Override
@@ -204,8 +251,8 @@ public class QuizServiceImpl implements QuizService {
                     question.setId(questionRequest.getQuestionId());
 
                     QuizQuestion quizQuestion = new QuizQuestion();
-                    quizQuestion.setQuiz(quiz);
-                    quizQuestion.setQuestion(question);
+                    quizQuestion.setQuizId(quiz.getId());
+                    quizQuestion.setQuestionId(question.getId());
                     quizQuestion.setMarksOfQuestion(questionRequest.getMarksOfQuestion());
 
                     quizQuestionRepository.save(quizQuestion);

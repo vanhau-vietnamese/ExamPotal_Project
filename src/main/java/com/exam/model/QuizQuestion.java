@@ -15,12 +15,14 @@ public class QuizQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+    private Long quizId;
+    private Long questionId;
 
     @ManyToOne
-    @JoinColumn(name = "quizId")
+    @JoinColumn(name = "quizId", referencedColumnName = "id", insertable = false, updatable = false)
     private Quiz quiz;
     @ManyToOne
-    @JoinColumn(name = "questionId")
+    @JoinColumn(name = "questionId", referencedColumnName = "id", insertable = false, updatable = false)
     private Question question;
 
     @Column(name = "marksOfQuestion")

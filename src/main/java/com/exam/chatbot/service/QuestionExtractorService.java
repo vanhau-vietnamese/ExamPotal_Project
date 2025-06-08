@@ -1,5 +1,6 @@
 package com.exam.chatbot.service;
 
+import com.exam.chatbot.dto.ChatRequestDto;
 import com.exam.chatbot.dto.VerifyQuestionResultDto;
 import com.exam.dto.request.QuestionRequest;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +12,8 @@ public interface QuestionExtractorService {
     List<QuestionRequest> extractQuestions(MultipartFile file) throws IOException;
 
     List<VerifyQuestionResultDto> verifyQuestions(MultipartFile file) throws IOException;
+
+    String chatMessage(String message, List<MultipartFile> files );
 
 //    List
 

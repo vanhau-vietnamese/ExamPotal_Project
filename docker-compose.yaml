@@ -10,8 +10,8 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mysql:/var/lib/mysql
-      - ./exam_db.sql:/docker-entrypoint-initdb.d/init.sql  # Gắn file SQL export vào container
+      - mysql_data:/var/lib/mysql
+      - ./exam_db.sql:/docker-entrypoint-initdb.d/init.sql:ro  # Gắn file SQL export vào container
 
   spring-app:
     container_name: exam_project
@@ -30,4 +30,4 @@ services:
       - BREVO_API_KEY=${BREVO_API_KEY}
       - SPRING_AI_OPENAI_APIKEY=${OPENAI_API_KEY}
 volumes:
-  mysql:
+  mysql_data:

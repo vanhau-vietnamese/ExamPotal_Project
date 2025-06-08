@@ -3,6 +3,7 @@ package com.exam.controller;
 import com.exam.dto.request.FilterCreateAtRequest;
 import com.exam.dto.request.QuestionRequest;
 import com.exam.dto.request.QuestionTypeRequest;
+import com.exam.dto.response.QuestionResponse;
 import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ import java.util.Map;
 public class QuestionController {
     private final QuestionService questionService;
     @PostMapping("/add")
-    public ResponseEntity<?> addQuestion(@RequestBody QuestionRequest questionRequest){
-        return questionService.addQuestion(questionRequest);
+    public ResponseEntity<QuestionResponse> addQuestion(@RequestBody QuestionRequest questionRequest){
+        return ResponseEntity.ok(questionService.addQuestion(questionRequest));
     }
 
     @GetMapping("/{questionId}")

@@ -1,5 +1,6 @@
 package com.exam.repository;
 
+import com.exam.dto.response.UserHistoryDetailResponse;
 import com.exam.model.Quiz;
 import com.exam.model.User;
 import com.exam.model.UserQuizResult;
@@ -25,4 +26,6 @@ public interface UserQuizResultRepository extends JpaRepository<UserQuizResult, 
     Integer countUserQuizResultByUserId(String userId);
 
     UserQuizResult getUserQuizResultByUserAndId(User user, Long id);
+
+//    UserHistoryDetailResponse getHistoryDetail(Long id);
 }

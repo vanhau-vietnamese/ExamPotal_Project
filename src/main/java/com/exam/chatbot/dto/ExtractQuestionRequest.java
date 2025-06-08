@@ -1,6 +1,10 @@
-package com.exam.dto.request;
+package com.exam.chatbot.dto;
 
-import lombok.*;
+import com.exam.dto.request.QuestionRequest;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -8,13 +12,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuizRequest {
+public class ExtractQuestionRequest {
     private String title;
     private String description;
     private int maxMarks;
     private boolean status = false;
     private Long categoryId;
     private int durationMinutes;
-    private List<QuizQuestionRequest> listQuestion;
     private List<QuestionRequest> questions;
 }

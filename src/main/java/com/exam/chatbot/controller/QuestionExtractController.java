@@ -5,10 +5,7 @@ import com.exam.chatbot.service.QuestionExtractorService;
 import com.exam.dto.request.QuestionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,4 +27,10 @@ public class QuestionExtractController {
     public ResponseEntity<List<VerifyQuestionResultDto>> verifyQuestions(@RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(questionExtractorService.verifyQuestions(file));
     }
+
+    @PostMapping(value = "/test")
+    public ResponseEntity<String> generation(@RequestParam("message") String message, @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+        return ResponseEntity.ok(questionExtractorService.chatMessage(message, files));
+    }
+
 }

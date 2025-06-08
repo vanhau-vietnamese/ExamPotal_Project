@@ -14,4 +14,5 @@ public class QuestionRequest {
     private String questionTypeId;
     private Long categoryId;
     private List<AnswerRequest> answerRequestList = new ArrayList<>();
+    private Integer marksOfQuestion;
 }

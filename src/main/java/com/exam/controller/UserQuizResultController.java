@@ -1,10 +1,12 @@
 package com.exam.controller;
 
+import com.exam.dto.response.UserHistoryDetailResponse;
 import com.exam.service.UserQuizResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -25,5 +27,10 @@ public class UserQuizResultController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUserQuizResult(@PathVariable("id") Long id){
         return userQuizResultService.deleteUserQuizResult(id);
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<UserHistoryDetailResponse> detail(@PathVariable("id") Long id) throws IOException {
+        return ResponseEntity.ok(userQuizResultService.detail(id));
     }
 }

@@ -35,17 +35,11 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerRepository answerRepository;
     private final CategoryRepository categoryRepository;
     @Override
-    public ResponseEntity<?> addQuestion(QuestionRequest questionRequest) {
+    public QuestionResponse addQuestion(QuestionRequest questionRequest) {
         boolean questionTypeValid  = isValidQuestionTypeByAlias(questionRequest.getQuestionTypeId());
-        if(!questionTypeValid){
-            return ResponseEntity.badRequest().body("Question Type Not Existed");
-        }
 
         // Kiểm tra category
         Optional<Category> optionalCategory = categoryRepository.findById(questionRequest.getCategoryId());
-        if (!optionalCategory.isPresent()) {
-            return ResponseEntity.badRequest().body("Category not found");
-        }
         Category category = optionalCategory.get();
 
         // Tạo và lưu câu hỏi
@@ -73,7 +67,7 @@ public class QuestionServiceImpl implements QuestionService {
         questionTypeResponse.setDisplayName(question.getQuestionType().getDisplayName());
 
         QuestionResponse questionResponse = getQuestionResponse(question, questionTypeResponse, null);
-        return ResponseEntity.ok(questionResponse);
+        return questionResponse;
     }
 
     @Transactional

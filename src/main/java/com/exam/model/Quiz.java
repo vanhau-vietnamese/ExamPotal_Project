@@ -4,9 +4,7 @@ import com.exam.enums.EStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
@@ -16,8 +14,9 @@ import java.util.Set;
 
 @DynamicUpdate
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor
 @Entity
 @Table(name = "quizzes")
 public class Quiz {
@@ -35,6 +34,7 @@ public class Quiz {
     private int numberOfQuestions;
     @Column(name = "durationMinutes")
     private int durationMinutes;
+    private Long categoryId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -50,7 +50,7 @@ public class Quiz {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties("quizzes")
-    @JoinColumn(name = "categoryId", referencedColumnName = "id")
+    @JoinColumn(name = "categoryId", referencedColumnName = "id", insertable = false, updatable = false)
     private Category category;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

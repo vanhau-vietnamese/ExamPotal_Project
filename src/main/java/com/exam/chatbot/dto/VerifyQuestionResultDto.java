@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyQuestionResultDto {
-    private String status; // VALID / INVALID
-    private String reason; // null nếu valid
-    private String suggestion; // null nếu valid
+    private boolean status;
+    private String reason;
+    private String suggestion;
     private QuestionRequest question;
 }

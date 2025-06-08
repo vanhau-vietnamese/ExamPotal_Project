@@ -238,6 +238,7 @@ public class TakeQuizServiceImpl implements TakeQuizService {
             answerObject.setId(answer.getId());
             answerObject.setMedia(answer.getMedia());
             answerObject.setContent(answer.getContent());
+            answerObject.setCorrect(answer.isCorrect());
             // setSlect theo: nếu answerId tồn tại trong selectedOptions
             answerObject.setSelect(selectedOptions.contains(answerId));
             // add vao answerObjectList

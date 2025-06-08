@@ -9,11 +9,12 @@ import com.exam.dto.response.QuestionResponse;
 import com.exam.helper.QuestionObject;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "user_question_result")
 public class UserQuestionResult {
