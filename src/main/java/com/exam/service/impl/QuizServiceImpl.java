@@ -118,6 +118,11 @@ public class QuizServiceImpl implements QuizService {
 
 //        QuizQuestion quizQuestion
         for(QuestionRequest questionRequest : quizRequest.getQuestions()){
+            var validate = questionService.validate(questionRequest);
+            if (!validate) {
+                continue;
+            }
+
             // add quétion
             QuestionResponse questionResponse = questionService.addQuestion(questionRequest);
 

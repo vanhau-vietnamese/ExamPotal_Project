@@ -22,4 +22,6 @@ public interface QuestionService {
     ResponseEntity<?> getQuestionsOfCreateAt(FilterCreateAtRequest request);
     ResponseEntity<?> searchQuestions(Map<String, String> searchRequest);
     ResponseEntity<?> paginationQuestions(int page, int size);
+
+    boolean validate(QuestionRequest request);
 }

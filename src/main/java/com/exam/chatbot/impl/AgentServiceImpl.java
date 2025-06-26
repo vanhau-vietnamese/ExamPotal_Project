@@ -95,12 +95,12 @@ public class AgentServiceImpl implements AgentService {
     public String doChat(ChatRequestDto request) {
         String conversationId = getConversationId();
 
-        var messgae =  chatClient.prompt()
+        var messageResponse =  chatClient.prompt()
                         .advisors(a -> a.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationId))
                         .user(request.getMessage())
                         .call()
                         .content();
-        return messgae;
+        return messageResponse;
     }
 
     @Override

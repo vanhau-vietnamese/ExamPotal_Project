@@ -1,12 +1,14 @@
 package com.exam.chatbot.impl;
 
 import com.exam.QuestionTypeConstant;
+import com.exam.chatbot.dto.GenerateQuestionRequest;
 import com.exam.chatbot.dto.VerifyQuestionResultDto;
 import com.exam.chatbot.service.AgentService;
 import com.exam.chatbot.service.AgentVerifyQuestionService;
 import com.exam.chatbot.service.QuestionExtractorService;
 import com.exam.dto.request.AnswerRequest;
 import com.exam.dto.request.QuestionRequest;
+import com.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
@@ -29,6 +31,8 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
 
     private final AgentVerifyQuestionService agentVerifyQuestionService;
 
+    private final QuestionService questionService;
+
     @Override
     public List<QuestionRequest> extractQuestions(MultipartFile file) throws IOException {
         String text = extractTextFromFile(file);
@@ -47,6 +51,16 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
             results.add(verifyQuestionResultDto);
         }
         return results;
+    }
+
+    @Override
+    public List<VerifyQuestionResultDto> generateQuestions(GenerateQuestionRequest request) throws IOException {
+        var fileId = agentService.processAndStore(request.getFile());
+
+        request.setFileId(fileId);
+
+// Bước 2: Gọi agent để generate câu hỏi dựa trên fileId
+        return agentVerifyQuestionService.generateQuestions(request);
     }
 
     @Override
@@ -74,103 +88,6 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
             return stripper.getText(document);
         }
     }
-
-//    private String normalizeText(String text) {
-//        text = text.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}\\p{Punct}\\s]", "");  // remove special symbols
-//
-//        String[] lines = text.split("\\r?\\n");
-//        StringBuilder normalized = new StringBuilder();
-//
-//        boolean isQuestionStarted = false;
-//        StringBuilder currentQuestion = new StringBuilder();
-//        StringBuilder currentAnswers = new StringBuilder();
-//
-//        for (String line : lines) {
-//            line = line.trim();
-//            if (line.isEmpty()) continue;
-//
-//            if (line.matches("^Câu\\s*\\d+[:\\.\\)]?.*")) {
-//                if (isQuestionStarted) {
-//                    normalized.append(currentQuestion.toString().trim()).append("\n");
-//                    normalized.append(currentAnswers.toString().trim()).append("\n");
-//                }
-//                currentQuestion.setLength(0);
-//                currentAnswers.setLength(0);
-//                isQuestionStarted = true;
-//                currentQuestion.append(line);
-//            } else if (line.matches("^[A-Z][\\.\\):]\\s+.*")) {
-//                currentAnswers.append(line).append("\n");
-//            } else if (line.toLowerCase().startsWith("đáp án")) {
-//                currentAnswers.append(line).append("\n");
-//            } else {
-//                currentQuestion.append(" ").append(line);
-//            }
-//        }
-//
-//        if (isQuestionStarted) {
-//            normalized.append(currentQuestion.toString().trim()).append("\n");
-//            normalized.append(currentAnswers.toString().trim()).append("\n");
-//        }
-//
-//        return normalized.toString();
-//    }
-
-//    private String normalizeText(String text) {
-//        text = text.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}\\p{Punct}\\s]", "");  // Xóa ký tự đặc biệt bất thường
-//
-//        String[] lines = text.split("\\r?\\n");
-//        StringBuilder normalized = new StringBuilder();
-//
-//        boolean isInsideQuestion = false;
-//        StringBuilder currentQuestion = new StringBuilder();
-//        StringBuilder currentAnswers = new StringBuilder();
-//
-//        Pattern questionStartPattern = Pattern.compile("^Câu\\s*\\d+[:\\.\\)]?.*", Pattern.CASE_INSENSITIVE);
-//        Pattern optionPattern = Pattern.compile("^([A-H])\\s*[\\.\\):]\\s+.*");
-//        Pattern answerLinePattern = Pattern.compile("^Đáp án\\s*[:：].*", Pattern.CASE_INSENSITIVE);
-//
-//        for (String line : lines) {
-//            line = line.trim();
-//            if (line.isEmpty()) continue;
-//
-//            Matcher questionMatcher = questionStartPattern.matcher(line);
-//            Matcher optionMatcher = optionPattern.matcher(line);
-//            Matcher answerMatcher = answerLinePattern.matcher(line);
-//
-//            if (questionMatcher.find()) {
-//                if (isInsideQuestion) {
-//                    // kết thúc câu cũ
-//                    normalized.append(currentQuestion.toString().trim()).append("\n");
-//                    normalized.append(currentAnswers.toString().trim()).append("\n");
-//                }
-//                currentQuestion.setLength(0);
-//                currentAnswers.setLength(0);
-//                currentQuestion.append(line);
-//                isInsideQuestion = true;
-//
-//            } else if (optionMatcher.find()) {
-//                currentAnswers.append(line).append("\n");
-//            } else if (answerMatcher.find()) {
-//                currentAnswers.append(line).append("\n");
-//            } else {
-//                if (isInsideQuestion && currentAnswers.length() == 0) {
-//                    // vẫn đang ở phần câu hỏi
-//                    currentQuestion.append(" ").append(line);
-//                } else if (isInsideQuestion) {
-//                    // continuation line của phương án gần nhất
-//                    currentAnswers.append(line).append("\n");
-//                }
-//            }
-//        }
-//
-//        // Thêm câu cuối cùng nếu còn sót lại
-//        if (isInsideQuestion) {
-//            normalized.append(currentQuestion.toString().trim()).append("\n");
-//            normalized.append(currentAnswers.toString().trim()).append("\n");
-//        }
-//
-//        return normalized.toString();
-//    }
 
     private String normalizeText(String text) {
         text = text.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}\\p{Punct}\\s]", "");  // Xóa ký tự đặc biệt bất thường

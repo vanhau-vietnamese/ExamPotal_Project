@@ -1,5 +1,6 @@
 package com.exam.chatbot.controller;
 
+import com.exam.chatbot.dto.GenerateQuestionRequest;
 import com.exam.chatbot.dto.VerifyQuestionResultDto;
 import com.exam.chatbot.service.QuestionExtractorService;
 import com.exam.dto.request.QuestionRequest;
@@ -26,6 +27,20 @@ public class QuestionExtractController {
     @PostMapping("/extract/verify")
     public ResponseEntity<List<VerifyQuestionResultDto>> verifyQuestions(@RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(questionExtractorService.verifyQuestions(file));
+    }
+
+    @PostMapping("/generate")
+    public ResponseEntity<List<VerifyQuestionResultDto>> generateQuestions(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("message") String message,
+            @RequestParam("number") Integer number) throws IOException {
+
+        // Tạo request object
+        GenerateQuestionRequest request = new GenerateQuestionRequest();
+        request.setFile(file);
+        request.setNumber(number);
+        request.setMessage(message);
+        return ResponseEntity.ok(questionExtractorService.generateQuestions(request));
     }
 
     @PostMapping(value = "/test")

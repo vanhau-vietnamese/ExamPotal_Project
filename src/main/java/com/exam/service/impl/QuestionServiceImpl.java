@@ -294,6 +294,18 @@ public class QuestionServiceImpl implements QuestionService {
         return ResponseEntity.ok(pageResponse);
     }
 
+    @Override
+    public boolean validate(QuestionRequest request) {
+        List<AnswerRequest> answerRequests = request.getAnswerRequestList();
+
+        if (answerRequests == null || answerRequests.isEmpty()) {
+            return false;
+        }
+
+        return answerRequests.stream().anyMatch(AnswerRequest::isCorrect);
+    }
+
+
     public boolean isValidQuestionTypeByAlias(String alias) {
         for (EQuestionType type : EQuestionType.values()) {
             if (type.getAlias().equalsIgnoreCase(alias)) {

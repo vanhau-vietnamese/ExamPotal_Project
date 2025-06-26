@@ -14,7 +14,7 @@ import java.util.Map;
 public class AdminManagerController {
     private final AdminManagerService adminManagerService;
     @PostMapping("/create/adminAccount")
-    public ResponseEntity<?> createAdminAccount(@RequestBody RegisterRequest request){
+    public ResponseEntity<?> createAdminAccount(@RequestBody RegisterRequest request) {
         return adminManagerService.createAdminAccount(request);
     }
 
