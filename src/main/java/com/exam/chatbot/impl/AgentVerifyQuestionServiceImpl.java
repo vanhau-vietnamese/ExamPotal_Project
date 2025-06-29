@@ -51,33 +51,98 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
     public AgentVerifyQuestionServiceImpl(ChatClient.Builder builder, QdrantVectorStore vectorStore) {
         this.chatMemory = new InMemoryChatMemory();
         this.chatClient = builder
-//                .defaultAdvisors(
-//                        List.of(
-//                                new QuestionAnswerAdvisor(vectorStore),
-//                                new MessageChatMemoryAdvisor(this.chatMemory)
-//                        )
-//                )
                 .build();
         this.vectorStore = vectorStore;
     }
 
     @Transactional
     @Override
+
+//    public VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest) throws IOException {
+//        // Tạo format cho JSON kết quả
+//        var outputConverter = new BeanOutputConverter<>(VerifyQuestionResultDto.class);
+//        String format = outputConverter.getFormat();
+//
+//        // Convert questionRequest sang JSON string
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String questionJson = objectMapper.writeValueAsString(questionRequest);
+//
+//        System.out.println("question JSON: " + questionJson);
+//
+//        // Tìm context liên quan theo category_id
+//        FilterExpressionBuilder b = new FilterExpressionBuilder();
+//        SearchRequest searchRequest = SearchRequest.builder()
+//                .query(questionRequest.getContent())
+//                .topK(20) // Tìm 5 context gần nhất, đủ để hỗ trợ kiểm định
+//                .similarityThreshold(0.7)
+//                .build();
+//
+//        List<Document> relatedDocuments = vectorStore.similaritySearch(searchRequest);
+//
+//        // Gộp context lại thành một đoạn text
+//        StringBuilder contextBuilder = new StringBuilder();
+//        for (Document doc : relatedDocuments) {
+//            contextBuilder.append(doc.getText()).append("\n");
+//        }
+//        String context = contextBuilder.toString();
+//
+//        // Tạo PromptTemplate với các tham số
+//        PromptTemplate promptTemplate = new PromptTemplate(ragPromptTemplate);
+//        Map<String, Object> promptParameters = new HashMap<>();
+//        promptParameters.put("input", questionJson); // JSON câu hỏi cần kiểm định
+//        promptParameters.put("format", format);
+//        promptParameters.put("context", context); // Thêm context vào prompt
+//
+//        Prompt prompt = promptTemplate.create(promptParameters);
+//
+//        var chatResponse = chatClient.prompt(prompt).call().chatResponse();
+//        var textOutput = chatResponse.getResult().getOutput().getText();
+//
+//        return outputConverter.convert(textOutput);
+//    }
+
     public VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest) throws IOException {
+        // Tạo format cho JSON kết quả
         var outputConverter = new BeanOutputConverter<>(VerifyQuestionResultDto.class);
         String format = outputConverter.getFormat();
 
-        // Convert questionRequest to JSON string
+        // Convert questionRequest sang JSON string
         ObjectMapper objectMapper = new ObjectMapper();
         String questionJson = objectMapper.writeValueAsString(questionRequest);
 
         System.out.println("question JSON: " + questionJson);
 
-        // Gọi PromptTemplate với các tham số
+        // Tìm context liên quan theo category_id
+        FilterExpressionBuilder b = new FilterExpressionBuilder();
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query(questionRequest.getContent())
+                .topK(20)
+                .similarityThreshold(0.7)
+                .build();
+
+        List<Document> relatedDocuments = vectorStore.similaritySearch(searchRequest);
+
+        String context;
+
+        // Nếu không tìm thấy context phù hợp → để AI trả lời theo kiến thức chung
+        if (relatedDocuments.isEmpty()) {
+            context = "Không có tài liệu tham khảo. Vui lòng sử dụng kiến thức của bạn để kiểm định câu hỏi.";
+        } else {
+            // Gộp context lại thành một đoạn text
+            StringBuilder contextBuilder = new StringBuilder();
+            for (Document doc : relatedDocuments) {
+                contextBuilder.append(doc.getText()).append("\n");
+            }
+            context = contextBuilder.toString();
+        }
+
+        // Tạo PromptTemplate với các tham số
         PromptTemplate promptTemplate = new PromptTemplate(ragPromptTemplate);
         Map<String, Object> promptParameters = new HashMap<>();
-        promptParameters.put("input", questionJson); // <<--- JSON của câu hỏi
+        promptParameters.put("input", questionJson);
         promptParameters.put("format", format);
+        promptParameters.put("context", context);
+
         Prompt prompt = promptTemplate.create(promptParameters);
 
         var chatResponse = chatClient.prompt(prompt).call().chatResponse();
@@ -86,56 +151,19 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
         return outputConverter.convert(textOutput);
     }
 
+
     @Override
     public Boolean verifyMessage(String message) throws IOException {
-
         return false;
     }
 
     @Transactional
-//    @Override
-//    public List<VerifyQuestionResultDto> generateQuestion(String fileId) {
-//        int countQuestion = 6;
-//        var topK = countQuestion * 3;
-//
-//        FilterExpressionBuilder b = new FilterExpressionBuilder();
-//
-//        SearchRequest searchRequest = SearchRequest.builder()
-//                .query("")
-//                .topK(topK) // Bạn có thể tùy chỉnh số lượng, nên lấy nhiều để AI có đủ context
-//                .similarityThreshold(0.8) // Vì không dùng similarity, nên để ngưỡng 0.0
-//                .filterExpression(b.eq("file_id", fileId).build()) // Lọc theo file_id
-//                .build();
-//
-//        List<Document> documents = vectorStore.similaritySearch(searchRequest);
-//
-//        String context = documents.stream()
-//                .map(Document::getText)
-//                .collect(Collectors.joining(System.lineSeparator()));
-//
-//        var outputConverter = new BeanOutputConverter<>(
-//                new ParameterizedTypeReference<List<VerifyQuestionResultDto>>() { });
-//        String format = outputConverter.getFormat();
-//
-//        // Gọi PromptTemplate với các tham số
-//        PromptTemplate promptTemplate = new PromptTemplate(ragPromptTemplate);
-//        Map<String, Object> promptParameters = new HashMap<>();
-//        promptParameters.put("format", format);
-//        promptParameters.put("countQuestion", countQuestion);
-//        promptParameters.put("context", context);
-//        Prompt prompt = promptTemplate.create(promptParameters);
-//
-//        var chatResponse = chatClient.prompt(prompt).call().chatResponse();
-//        var textOutput = chatResponse.getResult().getOutput().getText();
-//
-//        return outputConverter.convert(textOutput);
-//    }
     @Override
     public List<VerifyQuestionResultDto> generateQuestions(GenerateQuestionRequest request) throws IOException {
         FilterExpressionBuilder b = new FilterExpressionBuilder();
         SearchRequest searchRequest = SearchRequest.builder()
                 .query("generate questions from this file")
-                .topK(400)
+                .topK(1000)
                 .filterExpression(b.eq("file_id", request.getFileId()).build()) // Lọc theo file_id
                 .build();
 
@@ -147,7 +175,7 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
 
         int totalQuestionsNeeded = request.getNumber() != null ? request.getNumber() : 10;
         List<VerifyQuestionResultDto> allQuestions = new ArrayList<>();
-        int batchSize = 7000; // Mỗi batch 8000 ký tự (~ 2k token)
+        int batchSize = 7000; // Mỗi batch ~ 2k token (~ 7000 ký tự)
 
         int currentIndex = 0;
 
@@ -160,11 +188,12 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
             }
             String context = contextBuilder.toString();
 
-            // Prompt tạo batch câu hỏi
+            // Tạo prompt sinh câu hỏi
             PromptTemplate promptTemplate = new PromptTemplate(ragGeneratePromptTemplate);
             Map<String, Object> promptParams = new HashMap<>();
             promptParams.put("context", context);
             promptParams.put("number", totalQuestionsNeeded - allQuestions.size());
+            promptParams.put("message", request.getMessage());
 
             var outputConverter = new BeanOutputConverter<>(new ParameterizedTypeReference<List<VerifyQuestionResultDto>>() {});
             String format = outputConverter.getFormat();
@@ -175,23 +204,30 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
             var chatResponse = chatClient.prompt(prompt).call().chatResponse();
             String result = chatResponse.getResult().getOutput().getText();
 
-            List<VerifyQuestionResultDto> batchQuestions = outputConverter.convert(result);
+            // Xử lý lọc bỏ phần JSON Schema (nếu có)
+            int jsonArrayStart = result.indexOf("[");
+            if (jsonArrayStart == -1) {
+                throw new IllegalStateException("Không tìm thấy danh sách JSON hợp lệ trong kết quả.");
+            }
+            String validJson = result.substring(jsonArrayStart).trim();
+
+            // Parse kết quả JSON thực
+            List<VerifyQuestionResultDto> batchQuestions = outputConverter.convert(validJson);
 
             if (batchQuestions == null || batchQuestions.isEmpty()) {
-                break; // Không sinh thêm được nữa
+                break; // Nếu không sinh thêm được nữa, dừng luôn
             }
 
             allQuestions.addAll(batchQuestions);
         }
 
-        // Nếu tổng số câu sinh được > số yêu cầu thì chỉ trả về đúng số yêu cầu
+        // Nếu sinh nhiều hơn yêu cầu, cắt lại đúng số lượng
         if (allQuestions.size() > totalQuestionsNeeded) {
             allQuestions = allQuestions.subList(0, totalQuestionsNeeded);
         }
 
         return allQuestions;
     }
-
 
     @Override
     public QuestionResultDto agentSuggestQuestion(QuestionDto request) throws IOException {

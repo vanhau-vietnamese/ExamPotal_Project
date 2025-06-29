@@ -28,6 +28,8 @@ import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.ai.transformer.splitter.TextSplitter;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.ai.vectorstore.qdrant.QdrantVectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -42,6 +44,8 @@ import org.springframework.web.multipart.MultipartFile;
 import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Service
@@ -115,26 +119,65 @@ public class AgentServiceImpl implements AgentService {
     }
 
     @Override
+//    public String processAndStore(MultipartFile file) throws IOException {
+//        String fileId = UUID.randomUUID().toString();
+//        List<Document> documents = extractDocumentsFromFile(file);
+//
+//        // Kiểm tra và phân tích dữ liệu trước khi thêm vào vector store
+//        TextSplitter splitter = new TokenTextSplitter();
+//        documents = splitter.apply(documents);
+//
+//        documents = documents.stream()
+//                .map(doc -> new Document(doc.getText(), Map.of(
+//                        "file_id", fileId,
+//                        "file_name", file.getOriginalFilename()
+//                )))
+//                .toList();
+//        if (documents.isEmpty()) {
+//            throw new IllegalArgumentException("Không có đoạn văn nào hợp lệ để lưu vào Qdrant");
+//        }
+//
+//        try {
+//            // Kiểm tra thêm vào Qdrant
+//            vectorStore.add(documents);
+//        } catch (Exception e) {
+//            System.out.println("Lỗi khi thêm dữ liệu vào Qdrant: " + e.getMessage());
+//            throw new IOException("Không thể lưu dữ liệu vào Qdrant", e);
+//        }
+//
+//        return fileId;
+//    }
+
     public String processAndStore(MultipartFile file) throws IOException {
+        String fileHash = calculateFileHash(file); // Tính hash file
+
+        // Kiểm tra file đã tồn tại chưa
+        if (isFileAlreadyStored(fileHash)) {
+            // Nếu file đã tồn tại, trả về fileId cũ (hoặc có thể trả về fileHash luôn)
+            return getExistingFileId(fileHash);
+        }
+
+        // Nếu file chưa tồn tại, tạo fileId mới
         String fileId = UUID.randomUUID().toString();
         List<Document> documents = extractDocumentsFromFile(file);
 
-        // Kiểm tra và phân tích dữ liệu trước khi thêm vào vector store
+        // Tách nhỏ văn bản
         TextSplitter splitter = new TokenTextSplitter();
         documents = splitter.apply(documents);
 
         documents = documents.stream()
                 .map(doc -> new Document(doc.getText(), Map.of(
                         "file_id", fileId,
+                        "file_hash", fileHash, // Lưu hash để kiểm tra trùng
                         "file_name", file.getOriginalFilename()
                 )))
                 .toList();
+
         if (documents.isEmpty()) {
             throw new IllegalArgumentException("Không có đoạn văn nào hợp lệ để lưu vào Qdrant");
         }
 
         try {
-            // Kiểm tra thêm vào Qdrant
             vectorStore.add(documents);
         } catch (Exception e) {
             System.out.println("Lỗi khi thêm dữ liệu vào Qdrant: " + e.getMessage());
@@ -143,6 +186,52 @@ public class AgentServiceImpl implements AgentService {
 
         return fileId;
     }
+
+    public String calculateFileHash(MultipartFile file) throws IOException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(file.getBytes());
+
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Không thể tính toán hash file", e);
+        }
+    }
+
+    public boolean isFileAlreadyStored(String fileHash) {
+        FilterExpressionBuilder b = new FilterExpressionBuilder();
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query(fileHash)
+                .topK(1)
+                .similarityThreshold(0.99) // gần như tuyệt đối
+                .filterExpression(b.eq("file_hash", fileHash).build())
+                .build();
+
+        List<Document> existingDocs = vectorStore.similaritySearch(searchRequest);
+        return !existingDocs.isEmpty();
+    }
+
+    public String getExistingFileId(String fileHash) {
+        FilterExpressionBuilder b = new FilterExpressionBuilder();
+        SearchRequest searchRequest = SearchRequest.builder()
+                .query(fileHash)
+                .topK(1)
+                .similarityThreshold(0.99)
+                .filterExpression(b.eq("file_hash", fileHash).build())
+                .build();
+
+        List<Document> existingDocs = vectorStore.similaritySearch(searchRequest);
+        if (existingDocs.isEmpty()) {
+            throw new IllegalStateException("Không tìm thấy file với hash đã lưu.");
+        }
+        return (String) existingDocs.get(0).getMetadata().get("file_id");
+    }
+
+
 
     @Override
     public VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest) throws IOException {

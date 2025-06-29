@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class QuestionRequest {
+    private Long id;
     private String media;
     private String content;
     private String questionTypeId;

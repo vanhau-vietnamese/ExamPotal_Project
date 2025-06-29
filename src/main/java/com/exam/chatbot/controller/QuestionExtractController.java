@@ -5,6 +5,7 @@ import com.exam.chatbot.dto.VerifyQuestionResultDto;
 import com.exam.chatbot.service.QuestionExtractorService;
 import com.exam.dto.request.QuestionRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,19 +30,27 @@ public class QuestionExtractController {
         return ResponseEntity.ok(questionExtractorService.verifyQuestions(file));
     }
 
-    @PostMapping("/generate")
+    @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<VerifyQuestionResultDto>> generateQuestions(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("message") String message,
-            @RequestParam("number") Integer number) throws IOException {
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "number", required = false) Integer number,
+            @RequestParam(value = "message", required = false) String message) throws IOException {
 
-        // Tạo request object
+        if (message == null || message.isBlank()) {
+            message = "Các câu hỏi được phân bổ đều trên tài liệu";
+        }
+        if (number == null || number <= 0) {
+            number = 5;
+        }
+
         GenerateQuestionRequest request = new GenerateQuestionRequest();
         request.setFile(file);
         request.setNumber(number);
         request.setMessage(message);
+
         return ResponseEntity.ok(questionExtractorService.generateQuestions(request));
     }
+
 
     @PostMapping(value = "/test")
     public ResponseEntity<String> generation(@RequestParam("message") String message, @RequestParam(value = "files", required = false) List<MultipartFile> files) {

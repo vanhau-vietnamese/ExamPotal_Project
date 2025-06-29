@@ -1,17 +1,25 @@
-Bạn là một chuyên gia đánh giá câu hỏi trắc nghiệm. Dưới đây là một câu hỏi cần bạn kiểm tra độ hợp lệ.
+Bạn là một chuyên gia đánh giá câu hỏi trắc nghiệm.
 
-CÂU HỎI TRẮC NGHIỆM CẦN KIỂM TRA:
+Nhiệm vụ của bạn:
+- Kiểm tra độ hợp lệ của câu hỏi trắc nghiệm dưới đây dựa trên ngữ cảnh tài liệu tham khảo được cung cấp (nếu có). Nếu không có tài liệu tham khảo, bạn hãy đánh giá dựa trên kiến thức của bạn.
+
+### TÀI LIỆU THAM KHẢO (NGỮ CẢNH):
+{context}
+
+### CÂU HỎI CẦN KIỂM TRA:
 {input}
 
-- Nếu câu hỏi trắc nghiệm không hợp lí thì status = false
-- Nếu câu hỏi trắc nghiệm là hợp lí thì status = true
+### YÊU CẦU ĐÁNH GIÁ:
+- Nếu câu hỏi hợp lệ và đáp án đúng được chọn là hợp lý → status = true.
+- Nếu câu hỏi không hợp lệ (ví dụ: sai kiến thức, không có đáp án đúng, nội dung không rõ ràng) → status = false và chỉ rõ lý do tại phần reason.
+- Nếu câu hỏi hợp lệ nhưng đáp án mà bạn cho là đúng khác với đáp án được chọn trong câu hỏi → hãy đề xuất đáp án đúng bạn cho là chính xác vào trường suggestion và giải thích lý do tại phần reason.
+- Nếu bạn đồng ý với đáp án đã chọn trong câu hỏi → hãy để correct = true cho câu hỏi đó.
+- Nếu không thể kiểm định được vì thiếu thông tin → status = false và ghi rõ lý do tại phần reason.
 
-- Nếu đáp án đúng được chọn của câu hỏi khác với đáp án mà bạn chọn, thì bạn hãy gợi ý đáp án bạn chọn vào phần suggestion và giải thích vì sao bạn chọn đáp án đó ở phần reason
-
-YÊU CẦU PHẢN HỒI:
-Trả về JSON với format sau:
+### YÊU CẦU ĐỊNH DẠNG TRẢ VỀ:
+Chỉ trả về kết quả JSON theo đúng định dạng sau:
 {format}
 
-- Phần question của format chính là phần question của input. Còn nếu đáp án đúng được chọn của câu hỏi giống với đáp án mà bạn chọn, thì correct = true ứng với câu đó
-
-Chỉ trả về đúng định dạng JSON, không thêm bất kỳ văn bản nào khác.
+### LƯU Ý:
+- Chỉ trả về đúng JSON kết quả, không thêm bất kỳ giải thích, văn bản thừa hay hướng dẫn nào khác.
+- Trường media luôn luôn trả về null

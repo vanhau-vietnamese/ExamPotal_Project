@@ -17,6 +17,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     }
 
     @Override
+    @Transactional
     public List<VerifyQuestionResultDto> generateQuestions(GenerateQuestionRequest request) throws IOException {
         var fileId = agentService.processAndStore(request.getFile());
 
