@@ -30,6 +30,11 @@ public class QuestionExtractController {
         return ResponseEntity.ok(questionExtractorService.verifyQuestions(file));
     }
 
+//    @PostMapping("/extract/verify")
+//    public ResponseEntity<List<VerifyQuestionResultDto>> verifyQuestions(@RequestParam("file") MultipartFile file) throws IOException {
+//        return ResponseEntity.ok(questionExtractorService.verifyQuestionsV2(file));
+//    }
+
     @PostMapping(value = "/generate", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<List<VerifyQuestionResultDto>> generateQuestions(
             @RequestPart("file") MultipartFile file,

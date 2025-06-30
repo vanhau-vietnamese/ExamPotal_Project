@@ -37,6 +37,7 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     @Override
     public List<QuestionRequest> extractQuestions(MultipartFile file) throws IOException {
         String text = extractTextFromFile(file);
+
         String cleanedText = normalizeText(text);
         return parseQuestions(cleanedText);
     }
@@ -45,13 +46,24 @@ public class QuestionExtractorServiceImpl implements QuestionExtractorService {
     public List<VerifyQuestionResultDto>verifyQuestions(MultipartFile file) throws IOException {
         // lấy câu hỏi từ file
         List<QuestionRequest> extractQuestions = this.extractQuestions(file);
+
+        var fileId = agentService.processAndStore(file);
+
         List<VerifyQuestionResultDto> results = new ArrayList<>();
         for(QuestionRequest question : extractQuestions) {
-            VerifyQuestionResultDto verifyQuestionResultDto = agentVerifyQuestionService.verifyQuestion(question);
+            VerifyQuestionResultDto verifyQuestionResultDto = agentVerifyQuestionService.verifyQuestion(question, fileId);
             verifyQuestionResultDto.setQuestion(question);
             results.add(verifyQuestionResultDto);
         }
         return results;
+    }
+
+    @Override
+    public List<VerifyQuestionResultDto> verifyQuestionsV2(MultipartFile file) throws IOException {
+        var fileId = agentService.processAndStore(file);
+
+// Bước 2: Gọi agent để generate câu hỏi dựa trên fileId
+        return agentVerifyQuestionService.verifyQuestionsV2(fileId);
     }
 
     @Override

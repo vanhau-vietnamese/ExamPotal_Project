@@ -14,6 +14,8 @@ public interface QuestionExtractorService {
 
     List<VerifyQuestionResultDto> verifyQuestions(MultipartFile file) throws IOException;
 
+    List<VerifyQuestionResultDto> verifyQuestionsV2(MultipartFile file) throws IOException;
+
     String chatMessage(String message, List<MultipartFile> files );
 
     List<VerifyQuestionResultDto> generateQuestions(GenerateQuestionRequest request) throws IOException;

@@ -6,7 +6,7 @@ CÂU HỎI TRẮC NGHIỆM CẦN KIỂM TRA:
 - Nếu câu hỏi trắc nghiệm không hợp lí thì status = false
 - Nếu câu hỏi trắc nghiệm là hợp lí thì status = true
 
-1. Giải thích vì sao đáp án của người học là sai ở phần reason
+1. Giải thích chi tiết vì sao đáp án của người học là sai ở phần reason
 2. Nêu đáp án đúng và lý do.
 3. Đề xuất phần kiến thức cần ôn tập (suggestion)
 4. Gợi ý tài liệu tham khảo (có thể là URL) ở phần refenrence
@@ -19,5 +19,5 @@ Trả về JSON với format sau:
 - Phần question của format chính là phần question của input
 
 Chỉ trả về đúng định dạng JSON, không thêm bất kỳ văn bản nào khác.
-Trường media luôn luông trả về null
+Trường media luôn luôn trả về null
 

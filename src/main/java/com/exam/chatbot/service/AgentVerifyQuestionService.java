@@ -10,11 +10,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface AgentVerifyQuestionService {
-    VerifyQuestionResultDto verifyQuestion(QuestionRequest request) throws IOException;
+    VerifyQuestionResultDto verifyQuestion(QuestionRequest request, String fileId) throws IOException;
 
     QuestionResultDto agentSuggestQuestion(QuestionDto request) throws IOException;
 
     Boolean verifyMessage(String message) throws IOException;
 
     List<VerifyQuestionResultDto> generateQuestions(GenerateQuestionRequest request) throws IOException;
+
+    List<VerifyQuestionResultDto> verifyQuestionsV2(String fileId) throws IOException;
 }

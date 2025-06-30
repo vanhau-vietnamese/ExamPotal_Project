@@ -81,8 +81,9 @@ public class QuizServiceImpl implements QuizService {
             }
 
             if (questionRequest.getId() == null) {
+                questionRequest.setCategoryId(category.get().getId());
 // add quétion
-                QuestionResponse questionResponse = questionService.addQuestion(questionRequest);
+                QuestionResponse questionResponse = questionService .addQuestion(questionRequest);
 
                 questionRequest.setId(questionResponse.getId());
             }

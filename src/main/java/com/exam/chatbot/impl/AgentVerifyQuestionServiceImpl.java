@@ -48,6 +48,9 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
     @Value("classpath:/prompts/generate-question.st")
     private Resource ragGeneratePromptTemplate;
 
+    @Value("classpath:/prompts/verify-question-v2.st")
+    private Resource ragVerifyPromptTemplate;
+
     public AgentVerifyQuestionServiceImpl(ChatClient.Builder builder, QdrantVectorStore vectorStore) {
         this.chatMemory = new InMemoryChatMemory();
         this.chatClient = builder
@@ -101,7 +104,7 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
 //        return outputConverter.convert(textOutput);
 //    }
 
-    public VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest) throws IOException {
+    public VerifyQuestionResultDto verifyQuestion(QuestionRequest questionRequest, String fileId) throws IOException {
         // Tạo format cho JSON kết quả
         var outputConverter = new BeanOutputConverter<>(VerifyQuestionResultDto.class);
         String format = outputConverter.getFormat();
@@ -113,11 +116,18 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
         System.out.println("question JSON: " + questionJson);
 
         // Tìm context liên quan theo category_id
+//        FilterExpressionBuilder b = new FilterExpressionBuilder();
+//        SearchRequest searchRequest = SearchRequest.builder()
+//                .query(questionRequest.getContent())
+//                .topK(20)
+//                .similarityThreshold(0.7)
+//                .build();
+
         FilterExpressionBuilder b = new FilterExpressionBuilder();
         SearchRequest searchRequest = SearchRequest.builder()
                 .query(questionRequest.getContent())
-                .topK(20)
-                .similarityThreshold(0.7)
+                .topK(5)
+                .filterExpression(b.eq("file_id", fileId).build())
                 .build();
 
         List<Document> relatedDocuments = vectorStore.similaritySearch(searchRequest);
@@ -150,7 +160,6 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
 
         return outputConverter.convert(textOutput);
     }
-
 
     @Override
     public Boolean verifyMessage(String message) throws IOException {
@@ -227,6 +236,79 @@ public class AgentVerifyQuestionServiceImpl implements AgentVerifyQuestionServic
         }
 
         return allQuestions;
+    }
+
+    @Override
+    public List<VerifyQuestionResultDto> verifyQuestionsV2(String fileId) throws IOException {
+        // Bước 1: Lấy dữ liệu file đã upload
+        FilterExpressionBuilder b = new FilterExpressionBuilder();
+        SearchRequest searchRequest1 = SearchRequest.builder()
+                .query("extract questions from this file")
+                .topK(1000)
+                .filterExpression(b.eq("file_id", fileId).build())
+                .build();
+
+        List<Document> relatedDocuments1 = vectorStore.similaritySearch(searchRequest1);
+
+        if (relatedDocuments1.isEmpty()) {
+            throw new IllegalStateException("Không tìm thấy nội dung nào trong file.");
+        }
+
+        StringBuilder contextBuilder = new StringBuilder();
+        for (Document doc : relatedDocuments1) {
+            contextBuilder.append(doc.getText()).append("\n");
+        }
+        String context1 = contextBuilder.toString();
+
+        System.out.println("CONTEXT: " + context1);
+
+//        // Bước 1: Lấy dữ liệu file đã upload
+//        SearchRequest searchRequest2 = SearchRequest.builder()
+//                .query("extract questions from this file")
+//                .topK(1000)
+//                .filterExpression(b.eq("file_id", fileId).build())
+//                .build();
+//
+//        List<Document> relatedDocuments2 = vectorStore.similaritySearch(searchRequest2);
+//
+//        if (relatedDocuments2.isEmpty()) {
+//            throw new IllegalStateException("Không tìm thấy nội dung nào trong file.");
+//        }
+//
+//        StringBuilder contextBuilder2 = new StringBuilder();
+//        for (Document doc : relatedDocuments2) {
+//            contextBuilder.append(doc.getText()).append("\n");
+//        }
+//        String context2 = contextBuilder2.toString();
+
+        // Tạo prompt trích xuất câu hỏi
+        PromptTemplate promptTemplate = new PromptTemplate(ragVerifyPromptTemplate);
+        Map<String, Object> promptParams = new HashMap<>();
+        promptParams.put("context1", context1);
+
+        var outputConverter = new BeanOutputConverter<>(new ParameterizedTypeReference<List<VerifyQuestionResultDto>>() {});
+        String format = outputConverter.getFormat();
+        promptParams.put("format", format);
+
+        Prompt prompt = promptTemplate.create(promptParams);
+
+        var chatResponse = chatClient.prompt(prompt).call().chatResponse();
+        String result = chatResponse.getResult().getOutput().getText();
+
+        int jsonArrayStart = result.indexOf("[");
+        if (jsonArrayStart == -1) {
+            throw new IllegalStateException("Không tìm thấy danh sách JSON hợp lệ trong kết quả.");
+        }
+        String validJson = result.substring(jsonArrayStart).trim();
+
+        // Parse JSON kết quả
+        List<VerifyQuestionResultDto> extractedQuestions = outputConverter.convert(validJson);
+
+        if (extractedQuestions == null || extractedQuestions.isEmpty()) {
+            throw new IllegalStateException("Không trích xuất được câu hỏi nào từ file.");
+        }
+
+        return extractedQuestions;
     }
 
     @Override
